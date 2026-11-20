@@ -30,7 +30,7 @@ export default function RootLayout(props: LayoutProps<"/">) {
             <Toaster />
             <LenisSmoothScroll />
             <NextJsToploader color="var(--primary)" showSpinner={false} />
-            {/* {process.env.NODE_ENV === "production" && <Analytics />} */}
+            {process.env.NODE_ENV === "production" && <Analytics />}
           </TooltipProvider>
         </ThemeProvider>
       </body>

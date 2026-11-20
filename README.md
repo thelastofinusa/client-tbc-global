@@ -1,1 +1,1 @@
-## The Burning Church
+## The Burning Church Global
