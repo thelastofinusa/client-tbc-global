@@ -1,21 +1,39 @@
 import { cn } from "cn";
-import {
-  Geist_Mono as FontMono,
-  Geist as FontSans,
-  Inter as FontSerif,
-} from "next/font/google";
+import localFont from "next/font/local";
 
-const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
+const fontHeading = localFont({
+  src: "../public/fonts/BricolageGrotesque/VariableFont_opsz,wdth,wght.ttf",
+  variable: "--font-heading",
+  display: "swap",
+  style: "normal",
+});
 
-const fontSerif = FontSerif({
+const fontSans = localFont({
+  src: "../public/fonts/HankenGrotesk/HankenGrotesk-VariableFont_wght.ttf",
+  variable: "--font-sans",
+  display: "swap",
+  style: "normal",
+});
+
+const fontSerif = localFont({
+  src: "../public/fonts/Cinzel/Cinzel-VariableFont_wght.ttf",
   variable: "--font-serif",
-  subsets: ["latin"],
+  display: "swap",
+  style: "normal",
 });
 
-const fontMono = FontMono({
+const fontMono = localFont({
+  src: "../public/fonts/GeistMono/VariableFont_wght.ttf",
   variable: "--font-mono",
-  subsets: ["latin"],
+  display: "swap",
+  style: "normal",
 });
 
-export const fontVariables = (className: string) =>
-  cn(className, fontSans.variable, fontSerif.variable, fontMono.variable);
+export const fontVariables = (className?: string) =>
+  cn(
+    fontSans.variable,
+    fontSerif.variable,
+    fontMono.variable,
+    fontHeading.variable,
+    className,
+  );
