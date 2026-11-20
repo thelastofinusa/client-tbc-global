@@ -1,0 +1,39 @@
+export const siteConfig = {
+  title: "The Burning Church Global",
+  description:
+    "Welcome to The Burning Church official website. Our site is currently under construction. Please check back soon for updates.",
+  author: {
+    name: "Abdullahi Salihu",
+    username: "thelastofinusa",
+    nickname: "Osilama",
+    nicknameShorten: "Osi",
+    namePronunciationUrl:
+      "https://cdn.sanity.io/files/l1eyjyqo/production/5bc4adb49053f62e13529d23fa46de67382dc887.mp3",
+    position: "Web3 Frontend Developer",
+    email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
+    phone: "KzIzNDgxMjgxNTc1MTA=",
+    avatar:
+      "https://cdn.sanity.io/images/l1eyjyqo/production/8ffea40c28f50c75fc2a04099b7a3e326d15ee68-1722x1717.jpg",
+  },
+  url:
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BASE_URL || "https://tbcg.vercel.app"
+      : "http://localhost:3000",
+  socials: [
+    { platform: "whatsApp", url: "https://wa.link/bjgckl" },
+    { platform: "twitter", url: "https://twitter.com/thelastofinusa" },
+    { platform: "gitHub", url: "https://github.com/thelastofinusa" },
+    { platform: "instagram", url: "https://www.instagram.com/thelastofinusa/" },
+    { platform: "telegram", url: "https://t.me/thelastofinusa" },
+    {
+      platform: "linkedIn",
+      url: "https://www.linkedin.com/in/thelastofinusa/",
+    },
+    { platform: "youtube", url: "https://www.youtube.com/@thelastofinusa" },
+    { platform: "medium", url: "https://medium.com/@thelastofinusa" },
+    {
+      platform: "productHunt",
+      url: "https://www.producthunt.com/@thelastofinusa",
+    },
+  ],
+};

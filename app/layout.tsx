@@ -2,17 +2,58 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/react";
+import { assetPath } from "keltra";
 import NextJsToploader from "nextjs-toploader";
 import { LenisSmoothScroll } from "~/components/providers/lenis";
 import { ThemeProvider } from "~/components/providers/theme";
 import { Toaster } from "~/components/reusable/shadcn/toast";
 import { TooltipProvider } from "~/components/reusable/shadcn/tooltip";
+import { siteConfig } from "~/config/site.config";
 import { fontVariables } from "~/lib/fonts";
 
 export const metadata: Metadata = {
-  title: "The Burning Church Global",
-  description:
-    "Welcome to The Burning Church official website. Our site is currently under construction. Please check back soon for updates.",
+  title: {
+    default: siteConfig.title,
+    template: `%s – ${siteConfig.title}`,
+  },
+  description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url as string),
+  authors: [{ name: siteConfig.title }],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: siteConfig.title,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    images: [
+      {
+        url: assetPath("/opengraph.webp"),
+        width: 1200,
+        height: 630,
+        alt: siteConfig.title,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [assetPath("/opengraph.webp")],
+  },
+  icons: siteConfig.author.avatar,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout(props: LayoutProps<"/">) {
