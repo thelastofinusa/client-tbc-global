@@ -1,7 +1,7 @@
 export const siteConfig = {
   title: "The Burning Church Global",
   description:
-    "Welcome to The Burning Church official website. Our site is currently under construction. Please check back soon for updates.",
+    "A generation set on fire. Join Burning Church Global Ministries in Kudenda, Kaduna — a community where faith turns into action.",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { assetPath } from "keltra";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url as string),
   authors: [{ name: siteConfig.title }],
+  generator: "Next.js",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -50,13 +51,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout(props: LayoutProps<"/">) {
+export const viewport: Viewport = {
+  width: "device-width",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
+
+export default function RootLayout(props: Readonly<LayoutProps<"/">>) {
   return (
     <html
       lang="en"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
-      className={fontVariables("h-full antialiased font-sans")}
+      className={fontVariables("h-full antialiased")}
     >
       <body className="flex min-h-full flex-col">{props.children}</body>
     </html>

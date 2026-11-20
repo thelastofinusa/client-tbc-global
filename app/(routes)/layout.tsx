@@ -5,7 +5,7 @@ import { ThemeProvider } from "~/components/providers/theme";
 import { Toaster } from "~/components/reusable/shadcn/toast";
 import { TooltipProvider } from "~/components/reusable/shadcn/tooltip";
 
-export default function RoutesLayout(props: LayoutProps<"/">) {
+export default function RoutesLayout(props: Readonly<LayoutProps<"/">>) {
   return (
     <ThemeProvider defaultTheme="system">
       <TooltipProvider>

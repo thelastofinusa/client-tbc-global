@@ -1,5 +1,11 @@
 import React from "react";
+import { Header } from "~/components/shared/header";
 
-export default function LandingLayout(props: LayoutProps<"/">) {
-  return <React.Fragment>{props.children}</React.Fragment>;
+export default function LandingLayout(props: Readonly<LayoutProps<"/">>) {
+  return (
+    <React.Fragment>
+      <Header />
+      <main className="flex-1">{props.children}</main>
+    </React.Fragment>
+  );
 }
