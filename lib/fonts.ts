@@ -1,13 +1,6 @@
 import { cn } from "cn";
 import localFont from "next/font/local";
 
-const fontHeading = localFont({
-  src: "../public/fonts/BricolageGrotesque/VariableFont_opsz,wdth,wght.ttf",
-  variable: "--font-heading",
-  display: "swap",
-  style: "normal",
-});
-
 const fontSans = localFont({
   src: "../public/fonts/HankenGrotesk/HankenGrotesk-VariableFont_wght.ttf",
   variable: "--font-sans",
@@ -30,10 +23,4 @@ const fontMono = localFont({
 });
 
 export const fontVariables = (className?: string) =>
-  cn(
-    fontSans.variable,
-    fontSerif.variable,
-    fontMono.variable,
-    fontHeading.variable,
-    className,
-  );
+  cn(fontSans.variable, fontSerif.variable, fontMono.variable, className);

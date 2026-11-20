@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Analytics } from "@vercel/analytics/react";
 import { assetPath } from "keltra";
-import NextJsToploader from "nextjs-toploader";
-import { LenisSmoothScroll } from "~/components/providers/lenis";
-import { ThemeProvider } from "~/components/providers/theme";
-import { Toaster } from "~/components/reusable/shadcn/toast";
-import { TooltipProvider } from "~/components/reusable/shadcn/tooltip";
 import { siteConfig } from "~/config/site.config";
 import { fontVariables } from "~/lib/fonts";
 
@@ -64,18 +58,7 @@ export default function RootLayout(props: LayoutProps<"/">) {
       suppressHydrationWarning
       className={fontVariables("h-full antialiased font-sans")}
     >
-      <body className="flex min-h-full flex-col">
-        <ThemeProvider defaultTheme="system">
-          <TooltipProvider>
-            {props.children}
-
-            <Toaster />
-            <LenisSmoothScroll />
-            <NextJsToploader color="var(--primary)" showSpinner={false} />
-            {process.env.NODE_ENV === "production" && <Analytics />}
-          </TooltipProvider>
-        </ThemeProvider>
-      </body>
+      <body className="flex min-h-full flex-col">{props.children}</body>
     </html>
   );
 }
