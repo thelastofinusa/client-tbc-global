@@ -42,7 +42,7 @@ export const Header = () => {
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
             <Link href="/" className="flex items-center gap-2 font-serif">
-              <div className="bg-red grid size-9 place-items-center rounded-full text-white">
+              <div className="bg-red hidden size-9 place-items-center rounded-full text-white sm:grid">
                 <FlameIcon fill="currentColor" className="size-4.5" />
               </div>
               <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
@@ -116,7 +116,7 @@ export const Header = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-background fixed top-19 right-0 left-0 z-50 flex flex-col gap-1 border-b px-5 py-3 shadow-[0_40px_40px_#17100d33] sm:px-8 md:px-10"
+              className="bg-background fixed top-19 right-0 left-0 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_40px_40px_#17100d33] sm:px-8 md:px-10"
             >
               {mainNavItems.map((item) => {
                 const isActive = isActivePath(item.path, pathname);
