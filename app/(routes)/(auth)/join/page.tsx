@@ -1,5 +1,12 @@
-import React from "react";
+import { Container } from "~/components/shared/container";
+import { siteConfig } from "~/config/site.config";
 
-export default function JoinPage() {
-  return <div>JoinPage</div>;
+export default function Page() {
+  return (
+    <div className="py-5">
+      <Container>
+        <p className="text-sm">{siteConfig.description}</p>
+      </Container>
+    </div>
+  );
 }

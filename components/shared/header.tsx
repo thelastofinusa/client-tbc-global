@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRightIcon, ChevronRightIcon, FlameIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,12 +32,46 @@ const mainNavItems = navItems.filter((item) => item.kind === "nav");
 const loginItem = navItems.find((item) => item.kind === "login");
 const joinItem = navItems.find((item) => item.kind === "join");
 
+const easeOutExpo = [0.22, 1, 0.36, 1] as const;
+
+const drawerVariants: Variants = {
+  closed: {
+    opacity: 0,
+    y: -14,
+    transition: {
+      duration: 0.18,
+      ease: easeOutExpo,
+      when: "afterChildren",
+    },
+  },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.26,
+      ease: easeOutExpo,
+      when: "beforeChildren",
+      staggerChildren: 0.035,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  closed: { opacity: 0, y: -6 },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.2, ease: easeOutExpo },
+  },
+};
+
 export const Header = () => {
   const pathname = usePathname();
   const { toggle, isOpen } = useToggle("menu");
 
   return (
-    <header className="bg-background/90 sticky top-0 left-0 z-50 h-19 w-full backdrop-blur-lg md:h-24">
+    <header className="bg-background md:bg-background/90 sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24 md:backdrop-blur-lg">
       <Container className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
@@ -96,11 +130,23 @@ export const Header = () => {
             <Button
               variant="outline"
               size="icon"
-              className="lg:hidden"
+              className="relative overflow-hidden lg:hidden"
               onClick={toggle}
               aria-label="Toggle menu"
+              aria-expanded={isOpen}
             >
-              {isOpen ? <IoClose /> : <IoMenuSharp />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={isOpen ? "close" : "open"}
+                  initial={{ opacity: 0, rotate: -45, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 45, scale: 0.8 }}
+                  transition={{ duration: 0.14, ease: easeOutExpo }}
+                  className="grid place-items-center"
+                >
+                  {isOpen ? <IoClose /> : <IoMenuSharp />}
+                </motion.span>
+              </AnimatePresence>
               <span className="sr-only">
                 {isOpen ? "Close Menu" : "Open Menu"}
               </span>
@@ -110,70 +156,92 @@ export const Header = () => {
 
         <AnimatePresence>
           {isOpen && (
-            <motion.nav
-              key="mobile-nav"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-background fixed top-19 right-0 left-0 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_40px_40px_#17100d33] sm:px-8 md:px-10"
-            >
-              {mainNavItems.map((item) => {
-                const isActive = isActivePath(item.path, pathname);
+            <>
+              {/* Backdrop overlay below the header */}
+              <motion.div
+                key="mobile-nav-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                onClick={toggle}
+                aria-hidden="true"
+                className="fixed inset-x-0 top-19 bottom-0 z-40 bg-black/35 backdrop-blur-[2px] md:top-24 lg:hidden"
+              />
 
-                return (
-                  <Button
-                    size="lg"
-                    variant={isActive ? "secondary" : "ghost"}
-                    key={item.path}
-                    nativeButton={false}
-                    render={<Link href={item.path} />}
-                    className="text-ink justify-between text-left"
-                    onClick={toggle}
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRightIcon size={16} />
-                  </Button>
-                );
-              })}
+              {/* Sliding drawer */}
+              <motion.nav
+                key="mobile-nav"
+                variants={drawerVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                className="bg-background fixed inset-x-0 top-19 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_24px_48px_-12px_rgba(23,16,13,0.28)] sm:px-8 md:top-24 md:px-10 lg:hidden"
+              >
+                {mainNavItems.map((item) => {
+                  const isActive = isActivePath(item.path, pathname);
 
-              {/* Differentiated Login & Join actions for mobile */}
-              <div className="mt-3 flex flex-col gap-2 border-t pt-4 md:hidden">
-                {loginItem && (
-                  <Button
-                    size="lg"
-                    variant={
-                      isActivePath(loginItem.path, pathname)
-                        ? "secondary"
-                        : "outline"
-                    }
-                    nativeButton={false}
-                    render={<Link href={loginItem.path} />}
-                    className="text-ink w-full justify-between"
-                    onClick={toggle}
-                  >
-                    <span>{loginItem.label}</span>
-                    <span className="text-muted-foreground text-xs font-normal">
-                      Member account
-                    </span>
-                  </Button>
-                )}
+                  return (
+                    <motion.div key={item.path} variants={itemVariants}>
+                      <Button
+                        size="lg"
+                        variant={isActive ? "secondary" : "ghost"}
+                        nativeButton={false}
+                        render={<Link href={item.path} />}
+                        className="text-ink group w-full justify-between text-left"
+                        onClick={toggle}
+                      >
+                        <span>{item.label}</span>
+                        <ArrowRightIcon
+                          size={16}
+                          className="transition-transform duration-150 group-hover:translate-x-0.5"
+                        />
+                      </Button>
+                    </motion.div>
+                  );
+                })}
 
-                {joinItem && (
-                  <Button
-                    size="lg"
-                    variant="dark"
-                    nativeButton={false}
-                    render={<Link href={joinItem.path} />}
-                    className="w-full justify-between"
-                    onClick={toggle}
-                  >
-                    <span>{joinItem.label}</span>
-                    <ChevronRightIcon size={16} />
-                  </Button>
-                )}
-              </div>
-            </motion.nav>
+                {/* Differentiated Login & Join actions for mobile */}
+                <motion.div
+                  variants={itemVariants}
+                  className="mt-3 flex flex-col gap-2 border-t pt-4 md:hidden"
+                >
+                  {loginItem && (
+                    <Button
+                      size="lg"
+                      variant={
+                        isActivePath(loginItem.path, pathname)
+                          ? "secondary"
+                          : "outline"
+                      }
+                      nativeButton={false}
+                      render={<Link href={loginItem.path} />}
+                      className="text-ink w-full justify-between"
+                      onClick={toggle}
+                    >
+                      <span>{loginItem.label}</span>
+                      <span className="text-muted-foreground text-xs font-normal">
+                        Member account
+                      </span>
+                    </Button>
+                  )}
+
+                  {joinItem && (
+                    <Button
+                      size="lg"
+                      variant="dark"
+                      nativeButton={false}
+                      render={<Link href={joinItem.path} />}
+                      className="w-full justify-between"
+                      onClick={toggle}
+                    >
+                      <span>{joinItem.label}</span>
+                      <ChevronRightIcon size={16} />
+                    </Button>
+                  )}
+                </motion.div>
+              </motion.nav>
+            </>
           )}
         </AnimatePresence>
       </Container>
