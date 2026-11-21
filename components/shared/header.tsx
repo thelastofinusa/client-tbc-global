@@ -1,51 +1,18 @@
 "use client";
 
-import { Image } from "keltra/image/next";
 import { ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
-import { siteConfig } from "~/config/site.config";
+import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Button } from "../reusable/shadcn/button";
 import { Separator } from "../reusable/shadcn/separator";
 import { Container } from "./container";
-
-type NavItemType = {
-  label: string;
-  mobileLabel?: string;
-  path: Route;
-  kind?: "nav" | "login" | "join";
-};
-
-const navItems: NavItemType[] = [
-  { label: "Home", mobileLabel: "Sanctuary", path: "/", kind: "nav" },
-  { label: "About", mobileLabel: "Our Story", path: "/about", kind: "nav" },
-  {
-    label: "Project",
-    mobileLabel: "Missions & Builds",
-    path: "/projects",
-    kind: "nav",
-  },
-  {
-    label: "Services & Visit",
-    mobileLabel: "Gatherings & Visit",
-    path: "/services",
-    kind: "nav",
-  },
-  {
-    label: "Partner",
-    mobileLabel: "Kingdom Partners",
-    path: "/partner",
-    kind: "nav",
-  },
-  { label: "Login", path: "/login", kind: "login" },
-  { label: "Join the family", path: "/join", kind: "join" },
-];
+import { LogoComponent } from "./logo";
 
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
@@ -77,11 +44,6 @@ export const Header = () => {
   const pathname = usePathname();
   const { toggle, isOpen, close } = useToggle("menu");
 
-  const prefix = siteConfig.title.replace(/\s*Global Ministries$/i, "").trim();
-  const suffix = siteConfig.title.endsWith("Global Ministries")
-    ? "Global Ministries"
-    : "";
-
   return (
     <header
       className={cn(
@@ -92,30 +54,7 @@ export const Header = () => {
       <Container className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
-            <Link
-              href="/"
-              onClick={close}
-              className="flex items-center gap-3 font-serif"
-            >
-              <Image
-                src="/logo.png"
-                alt={siteConfig.title}
-                width={32}
-                height={32}
-                preload
-                className="size-8"
-              />
-              <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
-                {suffix ? (
-                  <>
-                    <span className="text-[11px]">{prefix}</span>
-                    <span>{suffix}</span>
-                  </>
-                ) : (
-                  <span>{siteConfig.title}</span>
-                )}
-              </p>
-            </Link>
+            <LogoComponent path="/" />
           </div>
 
           <div className="hidden flex-1 items-center justify-center lg:flex">
