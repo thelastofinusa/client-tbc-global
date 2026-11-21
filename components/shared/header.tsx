@@ -83,8 +83,13 @@ export const Header = () => {
     : "";
 
   return (
-    <header className="bg-card sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24">
-      <Container size="md" className="size-full">
+    <header
+      className={cn(
+        "bg-background border-b sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24",
+        isOpen && "border-b-transparent",
+      )}
+    >
+      <Container className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
             <Link
@@ -125,7 +130,7 @@ export const Header = () => {
                     size="sm"
                     variant="ghost"
                     className={cn(
-                      "bg-card hover:bg-background/80 text-[13px]",
+                      "text-[13px]",
                       isActive && "text-red hover:text-red/80",
                     )}
                     nativeButton={false}
@@ -152,7 +157,7 @@ export const Header = () => {
               variant="outline"
               nativeButton={false}
               render={<Link href="/login" />}
-              className="bg-card hover:bg-background/80 hidden md:inline-flex"
+              className="hidden md:inline-flex"
             >
               <span>Log In</span>
             </Button>
@@ -163,10 +168,7 @@ export const Header = () => {
             <Button
               variant={isOpen ? "manual" : "outline"}
               size="icon"
-              className={cn(
-                "relative overflow-hidden lg:hidden",
-                !isOpen && "bg-card",
-              )}
+              className="relative overflow-hidden lg:hidden"
               onClick={toggle}
               aria-label="Toggle menu"
               aria-expanded={isOpen}
@@ -207,7 +209,7 @@ export const Header = () => {
                 initial="closed"
                 animate="open"
                 exit="closed"
-                className="bg-card fixed inset-x-0 top-19 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_24px_48px_-12px_rgba(23,16,13,0.28)] sm:px-8 md:top-24 md:px-10 lg:hidden"
+                className="bg-background fixed inset-x-0 top-19 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_24px_48px_-12px_rgba(23,16,13,0.28)] sm:px-8 md:top-24 md:px-10 lg:hidden"
               >
                 {navItems.map((item) => {
                   const kind = item.kind ?? "nav";

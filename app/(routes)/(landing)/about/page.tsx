@@ -1,12 +1,9 @@
-import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
+import { AboutHeroComponent } from "./_components/hero";
 
 export default function Page() {
   return (
-    <div className="py-5">
-      <Container>
-        <p className="text-sm">{siteConfig.description}</p>
-      </Container>
+    <div className="flex-1 overflow-x-clip">
+      <AboutHeroComponent />
     </div>
   );
 }

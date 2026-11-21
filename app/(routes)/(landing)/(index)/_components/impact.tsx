@@ -27,7 +27,7 @@ const impactStats = [
 export const ImpactComponent = () => {
   return (
     <section aria-label="Impact" className="flex-1 overflow-x-clip">
-      <Container size="md" className="relative py-16 md:py-24">
+      <Container className="relative py-16 md:py-24">
         <div className="relative grid grid-cols-1 gap-y-10 md:grid-cols-[1fr_1.5fr] md:gap-x-15 md:gap-y-0">
           <div>
             <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">

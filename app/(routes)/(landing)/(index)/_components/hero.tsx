@@ -5,9 +5,8 @@ import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
 
-export const HeroComponent = () => {
+export const HomeHeroComponent = () => {
   return (
     <section
       aria-label="Hero"
@@ -26,17 +25,8 @@ export const HeroComponent = () => {
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(20,15,13,0.83)_0%,rgba(22,15,13,0.63)_40%,rgba(23,15,13,0.08)_100%),linear-gradient(0deg,rgba(20,15,13,0.34),transparent_45%)] max-md:bg-[linear-gradient(90deg,#150f0dd9,#180f0d56_90%),linear-gradient(0deg,#150f0db0,transparent_55%)]"
       />
 
-      <div className="bg-accent-foreground relative hidden w-full md:block">
-        <Container size="md" className="py-2">
-          <div className="flex items-center justify-center text-xs tracking-wider">
-            <p className="text-center font-serif font-medium">
-              {siteConfig.title} - {siteConfig.slogan}
-            </p>
-          </div>
-        </Container>
-      </div>
-      <div className="relative py-16 md:py-24 md:pt-28 lg:pt-32">
-        <Container size="md">
+      <Container>
+        <div className="relative py-16 md:py-24 md:pt-28 lg:pt-32">
           <h1 className="mb-6 font-serif text-[clamp(56px,7vw,88px)] leading-[0.97] font-extrabold tracking-[-0.075em] max-md:text-5xl">
             Faith that
             <br />
@@ -100,8 +90,8 @@ export const HeroComponent = () => {
               </span>
             </Link>
           </div>
-        </Container>
-      </div>
+        </div>
+      </Container>
     </section>
   );
 };
