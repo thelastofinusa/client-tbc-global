@@ -1,11 +1,13 @@
 "use client";
 
+import { Image } from "keltra/image/next";
 import { ArrowRightIcon, ChevronRightIcon, FlameIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
+import { siteConfig } from "~/config/site.config";
 import { cn, isActivePath } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
 import { Button } from "../reusable/shadcn/button";
@@ -68,17 +70,25 @@ const itemVariants: Variants = {
 
 export const Header = () => {
   const pathname = usePathname();
-  const { toggle, isOpen } = useToggle("menu");
+  const { toggle, isOpen, close } = useToggle("menu");
 
   return (
     <header className="bg-background md:bg-background/90 sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24 md:backdrop-blur-lg">
       <Container className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
-            <Link href="/" className="flex items-center gap-2 font-serif">
-              <div className="bg-red grid size-9 place-items-center rounded-full text-white">
-                <FlameIcon fill="currentColor" className="size-4.5" />
-              </div>
+            <Link
+              href="/"
+              onClick={close}
+              className="flex items-center gap-2 font-serif"
+            >
+              <Image
+                src="/logo.png"
+                alt={siteConfig.title}
+                width={40}
+                height={40}
+                preload
+              />
               <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
                 <span className="text-[11px]">The Burning Church</span>
                 <span>Global Ministries</span>
@@ -98,6 +108,7 @@ export const Header = () => {
                   className={cn(isActive && "text-red hover:text-red/80")}
                   nativeButton={false}
                   render={<Link href={item.path} />}
+                  onClick={close}
                 >
                   <span>{item.label}</span>
                 </Button>
@@ -164,7 +175,7 @@ export const Header = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                onClick={toggle}
+                onClick={close}
                 aria-hidden="true"
                 className="fixed inset-x-0 top-19 bottom-0 z-40 bg-black/35 backdrop-blur-[2px] md:top-24 lg:hidden"
               />
@@ -189,7 +200,7 @@ export const Header = () => {
                         nativeButton={false}
                         render={<Link href={item.path} />}
                         className="text-ink group w-full justify-between text-left"
-                        onClick={toggle}
+                        onClick={close}
                       >
                         <span>{item.label}</span>
                         <ArrowRightIcon
@@ -217,7 +228,7 @@ export const Header = () => {
                       nativeButton={false}
                       render={<Link href={loginItem.path} />}
                       className="text-ink w-full justify-between"
-                      onClick={toggle}
+                      onClick={close}
                     >
                       <span>{loginItem.label}</span>
                       <span className="text-muted-foreground text-xs font-normal">
@@ -233,7 +244,7 @@ export const Header = () => {
                       nativeButton={false}
                       render={<Link href={joinItem.path} />}
                       className="w-full justify-between"
-                      onClick={toggle}
+                      onClick={close}
                     >
                       <span>{joinItem.label}</span>
                       <ChevronRightIcon size={16} />
