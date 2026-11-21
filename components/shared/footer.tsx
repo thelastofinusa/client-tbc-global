@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowUpRightIcon, MapPinIcon } from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { siteConfig } from "~/config/site.config";
 import { type NavItemType, navItems } from "~/lib/constants";
+import { Eyebrow } from "./eyebrow";
 import { LogoComponent } from "./logo";
 
 type FooterLinkItem = Omit<NavItemType, "path" | "label"> & {
@@ -68,10 +69,9 @@ export const Footer = () => {
           <div className="max-w-md">
             <LogoComponent path="/" className="inline-flex" />
 
-            <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm">
-              Raising a generation burning with purpose—where young people
-              discover their gifts, families find hope, and faith turns into
-              everyday action.
+            {/* <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm"> */}
+            <p className="text-secondary mt-4 text-sm leading-[1.75]">
+              {siteConfig.about}
             </p>
           </div>
 
@@ -81,6 +81,7 @@ export const Footer = () => {
               size="lg"
               nativeButton={false}
               render={<Link href="/services" />}
+              className="flex-1 sm:flex-none"
             >
               <span>Sunday Service · 9:00 AM</span>
               <ArrowUpRightIcon size={16} />
@@ -97,36 +98,33 @@ export const Footer = () => {
         </div>
 
         {/* Middle row: Navigation & Gathering details */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-10 sm:grid-cols-2 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <span className="text-accent block font-serif text-[10px] font-bold tracking-[0.18em] uppercase">
-              WHERE TO FIND US
-            </span>
-            <div className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-white/80">
-              <MapPinIcon className="text-accent mt-0.5 size-4 shrink-0" />
-              <div>
-                <strong className="block font-serif text-sm font-semibold text-white">
-                  Kudende, Kaduna
-                </strong>
-                <span className="mt-1 block text-white/70">
-                  Everyone is welcome. Bring your questions, bring your whole
-                  self.
-                </span>
+        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-10 sm:grid-cols-2 md:grid-cols-4">
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <Eyebrow label="Where to find us" className="text-accent" />
+
+            <div className="flex flex-col gap-2 sm:max-w-sm">
+              <div className="bg-muted/50 aspect-[1.3] sm:aspect-video">
+                <iframe
+                  title={`${siteConfig.title} location on Google Maps`}
+                  src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d773.2637856498449!2d7.368035125773172!3d10.478444737176677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDI4JzQyLjIiTiA3wrAyMicwNi41IkU!5e1!3m2!1sen!2sng!4v1795293027987!5m2!1sen!2sng"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  className="size-full border-none"
+                />
               </div>
             </div>
           </div>
 
           {footerSections.map((section) => (
-            <div key={section.title} className="lg:col-span-4">
-              <span className="text-accent block font-serif text-[10px] font-bold tracking-[0.18em] uppercase">
-                {section.title}
-              </span>
-              <ul className="mt-3.5 space-y-2.5 text-xs">
+            <div key={section.title} className="flex flex-col gap-4">
+              <Eyebrow label={section.title} className="text-accent" />
+
+              <ul className="flex flex-col gap-2">
                 {section.items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="inline-flex items-center gap-2 text-white/80 transition-colors hover:text-white"
+                      className="inline-flex items-center gap-2 text-[13px] text-white/80 transition-colors hover:text-white sm:text-sm"
                     >
                       {item.mobileLabel ? (
                         <>
@@ -153,8 +151,23 @@ export const Footer = () => {
         </div>
 
         {/* Bottom bar: Copyright & local anchor */}
-        <div className="flex flex-col justify-between gap-3 pt-6 text-xs text-white/60 sm:flex-row sm:items-center">
-          <p>&copy; 2026 {siteConfig.title}. All rights reserved.</p>
+        <div className="flex flex-col justify-between gap-3 pt-6 text-[13px] sm:flex-row sm:items-center">
+          <p className="flex flex-col gap-1">
+            <span className="text-white/60">
+              &copy; 2026 {siteConfig.title}.
+            </span>
+            <span className="text-white">
+              All Rights Reserved - Designed and Developed by{" "}
+              <a
+                target="_blank"
+                href="http://thelastofinusa.vercel.app"
+                rel="noopener"
+                className="underline"
+              >
+                Osilama
+              </a>
+            </span>
+          </p>
           <p className="font-serif text-[11px] tracking-[0.12em] text-white/75 uppercase">
             Love God · Serve People · Transform Our Community
           </p>

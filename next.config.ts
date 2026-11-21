@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
     typedEnv: true,
   },
-  allowedDevOrigins: ["192.168.18.4", "192.168.18.5"],
+  allowedDevOrigins:
+    process.env.NODE_ENV === "development" ? ["192.168.18.*"] : undefined,
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,

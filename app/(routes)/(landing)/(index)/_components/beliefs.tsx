@@ -2,6 +2,7 @@ import { Image } from "keltra/image/next";
 import { ArrowRight, ChevronRightIcon } from "lucide-react";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
+import { Eyebrow } from "~/components/shared/eyebrow";
 import { siteConfig } from "~/config/site.config";
 
 export const BeliefsComponent = () => {
@@ -31,13 +32,8 @@ export const BeliefsComponent = () => {
             <div className="hidden md:block" />
 
             {/* Right column content */}
-            <div className="md:col-span-2 md:pl-8 lg:col-span-1 lg:pl-10 xl:pl-16">
-              <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">
-                <span className="bg-accent h-px w-7" />
-                <span className="font-serif font-semibold uppercase">
-                  Who we are
-                </span>
-              </div>
+            <div className="flex flex-col md:col-span-2 md:pl-8 lg:col-span-1 lg:pl-10 xl:pl-16">
+              <Eyebrow label="Who we are" />
 
               <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
                 Not just a place
@@ -88,7 +84,7 @@ export const BeliefsComponent = () => {
                 </div>
               </div>
 
-              <Button variant="outline" size="lg">
+              <Button variant="dark" size="lg" className="sm:w-max">
                 <span>See the rest of our story</span>
                 <ChevronRightIcon />
               </Button>

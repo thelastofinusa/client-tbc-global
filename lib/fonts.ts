@@ -1,7 +1,8 @@
 import { cn } from "cn";
 import {
   Geist_Mono as FontMono,
-  Hanken_Grotesk as FontSans,
+  // Hanken_Grotesk as FontSans,
+  DM_Sans as FontSans,
   Manrope as FontSerif,
 } from "next/font/google";
 

@@ -1,7 +1,7 @@
 import { cn } from "cn";
-import { Flame } from "lucide-react";
 import { Container } from "~/components/shared/container";
 import { CountingNumber } from "~/components/shared/count-number";
+import { Eyebrow } from "~/components/shared/eyebrow";
 
 const impactStats = [
   {
@@ -30,12 +30,8 @@ export const ImpactComponent = () => {
       <Container className="relative py-16 md:py-24">
         <div className="relative grid grid-cols-1 gap-y-10 md:grid-cols-[1fr_1.5fr] md:gap-x-15 md:gap-y-0">
           <div>
-            <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">
-              <span className="bg-primary h-px w-7" />
-              <span className="font-serif font-semibold">
-                FAITH, MADE VISIBLE
-              </span>
-            </div>
+            <Eyebrow lineClass="bg-primary" label="Faith, made visible" />
+
             <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
               Good things happen
               <br />
@@ -74,12 +70,10 @@ export const ImpactComponent = () => {
           </div>
         </div>
 
-        <div className="mt-8 ml-auto flex w-max items-center gap-2 text-[9px] tracking-[0.16em]">
-          <Flame className="text-red size-4 shrink-0" />
-          <span className="font-serif font-semibold uppercase">
-            Every number is a real person.
-          </span>
-        </div>
+        <Eyebrow
+          label="Every number is a real person"
+          className="mt-8 ml-auto w-max"
+        />
       </Container>
     </section>
   );

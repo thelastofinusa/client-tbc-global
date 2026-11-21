@@ -5,6 +5,7 @@ import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
+import { Eyebrow } from "~/components/shared/eyebrow";
 
 export const HomeHeroComponent = () => {
   return (
@@ -33,7 +34,7 @@ export const HomeHeroComponent = () => {
             moves <em className="text-accent not-italic">forward.</em>
           </h1>
 
-          <p className="text-secondary mb-7 max-w-102.5 text-sm max-sm:max-w-82.5 sm:text-base sm:leading-[1.75]">
+          <p className="text-secondary mb-7 max-w-md text-sm sm:text-base">
             We're building a community where young people find purpose, families
             find hope, and faith turns into action.
           </p>
@@ -59,12 +60,7 @@ export const HomeHeroComponent = () => {
           </div>
 
           <div className="mt-16 flex flex-col items-start justify-between gap-6 max-md:mt-11 md:flex-row md:items-end">
-            <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">
-              <span className="bg-accent h-px w-7" />
-              <span className="font-serif font-semibold">
-                KUDEDA, KADUNA · EVERYONE IS WELCOME
-              </span>
-            </div>
+            <Eyebrow label="Kudenda, Kaduna · Everyone is welcome" />
 
             <Link
               href="/services"
