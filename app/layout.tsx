@@ -4,6 +4,7 @@ import "./globals.css";
 import { assetPath } from "keltra";
 import { siteConfig } from "~/config/site.config";
 import { fontVariables } from "~/lib/fonts";
+import { getInitials } from "~/lib/utils";
 
 export const metadata: Metadata = {
   title: {
@@ -37,7 +38,6 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [assetPath("/opengraph.webp")],
   },
-  icons: siteConfig.author.avatar,
   robots: {
     index: true,
     follow: true,
@@ -48,6 +48,24 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "TBCG",
+    statusBarStyle: "default",
   },
 };
 

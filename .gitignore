@@ -42,3 +42,4 @@ next-env.d.ts
 
 # keltra generated files
 .keltra/
+pack.md

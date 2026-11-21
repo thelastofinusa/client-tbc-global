@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export type ToggleId = "menu";
+export type ToggleId = "menu" | "installation";
 
 type ToggleContextValue = {
   activeToggle: ToggleId | null;
