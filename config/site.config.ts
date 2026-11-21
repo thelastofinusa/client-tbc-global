@@ -1,8 +1,10 @@
 export const siteConfig = {
-  title: "Burning Church Global Ministries",
+  title: "The Burning Church Global Ministries",
   description:
+    "The Burning Church Global Ministries is a house of worship rooted in Kudenda, Kaduna. We believe faith should change the way we love our neighbors, raise our kids, and build our future.",
+  about:
     "A generation set on fire. Join Burning Church Global Ministries in Kudenda, Kaduna — a community where faith turns into action.",
-  slogan: "A church for the next generation",
+  slogan: "Living Flames",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",

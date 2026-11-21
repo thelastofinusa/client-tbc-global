@@ -1,5 +1,6 @@
 import { Analytics } from "@vercel/analytics/react";
 import NextJsToploader from "nextjs-toploader";
+import React from "react";
 import { LenisSmoothScroll } from "~/components/providers/lenis";
 import { ThemeProvider } from "~/components/providers/theme";
 import { ToggleProvider } from "~/components/providers/toggle";
@@ -14,9 +15,13 @@ export default function RoutesLayout(props: Readonly<LayoutProps<"/">>) {
           {props.children}
 
           <Toaster />
-          <LenisSmoothScroll />
           <NextJsToploader color="var(--primary)" showSpinner={false} />
-          {process.env.NODE_ENV === "production" && <Analytics />}
+          {process.env.NODE_ENV === "production" && (
+            <React.Fragment>
+              <LenisSmoothScroll />
+              <Analytics />
+            </React.Fragment>
+          )}
         </TooltipProvider>
       </ToggleProvider>
     </ThemeProvider>

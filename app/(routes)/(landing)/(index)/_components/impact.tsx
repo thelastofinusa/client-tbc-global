@@ -26,7 +26,7 @@ const impactStats = [
 export const ImpactComponent = () => {
   return (
     <section aria-label="Impact" className="flex-1 overflow-x-clip">
-      <Container className="relative py-16 md:py-24">
+      <Container size="md" className="relative py-16 md:py-24">
         <div className="relative grid grid-cols-1 gap-y-10 md:grid-cols-[1fr_1.5fr] md:gap-x-15 md:gap-y-0">
           <div>
             <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">
@@ -35,7 +35,7 @@ export const ImpactComponent = () => {
                 FAITH, MADE VISIBLE
               </span>
             </div>
-            <h2 className="mt-[18px] font-serif text-3xl leading-[1.05] font-extrabold tracking-[-0.06em] md:text-4xl lg:text-5xl">
+            <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
               Good things happen
               <br />
               when we show up.

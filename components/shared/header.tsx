@@ -1,7 +1,7 @@
 "use client";
 
 import { Image } from "keltra/image/next";
-import { ArrowRightIcon, ChevronRightIcon, FlameIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { IoClose, IoMenuSharp } from "react-icons/io5";
 import { siteConfig } from "~/config/site.config";
 import { cn, isActivePath } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
+import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Button } from "../reusable/shadcn/button";
 import { Separator } from "../reusable/shadcn/separator";
 import { Container } from "./container";
@@ -46,21 +47,13 @@ const navItems: NavItemType[] = [
   { label: "Join the family", path: "/join", kind: "join" },
 ];
 
-const mainNavItems = navItems.filter((item) => item.kind === "nav");
-const loginItem = navItems.find((item) => item.kind === "login");
-const joinItem = navItems.find((item) => item.kind === "join");
-
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
 const drawerVariants: Variants = {
   closed: {
     opacity: 0,
     y: -14,
-    transition: {
-      duration: 0.18,
-      ease: easeOutExpo,
-      when: "afterChildren",
-    },
+    transition: { duration: 0.18, ease: easeOutExpo, when: "afterChildren" },
   },
   open: {
     opacity: 1,
@@ -77,59 +70,72 @@ const drawerVariants: Variants = {
 
 const itemVariants: Variants = {
   closed: { opacity: 0, y: -6 },
-  open: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.2, ease: easeOutExpo },
-  },
+  open: { opacity: 1, y: 0, transition: { duration: 0.2, ease: easeOutExpo } },
 };
 
 export const Header = () => {
   const pathname = usePathname();
   const { toggle, isOpen, close } = useToggle("menu");
 
+  const prefix = siteConfig.title.replace(/\s*Global Ministries$/i, "").trim();
+  const suffix = siteConfig.title.endsWith("Global Ministries")
+    ? "Global Ministries"
+    : "";
+
   return (
-    <header className="bg-background md:bg-background/90 sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24 md:backdrop-blur-lg">
-      <Container className="size-full">
+    <header className="bg-card sticky top-0 left-0 z-50 h-19 w-full transition-colors md:h-24">
+      <Container size="md" className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
             <Link
               href="/"
               onClick={close}
-              className="flex items-center gap-2 font-serif"
+              className="flex items-center gap-3 font-serif"
             >
               <Image
                 src="/logo.png"
                 alt={siteConfig.title}
-                width={40}
-                height={40}
+                width={32}
+                height={32}
                 preload
+                className="size-8"
               />
               <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
-                <span className="text-[11px]">The Burning Church</span>
-                <span>Global Ministries</span>
+                {suffix ? (
+                  <>
+                    <span className="text-[11px]">{prefix}</span>
+                    <span>{suffix}</span>
+                  </>
+                ) : (
+                  <span>{siteConfig.title}</span>
+                )}
               </p>
             </Link>
           </div>
 
           <div className="hidden flex-1 items-center justify-center lg:flex">
-            {mainNavItems.map((item) => {
-              const isActive = isActivePath(item.path, pathname);
+            {navItems
+              .filter((item) => (item.kind ?? "nav") === "nav")
+              .map((item) => {
+                const isActive = isActivePath(item.path, pathname);
 
-              return (
-                <Button
-                  key={item.path}
-                  size="sm"
-                  variant="ghost"
-                  className={cn(isActive && "text-red hover:text-red/80")}
-                  nativeButton={false}
-                  render={<Link href={item.path} />}
-                  onClick={close}
-                >
-                  <span>{item.label}</span>
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={item.path}
+                    size="sm"
+                    variant="ghost"
+                    className={cn(
+                      "bg-card hover:bg-background/80 text-[13px]",
+                      isActive && "text-red hover:text-red/80",
+                    )}
+                    nativeButton={false}
+                    render={<Link href={item.path} />}
+                    onClick={close}
+                  >
+                    <span>{item.label}</span>
+                  </Button>
+                );
+              })}
           </div>
 
           <div className="flex items-center justify-end gap-2 sm:w-60">
@@ -146,7 +152,7 @@ export const Header = () => {
               variant="outline"
               nativeButton={false}
               render={<Link href="/login" />}
-              className="hidden md:inline-flex"
+              className="bg-card hover:bg-background/80 hidden md:inline-flex"
             >
               <span>Log In</span>
             </Button>
@@ -155,25 +161,25 @@ export const Header = () => {
               className="my-auto ml-2 hidden h-4! md:block lg:hidden"
             />
             <Button
-              variant="outline"
+              variant={isOpen ? "manual" : "outline"}
               size="icon"
-              className="relative overflow-hidden lg:hidden"
+              className={cn(
+                "relative overflow-hidden lg:hidden",
+                !isOpen && "bg-card",
+              )}
               onClick={toggle}
               aria-label="Toggle menu"
               aria-expanded={isOpen}
             >
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={isOpen ? "close" : "open"}
-                  initial={{ opacity: 0, rotate: -45, scale: 0.8 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 45, scale: 0.8 }}
-                  transition={{ duration: 0.14, ease: easeOutExpo }}
-                  className="grid place-items-center"
-                >
-                  {isOpen ? <IoClose /> : <IoMenuSharp />}
-                </motion.span>
-              </AnimatePresence>
+              <IconSwap>
+                <IconSwapItem key={isOpen ? "close" : "open"}>
+                  {isOpen ? (
+                    <IoClose aria-hidden="true" />
+                  ) : (
+                    <IoMenuSharp aria-hidden="true" />
+                  )}
+                </IconSwapItem>
+              </IconSwap>
               <span className="sr-only">
                 {isOpen ? "Close Menu" : "Open Menu"}
               </span>
@@ -184,7 +190,6 @@ export const Header = () => {
         <AnimatePresence>
           {isOpen && (
             <>
-              {/* Backdrop overlay below the header */}
               <motion.div
                 key="mobile-nav-backdrop"
                 initial={{ opacity: 0 }}
@@ -196,77 +201,67 @@ export const Header = () => {
                 className="fixed inset-x-0 top-19 bottom-0 z-40 bg-black/35 backdrop-blur-[2px] md:top-24 lg:hidden"
               />
 
-              {/* Sliding drawer */}
               <motion.nav
                 key="mobile-nav"
                 variants={drawerVariants}
                 initial="closed"
                 animate="open"
                 exit="closed"
-                className="bg-background fixed inset-x-0 top-19 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_24px_48px_-12px_rgba(23,16,13,0.28)] sm:px-8 md:top-24 md:px-10 lg:hidden"
+                className="bg-card fixed inset-x-0 top-19 z-50 flex flex-col gap-1 border-b p-5 shadow-[0_24px_48px_-12px_rgba(23,16,13,0.28)] sm:px-8 md:top-24 md:px-10 lg:hidden"
               >
-                {mainNavItems.map((item) => {
+                {navItems.map((item) => {
+                  const kind = item.kind ?? "nav";
                   const isActive = isActivePath(item.path, pathname);
+                  const isExtra = kind !== "nav";
 
                   return (
-                    <motion.div key={item.path} variants={itemVariants}>
+                    <motion.div
+                      key={item.path}
+                      variants={itemVariants}
+                      className={cn(
+                        kind === "login" && "mt-3 border-t pt-4 md:hidden",
+                        kind === "join" && "mt-1 md:hidden",
+                      )}
+                    >
                       <Button
                         size="lg"
-                        variant={isActive ? "secondary" : "ghost"}
+                        variant={
+                          kind === "join"
+                            ? "dark"
+                            : kind === "login"
+                              ? isActive
+                                ? "secondary"
+                                : "manual"
+                              : isActive
+                                ? "secondary"
+                                : "ghost"
+                        }
                         nativeButton={false}
                         render={<Link href={item.path} />}
-                        className="text-ink group w-full justify-between text-left"
+                        className={cn(
+                          "group w-full justify-between text-left text-xs",
+                          kind !== "join" && "text-ink",
+                        )}
                         onClick={close}
                       >
-                         <span>{item.mobileLabel ?? item.label}</span>
-                        <ArrowRightIcon
-                          size={16}
-                          className="transition-transform duration-150 group-hover:translate-x-0.5"
-                        />
+                        <span>{item.mobileLabel ?? item.label}</span>
+                        {kind === "login" ? (
+                          <span className="text-muted-foreground font-normal">
+                            Member account
+                          </span>
+                        ) : kind === "join" ? (
+                          <ChevronRightIcon size={16} />
+                        ) : (
+                          <ChevronRightIcon
+                            size={16}
+                            className="transition-transform duration-150 group-hover:translate-x-0.5"
+                          />
+                        )}
+                        {!isExtra && null}
                       </Button>
                     </motion.div>
                   );
                 })}
-
-                {/* Differentiated Login & Join actions for mobile */}
-                <motion.div
-                  variants={itemVariants}
-                  className="mt-3 flex flex-col gap-2 border-t pt-4 md:hidden"
-                >
-                  {loginItem && (
-                    <Button
-                      size="lg"
-                      variant={
-                        isActivePath(loginItem.path, pathname)
-                          ? "secondary"
-                          : "outline"
-                      }
-                      nativeButton={false}
-                      render={<Link href={loginItem.path} />}
-                      className="text-ink w-full justify-between"
-                      onClick={close}
-                    >
-                      <span>{loginItem.label}</span>
-                      <span className="text-muted-foreground text-xs font-normal">
-                        Member account
-                      </span>
-                    </Button>
-                  )}
-
-                  {joinItem && (
-                    <Button
-                      size="lg"
-                      variant="dark"
-                      nativeButton={false}
-                      render={<Link href={joinItem.path} />}
-                      className="w-full justify-between"
-                      onClick={close}
-                    >
-                      <span>{joinItem.label}</span>
-                      <ChevronRightIcon size={16} />
-                    </Button>
-                  )}
-                </motion.div>
               </motion.nav>
             </>
           )}
