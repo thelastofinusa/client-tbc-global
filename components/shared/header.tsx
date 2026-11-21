@@ -42,7 +42,7 @@ export const Header = () => {
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">
             <Link href="/" className="flex items-center gap-2 font-serif">
-              <div className="bg-red hidden size-9 place-items-center rounded-full text-white sm:grid">
+              <div className="bg-red grid size-9 place-items-center rounded-full text-white">
                 <FlameIcon fill="currentColor" className="size-4.5" />
               </div>
               <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
