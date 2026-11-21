@@ -1,22 +1,23 @@
 import { cn } from "cn";
 import { Flame } from "lucide-react";
 import { Container } from "~/components/shared/container";
+import { CountingNumber } from "~/components/shared/count-number";
 
 const impactStats = [
   {
-    value: "120",
+    value: 5210,
     suffix: "+",
     suffixClassName: "text-primary",
     label: "people in our community",
   },
   {
-    value: "40",
+    value: 209,
     suffix: null,
     suffixClassName: "",
     label: "students to sponsor",
   },
   {
-    value: "62",
+    value: 85,
     suffix: "%",
     suffixClassName: "text-accent",
     label: "of Mount Zion built",
@@ -48,16 +49,21 @@ export const ImpactComponent = () => {
                 key={stat.label}
                 className="border-line flex flex-col gap-1.5 border-l pl-6"
               >
-                <strong className="font-serif text-3xl leading-none font-extrabold tracking-[-0.06em] md:text-4xl">
-                  {stat.value}
+                <strong className="flex items-end gap-1 font-serif text-3xl leading-none font-medium tracking-[-0.06em] tabular-nums md:text-4xl">
+                  <CountingNumber
+                    fromNumber={0}
+                    number={stat.value}
+                    thousandSeparator=","
+                    inViewMargin="-50px"
+                    className="font-mono"
+                  />
                   {stat.suffix && (
                     <span
                       className={cn(
-                        "text-2xl! md:text-3xl! lg:text-4xl!",
+                        "text-xl! md:text-2xl! lg:text-3xl! -mb-0.5",
                         stat.suffixClassName,
                       )}
                     >
-                      {" "}
                       {stat.suffix}
                     </span>
                   )}
