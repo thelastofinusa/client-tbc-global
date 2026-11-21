@@ -37,7 +37,7 @@ export const Header = () => {
   const { toggle, isOpen } = useToggle("menu");
 
   return (
-    <header className="bg-background sticky top-0 left-0 z-50 h-19 w-full border-b">
+    <header className="bg-background/90 sticky top-0 left-0 z-50 h-19 w-full backdrop-blur-lg md:h-24">
       <Container className="size-full">
         <nav className="flex size-full items-center justify-between">
           <div className="flex items-center justify-start gap-2 md:w-60">

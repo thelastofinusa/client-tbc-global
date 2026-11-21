@@ -1,7 +1,7 @@
 "use client";
 
 import { Image } from "keltra/image/next";
-import { ArrowDownRight, ArrowRight, CalendarDays } from "lucide-react";
+import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
@@ -36,10 +36,10 @@ export const HeroComponent = () => {
           find hope, and faith turns into action.
         </p>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 md:gap-4">
           <Button size="lg" nativeButton={false} render={<Link href="/join" />}>
             <span>Join the family</span>
-            <ArrowRight size={16} />
+            <ChevronRightIcon size={16} />
           </Button>
           <Button
             variant="glass"
@@ -49,14 +49,13 @@ export const HeroComponent = () => {
             className="flex-1 sm:flex-none"
           >
             <span>See what we're building</span>
-            <ArrowDownRight size={16} />
           </Button>
         </div>
 
         <div className="mt-16 flex flex-col items-start justify-between gap-6 max-md:mt-11 md:flex-row md:items-end">
           <div className="flex items-center gap-3 text-[9px] tracking-[0.16em]">
             <span className="bg-accent h-px w-7" />
-            <span className="font-serif">
+            <span className="font-serif font-semibold">
               KUDEDA, KADUNA · EVERYONE IS WELCOME
             </span>
           </div>
@@ -67,7 +66,7 @@ export const HeroComponent = () => {
             className="text-ink bg-background flex w-full items-center gap-4 p-4 shadow-[0_12px_40px_#17100d33] sm:max-w-84"
           >
             <div className="text-red bg-card grid size-10 shrink-0 place-items-center">
-              <CalendarDays size={18} />
+              <CalendarDaysIcon size={18} />
             </div>
             <div className="flex flex-1 flex-col">
               <span className="text-muted-foreground font-serif text-[8px] font-semibold tracking-[0.14em]">
@@ -81,7 +80,7 @@ export const HeroComponent = () => {
               </small>
             </div>
             <span className="text-red grid size-10 place-items-center transition-transform hover:translate-x-0.5">
-              <ArrowRight size={18} />
+              <ChevronRightIcon size={18} />
             </span>
           </Link>
         </div>
