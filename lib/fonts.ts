@@ -1,23 +1,27 @@
 import { cn } from "cn";
-import localFont from "next/font/local";
+import {
+  Geist_Mono as FontMono,
+  Hanken_Grotesk as FontSans,
+  Manrope as FontSerif,
+} from "next/font/google";
 
-const fontSans = localFont({
-  src: "../public/fonts/HankenGrotesk/HankenGrotesk-VariableFont_wght.ttf",
+const fontSans = FontSans({
   variable: "--font-sans",
+  subsets: ["latin"],
   display: "swap",
-  style: "normal",
+  weight: ["100", "300", "400", "700", "900"],
 });
 
-const fontSerif = localFont({
-  src: "../public/fonts/Cinzel/Cinzel-VariableFont_wght.ttf",
+const fontSerif = FontSerif({
   variable: "--font-serif",
+  subsets: ["latin"],
   display: "swap",
   style: "normal",
 });
 
-const fontMono = localFont({
-  src: "../public/fonts/GeistMono/VariableFont_wght.ttf",
+const fontMono = FontMono({
   variable: "--font-mono",
+  subsets: ["latin"],
   display: "swap",
   style: "normal",
 });

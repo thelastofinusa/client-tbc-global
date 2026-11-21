@@ -1,7 +1,8 @@
 export const siteConfig = {
-  title: "The Burning Church Global",
+  title: "Burning Church Global Ministries",
   description:
     "A generation set on fire. Join Burning Church Global Ministries in Kudenda, Kaduna — a community where faith turns into action.",
+  slogan: "A church for the next generation",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",

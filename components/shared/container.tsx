@@ -10,8 +10,8 @@ const containerVariants = cva(
   {
     variants: {
       size: {
-        default: "max-w-[1380px]",
-        md: "max-w-[1090px]",
+        default: "max-w-[1480px]",
+        md: "max-w-[1330px]",
         sm: "max-w-[900px]",
         xs: "max-w-[748px]",
       },

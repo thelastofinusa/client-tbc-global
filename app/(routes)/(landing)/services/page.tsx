@@ -1,5 +1,5 @@
-import React from "react";
+import { siteConfig } from "~/config/site.config";
 
-export default function ServicesPage() {
-  return <div>ServicesPage</div>;
+export default function Page() {
+  return <div className="py-5">{siteConfig.description}</div>;
 }

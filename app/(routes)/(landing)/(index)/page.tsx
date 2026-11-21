@@ -1,10 +1,9 @@
-import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
+import { HeroComponent } from "./_components/hero";
 
 export default function HomePage() {
   return (
-    <div className="py-6">
-      <Container>{siteConfig.description}</Container>
+    <div className="flex-1 overflow-x-clip">
+      <HeroComponent />
     </div>
   );
 }
