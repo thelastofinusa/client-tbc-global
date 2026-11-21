@@ -16,16 +16,32 @@ import { Container } from "./container";
 
 type NavItemType = {
   label: string;
+  mobileLabel?: string;
   path: Route;
   kind?: "nav" | "login" | "join";
 };
 
 const navItems: NavItemType[] = [
-  { label: "Home", path: "/", kind: "nav" },
-  { label: "About", path: "/about", kind: "nav" },
-  { label: "Project", path: "/projects", kind: "nav" },
-  { label: "Services & Visit", path: "/services", kind: "nav" },
-  { label: "Partner", path: "/partner", kind: "nav" },
+  { label: "Home", mobileLabel: "Sanctuary", path: "/", kind: "nav" },
+  { label: "About", mobileLabel: "Our Story", path: "/about", kind: "nav" },
+  {
+    label: "Project",
+    mobileLabel: "Missions & Builds",
+    path: "/projects",
+    kind: "nav",
+  },
+  {
+    label: "Services & Visit",
+    mobileLabel: "Gatherings & Visit",
+    path: "/services",
+    kind: "nav",
+  },
+  {
+    label: "Partner",
+    mobileLabel: "Kingdom Partners",
+    path: "/partner",
+    kind: "nav",
+  },
   { label: "Login", path: "/login", kind: "login" },
   { label: "Join the family", path: "/join", kind: "join" },
 ];
@@ -202,7 +218,7 @@ export const Header = () => {
                         className="text-ink group w-full justify-between text-left"
                         onClick={close}
                       >
-                        <span>{item.label}</span>
+                         <span>{item.mobileLabel ?? item.label}</span>
                         <ArrowRightIcon
                           size={16}
                           className="transition-transform duration-150 group-hover:translate-x-0.5"
