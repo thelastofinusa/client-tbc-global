@@ -292,13 +292,14 @@ export const Header = () => {
 
                   <Suspense>
                     <Show when="signed-out">
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="flex items-center gap-3">
                         <Button
                           variant="cream"
                           size="lg"
                           nativeButton={false}
                           render={<Link href="/sign-up" />}
                           onClick={close}
+                          className="flex-1 sm:flex-none"
                         >
                           <span>Join the family</span>
                         </Button>
