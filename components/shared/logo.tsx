@@ -30,7 +30,7 @@ export const LogoComponent: React.FC<{
       )}
     >
       <Image
-        src="/logo.png"
+        src="/icons/favicon-32x32.png"
         alt={siteConfig.title}
         width={imgSize}
         height={imgSize}

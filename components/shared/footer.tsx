@@ -72,7 +72,7 @@ export const Footer = () => {
         <div className="flex flex-col justify-between gap-8 border-b border-white/10 pb-12 md:flex-row md:items-end md:pb-14">
           <div>
             <Eyebrow
-              label="Next gathering · Sunday, 9:00 AM"
+              label="Your story has a place here"
               className="text-accent"
             />
             <h2 className="mt-5 font-serif text-4xl leading-[1.02] font-extrabold tracking-[-0.06em] md:text-6xl">

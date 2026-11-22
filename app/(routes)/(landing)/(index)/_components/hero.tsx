@@ -1,9 +1,10 @@
 "use client";
 
 import { Image } from "keltra/image/next";
-import { CalendarDaysIcon, ChevronRightIcon, FlameIcon } from "lucide-react";
+import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { GoFlame } from "react-icons/go";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
@@ -55,7 +56,7 @@ export const HomeHeroComponent = () => {
             </div>
 
             <p className="text-muted-foreground mt-8 flex items-center gap-2 text-xs">
-              <FlameIcon size={14} className="text-primary" />
+              <GoFlame size={14} className="text-primary" />
               Gathering every Wednesday, Saturday and Sunday
             </p>
           </div>
@@ -82,7 +83,7 @@ export const HomeHeroComponent = () => {
               />
 
               <span className="bg-navy absolute top-4 left-4 flex items-center gap-2 px-3 py-2 text-[10px] font-semibold tracking-[0.14em] text-white uppercase">
-                <FlameIcon size={14} className="text-accent" />
+                <GoFlame size={14} className="text-accent" />
                 {siteConfig.slogan}
               </span>
 
@@ -136,7 +137,7 @@ export const HomeHeroComponent = () => {
               >
                 {item}
                 {i < motto.length - 1 && (
-                  <FlameIcon
+                  <GoFlame
                     size={12}
                     aria-hidden="true"
                     className="text-accent max-sm:hidden"

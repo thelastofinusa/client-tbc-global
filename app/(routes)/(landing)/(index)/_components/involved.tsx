@@ -1,17 +1,15 @@
-import {
-  ArrowRightIcon,
-  GraduationCapIcon,
-  HandshakeIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { FaRegHandshake } from "react-icons/fa6";
+import { GoSponsorTiers } from "react-icons/go";
+import { HiOutlineUsers } from "react-icons/hi2";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 
 const paths = [
   {
     number: "01",
-    icon: UsersIcon,
+    icon: HiOutlineUsers,
     title: "Join the family",
     description:
       "Create your account to stay connected, check in at services, and find your place to serve.",
@@ -20,7 +18,7 @@ const paths = [
   },
   {
     number: "02",
-    icon: GraduationCapIcon,
+    icon: GoSponsorTiers,
     title: "Sponsor a student",
     description:
       "Help a child stay in school. Pick a project and become part of their story.",
@@ -29,7 +27,7 @@ const paths = [
   },
   {
     number: "03",
-    icon: HandshakeIcon,
+    icon: FaRegHandshake,
     title: "Partner with us",
     description:
       "Walk with us on the projects we’re building across Kudende and beyond.",

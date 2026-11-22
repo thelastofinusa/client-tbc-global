@@ -1,17 +1,14 @@
 "use client";
 
 import { Show } from "@clerk/nextjs";
-import {
-  ArrowUpRightIcon,
-  ChevronRightIcon,
-  FlameIcon,
-  MapPinIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
+import { GoFlame } from "react-icons/go";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
+import { RiMapPinRangeLine } from "react-icons/ri";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
@@ -67,7 +64,7 @@ export const Header = () => {
               href="/services"
               className="flex items-center gap-3 text-white/80 transition-colors hover:text-white"
             >
-              <FlameIcon size={14} className="text-accent" />
+              <GoFlame size={14} className="text-accent" />
               <span>
                 Next gathering:{" "}
                 <strong className="font-semibold text-white">
@@ -76,7 +73,7 @@ export const Header = () => {
               </span>
               <span className="h-3 w-px bg-white/20" />
               <span className="flex items-center gap-1.5">
-                <MapPinIcon size={13} />
+                <RiMapPinRangeLine size={13} />
                 Kudenda, Kaduna
               </span>
             </Link>

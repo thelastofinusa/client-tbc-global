@@ -1,11 +1,10 @@
-import {
-  ArrowUpRightIcon,
-  BookOpenIcon,
-  GraduationCapIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
+import { GoSponsorTiers } from "react-icons/go";
+import { HiOutlineAcademicCap } from "react-icons/hi";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
+import { CountingNumber } from "~/components/shared/count-number";
 import { Eyebrow } from "~/components/shared/eyebrow";
 
 // Same figures as the Impact section. Move both to lib/constants.ts
@@ -47,7 +46,13 @@ export const ProjectsComponent = () => {
                 Project Mount Zion
               </span>
               <h3 className="mt-5 max-w-md font-serif text-3xl font-extrabold tracking-[-0.05em] md:text-4xl md:leading-[1.05]">
-                We’re {MOUNT_ZION_PROGRESS}% of the way there.
+                We’re{" "}
+                <CountingNumber
+                  fromNumber={0}
+                  number={MOUNT_ZION_PROGRESS}
+                  inViewMargin="-50px"
+                />
+                % of the way there.
               </h3>
               <p className="text-secondary/80 mt-4 max-w-md text-sm leading-[1.8]">
                 Mount Zion is the building we’re raising together. Help us carry
@@ -61,7 +66,12 @@ export const ProjectsComponent = () => {
                   Progress
                 </span>
                 <strong className="font-mono text-2xl tabular-nums">
-                  {MOUNT_ZION_PROGRESS}%
+                  <CountingNumber
+                    fromNumber={0}
+                    number={MOUNT_ZION_PROGRESS}
+                    inViewMargin="-50px"
+                  />
+                  %
                 </strong>
               </div>
               <div
@@ -97,12 +107,17 @@ export const ProjectsComponent = () => {
             className="bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8"
           >
             <div className="flex items-start justify-between">
-              <GraduationCapIcon className="text-primary size-7" />
+              <GoSponsorTiers className="text-primary size-7" />
               <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-5 transition-colors" />
             </div>
             <div>
               <strong className="font-mono text-4xl tabular-nums">
-                {STUDENTS_TO_SPONSOR}
+                <CountingNumber
+                  fromNumber={0}
+                  number={STUDENTS_TO_SPONSOR}
+                  thousandSeparator=","
+                  inViewMargin="-50px"
+                />
               </strong>
               <h3 className="mt-1 font-serif text-xl font-bold tracking-[-0.03em]">
                 students are waiting for a sponsor
@@ -119,7 +134,7 @@ export const ProjectsComponent = () => {
             className="bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8"
           >
             <div className="flex items-start justify-between">
-              <BookOpenIcon className="text-primary size-7" />
+              <HiOutlineAcademicCap className="text-primary size-7" />
               <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-5 transition-colors" />
             </div>
             <div>
@@ -127,7 +142,7 @@ export const ProjectsComponent = () => {
                 Academic projects
               </h3>
               <p className="text-muted-foreground mt-2 text-sm leading-[1.7]">
-                Learning programs that help young people in Kudende grow their
+                Learning programs that help young people in Kudenda grow their
                 skills and dream bigger.
               </p>
             </div>

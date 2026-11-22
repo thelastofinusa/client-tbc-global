@@ -1,5 +1,6 @@
-import { ChevronRightIcon, MapPinIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
+import { RiMapPinRangeLine } from "react-icons/ri";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
@@ -88,7 +89,7 @@ export const ServicesComponent = () => {
                         : "text-muted-foreground mt-1 flex items-center gap-1.5 text-xs"
                     }
                   >
-                    <MapPinIcon size={13} />
+                    <RiMapPinRangeLine size={13} />
                     Kudenda, Kaduna
                   </p>
                 </div>
