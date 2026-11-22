@@ -39,7 +39,6 @@ export const HomeHeroComponent = () => {
                 size="lg"
                 nativeButton={false}
                 render={<Link href="/sign-up" />}
-                className="flex-1 sm:flex-none"
               >
                 <span>Join the family</span>
                 <ChevronRightIcon size={16} />
@@ -49,6 +48,7 @@ export const HomeHeroComponent = () => {
                 size="lg"
                 nativeButton={false}
                 render={<Link href="/projects" />}
+                className="flex-1 sm:flex-none"
               >
                 <span>See what we’re building</span>
               </Button>
