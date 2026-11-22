@@ -1,9 +1,10 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import { Loader } from "lucide-react";
 
 const buttonVariants = cva(
-  "group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding font-serif text-[11px] font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding font-serif text-[11px] font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -19,14 +20,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
 
         // --- Custom Site Variants ---
-        dark: "bg-foreground rounded-[3px] text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
-        red: "bg-red rounded-[3px] text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
+        dark: "bg-foreground text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
+        red: "bg-red text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
         cream:
-          "rounded-[3px] bg-[#f5eee1] text-[#231c19] transition-[transform,background] duration-200 hover:-translate-y-0.5",
+          "bg-[#f5eee1] text-[#231c19] transition-[transform,background] duration-200 hover:-translate-y-0.5",
         "brand-outline":
-          "text-ink rounded-[3px] border border-[#bdb5aa] bg-transparent transition-[transform,background] duration-200 hover:-translate-y-0.5",
+          "text-ink border border-[#bdb5aa] bg-transparent transition-[transform,background] duration-200 hover:-translate-y-0.5",
         glass:
-          "border-white-overlay-48 bg-white-overlay-09 rounded-[3px] border text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
+          "border-white-overlay-48 bg-white-overlay-09 border text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
         approve:
           "h-auto rounded-none bg-[#e7f1e9] px-2.5 py-[7px] text-[8px] text-[#2c714b]",
         manual:
@@ -57,14 +58,30 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  isLoading = false,
+  loadingTxt,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    isLoading?: boolean;
+    loadingTxt?: string;
+  }) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      disabled={isLoading || props.disabled}
       {...props}
-    />
+    >
+      {isLoading ? (
+        <>
+          <Loader className="animate-spin" />
+          {loadingTxt && <span>{loadingTxt}</span>}
+        </>
+      ) : (
+        props.children
+      )}
+    </ButtonPrimitive>
   );
 }
 

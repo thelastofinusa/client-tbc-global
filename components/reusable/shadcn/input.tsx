@@ -9,7 +9,7 @@ const inputVariants = cva(
     variants: {
       variant: {
         default:
-          "border-input placeholder:text-muted-foreground disabled:bg-input/50 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-8 rounded-lg border bg-transparent px-2.5 py-1 text-base md:text-sm",
+          "border-input placeholder:text-muted-foreground disabled:bg-input/50 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-12 rounded-lg border bg-transparent px-3 py-1 text-sm",
         form: "border-chart-5 bg-primary-foreground h-[43px] rounded-[2px] border px-3 text-[11px] text-[#2a2522] placeholder:text-[#aaa198]",
         profile:
           "border-line h-10 rounded-none border bg-[#fbfaf7] px-2.5 text-[11px] text-[#2a2522]",

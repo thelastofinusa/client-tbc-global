@@ -152,7 +152,7 @@ export function InstallAppFab() {
             type="button"
             size="sm"
             aria-label="How to install the app"
-            className="fixed right-4 bottom-4 z-40 rounded-full border border-white/15 shadow-lg"
+            className="fixed right-4 bottom-4 z-40 md:right-6 md:bottom-6"
           >
             <DownloadIcon className="text-accent" />
             <span>Get App</span>

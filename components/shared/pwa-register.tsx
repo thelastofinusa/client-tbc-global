@@ -7,6 +7,15 @@ export function PwaRegister() {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
 
+    if (process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+        }
+      });
+      return;
+    }
+
     const register = () => {
       navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
         // Ignore registration errors in unsupported/restricted contexts

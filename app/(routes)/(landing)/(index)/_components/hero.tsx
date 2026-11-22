@@ -39,7 +39,7 @@ export const HomeHeroComponent = () => {
             find hope, and faith turns into action.
           </p>
 
-          <div className="flex gap-2 md:gap-4">
+          <div className="flex gap-2">
             <Button
               size="lg"
               nativeButton={false}

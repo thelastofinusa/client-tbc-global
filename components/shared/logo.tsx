@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "cn";
 import { Image } from "keltra/image/next";
 import type { Route } from "next";
@@ -10,7 +12,8 @@ export const LogoComponent: React.FC<{
   className?: string;
   path?: Route;
   toggleId?: ToggleId;
-}> = ({ path = "/", className, toggleId = "menu" }) => {
+  imgSize?: number;
+}> = ({ path = "/", className, toggleId = "menu", imgSize = 36 }) => {
   const { close } = useToggle(toggleId);
   const prefix = siteConfig.title.replace(/\s*Global Ministries$/i, "").trim();
   const suffix = siteConfig.title.endsWith("Global Ministries")
@@ -21,20 +24,27 @@ export const LogoComponent: React.FC<{
     <Link
       href={path}
       onClick={close}
-      className={cn("flex items-center gap-3 font-serif", className)}
+      className={cn(
+        "flex items-center gap-2 sm:gap-3 font-serif text-[13px] sm:text-sm",
+        className,
+      )}
     >
       <Image
         src="/logo.png"
         alt={siteConfig.title}
-        width={32}
-        height={32}
+        width={imgSize}
+        height={imgSize}
         preload
-        className="size-8"
+        className="object-contain"
+        style={{
+          width: `${imgSize}px`,
+          height: `${imgSize}px`,
+        }}
       />
-      <p className="flex flex-col font-serif text-sm leading-4 font-semibold">
+      <p className="flex flex-col font-serif leading-4 font-semibold">
         {suffix ? (
           <>
-            <span className="text-[11px]">{prefix}</span>
+            <span className="origin-left scale-[80%]">{prefix}</span>
             <span>{suffix}</span>
           </>
         ) : (

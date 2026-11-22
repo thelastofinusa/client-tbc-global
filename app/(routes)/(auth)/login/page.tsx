@@ -1,20 +1,24 @@
 import Link from "next/link";
-import { Container } from "~/components/shared/container";
+import { siteConfig } from "~/config/site.config";
+import { getInitials } from "~/lib/utils";
+import { AuthForm } from "../_components/form";
 
 export default function Page() {
   return (
-    <section className="flex-1 overflow-x-clip py-6">
-      <Container size="sm" className="flex flex-col gap-8">
-        <p className="ml-auto font-serif text-[13px] font-medium tracking-wide">
-          New to the Family?{" "}
-          <Link
-            href="/join"
-            className="text-primary font-bold underline underline-offset-2"
-          >
-            Join us
-          </Link>
-        </p>
-      </Container>
+    <section className="flex flex-col items-center gap-6">
+      <div className="bg-card w-full rounded-xl p-6 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)] md:p-8">
+        <AuthForm type="signin" />
+      </div>
+
+      <p className="font-serif text-[13px] font-medium tracking-wide">
+        New to {getInitials(siteConfig.title)} Family?{" "}
+        <Link
+          href="/join"
+          className="text-primary font-bold underline underline-offset-2"
+        >
+          Join us
+        </Link>
+      </p>
     </section>
   );
 }

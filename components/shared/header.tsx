@@ -69,7 +69,7 @@ export const Header = () => {
                     size="sm"
                     variant="ghost"
                     className={cn(
-                      "text-[13px]",
+                      "text-xs",
                       isActive && "text-red hover:text-red/80",
                     )}
                     nativeButton={false}
@@ -172,7 +172,7 @@ export const Header = () => {
                             : kind === "login"
                               ? isActive
                                 ? "secondary"
-                                : "manual"
+                                : "outline"
                               : isActive
                                 ? "secondary"
                                 : "ghost"
