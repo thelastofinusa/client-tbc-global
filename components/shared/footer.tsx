@@ -159,7 +159,7 @@ export const Footer = () => {
           <div className="col-span-2 flex flex-col gap-4 lg:col-span-4">
             <Eyebrow label="Where to find us" className="text-accent" />
 
-            <div className="aspect-[4/3] overflow-hidden border border-white/10">
+            <div className="aspect-2/1 overflow-hidden border border-white/10">
               <iframe
                 title={`${siteConfig.title} location on Google Maps`}
                 src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d773.2637856498449!2d7.368035125773172!3d10.478444737176677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDI4JzQyLjIiTiA3wrAyMicwNi41IkU!5e1!3m2!1sen!2sng!4v1795293027987!5m2!1sen!2sng"
@@ -181,16 +181,8 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* 3. Oversized wordmark */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none overflow-hidden text-center font-serif text-[11vw] leading-[0.85] font-extrabold tracking-[-0.07em] whitespace-nowrap text-white/[0.05] select-none lg:text-[140px]"
-        >
-          Burning Church
-        </div>
-
         {/* 4. Bottom bar */}
-        <div className="mt-6 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[13px] sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[13px] sm:flex-row sm:items-center">
           <p className="flex flex-col gap-1">
             <span className="text-white/60">
               &copy; 2026 {siteConfig.title}.
