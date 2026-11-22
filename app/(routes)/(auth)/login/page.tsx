@@ -6,7 +6,7 @@ import { AuthForm } from "../_components/form";
 export default function Page() {
   return (
     <section className="flex flex-col items-center gap-6">
-      <div className="bg-card w-full rounded-xl p-6 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)] md:p-8">
+        <div className="bg-card w-full rounded-3xl  shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)] p-8">
         <AuthForm type="signin" />
       </div>
 
