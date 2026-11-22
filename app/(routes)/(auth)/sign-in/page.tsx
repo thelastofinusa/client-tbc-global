@@ -5,12 +5,10 @@ import { AuthForm } from "../_components/form";
 
 export default function Page() {
   return (
-    <section className="flex flex-col items-center gap-6">
-      <div className="bg-card w-full rounded-3xl p-8 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)]">
-        <AuthForm type="signin" />
-      </div>
+    <section className="flex flex-col gap-8">
+      <AuthForm type="signin" />
 
-      <p className="font-serif text-[13px] font-medium tracking-wide">
+      <p className="border-line text-muted-foreground border-t pt-6 text-sm">
         New to {getInitials(siteConfig.title)} Family?{" "}
         <Link
           href="/sign-up"

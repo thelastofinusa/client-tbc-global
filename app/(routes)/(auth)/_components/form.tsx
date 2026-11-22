@@ -2,12 +2,14 @@
 
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { MailIcon } from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { AiOutlineLock, AiOutlineUser } from "react-icons/ai";
+import { AiOutlineLock } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import { HiOutlineUser, HiOutlineUserGroup } from "react-icons/hi2";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import * as z from "zod";
@@ -30,6 +32,7 @@ import {
   InputOTPSlot,
 } from "~/components/reusable/shadcn/input-otp";
 import { Separator } from "~/components/reusable/shadcn/separator";
+import { Eyebrow } from "~/components/shared/eyebrow";
 
 const signUpSchema = z.object({
   firstName: z
@@ -70,17 +73,19 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 
 const copyByType: Record<
   "signin" | "signup",
-  { title: string; description: string; submitLabel: string }
+  { eyebrow: string; title: string; description: string; submitLabel: string }
 > = {
   signup: {
-    title: "Join the Ministry",
+    eyebrow: "Create an account",
+    title: "Join the Family",
     description: "Register to stay connected and check in.",
-    submitLabel: "Join the Family",
+    submitLabel: "Complete Registration",
   },
   signin: {
-    title: "Welcome back home",
+    eyebrow: "Account access",
+    title: "Sign in to your space",
     description: "Sign in to access your profile and check in.",
-    submitLabel: "Continue",
+    submitLabel: "Access My Profile",
   },
 };
 
@@ -332,22 +337,52 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
   const formDisabled =
     isLoading || isRateLimited || isRateLimitMessage(clerkErrorMessage);
 
+  const rateLimited = isRateLimited || isRateLimitMessage(clerkErrorMessage);
+
+  const renderGlobalError = (hint: React.ReactNode) =>
+    activeGlobalError ? (
+      <div
+        role="alert"
+        className="border-destructive/30 bg-destructive/10 flex flex-col gap-1 border p-3"
+      >
+        <p className="text-destructive text-[13px] font-medium">
+          {activeGlobalError}
+        </p>
+        {rateLimited && (
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            {hint}
+          </p>
+        )}
+      </div>
+    ) : null;
+
+  const googleHint = (
+    <>
+      Please use{" "}
+      <span className="text-foreground font-semibold">
+        Continue with Google
+      </span>{" "}
+      above instead.
+    </>
+  );
+
+  /* ───────────── Email verification (OTP) ───────────── */
   if (type === "signup" && isVerifyingEmail) {
     return (
-      <form
-        onSubmit={handleVerifyOtp}
-        className="flex flex-col items-center gap-4 text-center"
-      >
-        <div className="flex flex-col items-center gap-0.5">
-          <h2 className="font-serif text-[19px] leading-tight font-semibold sm:text-xl">
-            Verify your email
+      <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <span className="bg-muted text-primary grid size-12 place-items-center">
+            <MailIcon size={22} aria-hidden="true" />
+          </span>
+          <h2 className="font-serif text-3xl leading-[1.05] font-extrabold tracking-[-0.06em] sm:text-4xl">
+            Check your email
           </h2>
-          <p className="text-muted-foreground max-w-sm text-xs leading-relaxed sm:text-sm">
-            Enter the 6-digit verification code sent to{" "}
-            <span className="text-foreground font-medium">
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            We sent a 6-digit code to{" "}
+            <span className="text-foreground font-semibold">
               {signUpForm.getValues("email")}
             </span>
-            .
+            . Enter it below to finish joining.
           </p>
         </div>
 
@@ -377,38 +412,31 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
           <p className="text-muted-foreground text-xs">{resendMessage}</p>
         )}
 
-        {activeGlobalError && (
-          <div className="space-y-1">
-            <p role="alert" className="text-destructive text-[13px]">
-              {activeGlobalError}
-            </p>
-            {formDisabled && (
-              <p className="text-muted-foreground text-xs">
-                Email verification is temporarily paused. Go back and continue
-                with Google instead.
-              </p>
-            )}
-          </div>
+        {renderGlobalError(
+          <>
+            Email verification is temporarily paused. Go back and continue with
+            Google instead.
+          </>,
         )}
 
         <Button
           type="submit"
           size="lg"
-          variant="dark"
+          variant="red"
           isLoading={isLoading}
           loadingTxt="Verifying..."
           disabled={formDisabled || otpCode.length < 6}
-          className="w-full text-[13px]"
+          className="w-full"
         >
           Verify & Continue
         </Button>
 
-        <div className="flex w-full items-center gap-2">
+        <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="secondary"
             size="lg"
-            className="flex-1 text-[13px]"
+            className="flex-1"
             disabled={formDisabled || resendCooldown > 0}
             onClick={handleResendOtp}
           >
@@ -421,7 +449,6 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
             type="button"
             variant="outline"
             size="lg"
-            className="text-[13px]"
             disabled={isLoading}
             onClick={() => {
               setIsVerifyingEmail(false);
@@ -437,6 +464,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
     );
   }
 
+  /* ───────────── Sign in / Sign up ───────────── */
   return (
     <form
       id={`auth-form-${type}`}
@@ -445,38 +473,39 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
           ? signInForm.handleSubmit(onSignInSubmit)
           : signUpForm.handleSubmit(onSignUpSubmit)
       }
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
     >
-      <div className="flex flex-col items-center gap-0.5 text-center">
-        <h2 className="font-serif text-[19px] leading-tight font-semibold sm:text-xl">
+      <div className="flex flex-col gap-1.5">
+        <Eyebrow lineClass="bg-primary" label={copy.eyebrow} />
+        <h2 className="mt-2 font-serif text-2xl leading-[1.05] font-extrabold tracking-[-0.06em] sm:text-3xl">
           {copy.title}
         </h2>
-
-        <p className="text-muted-foreground max-w-sm text-xs leading-relaxed sm:text-sm">
+        <p className="text-muted-foreground text-sm leading-relaxed">
           {copy.description}
         </p>
       </div>
 
       <Button
         type="button"
-        variant="outline"
+        variant="dark"
         size="lg"
         onClick={handleGoogleAuth}
         disabled={isLoading}
+        className="text-[13px]"
       >
         <FcGoogle className="size-4.5" />
-        <span className="text-[13px]">Continue with Google</span>
+        <span>Continue with Google</span>
       </Button>
 
-      <div className="my-1 flex items-center gap-4">
+      <div className="flex items-center gap-4">
         <Separator orientation="horizontal" className="flex-1" />
-        <span className="text-muted-foreground/80 text-xs">OR</span>
+        <span className="text-muted-foreground text-xs">or use your email</span>
         <Separator orientation="horizontal" className="flex-1" />
       </div>
 
       {type === "signup" ? (
         <FieldGroup className="gap-3">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3">
             <Controller
               name="firstName"
               control={signUpForm.control}
@@ -484,14 +513,14 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                 <Field data-invalid={fieldState.invalid}>
                   <InputGroup>
                     <InputGroupAddon>
-                      <AiOutlineUser />
+                      <HiOutlineUser />
                     </InputGroupAddon>
                     <InputGroupInput
                       {...field}
                       id="auth-first-name-signup"
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      placeholder="First name"
+                      placeholder="First Name"
                       autoComplete="given-name"
                       disabled={formDisabled}
                     />
@@ -510,14 +539,14 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                 <Field data-invalid={fieldState.invalid}>
                   <InputGroup>
                     <InputGroupAddon>
-                      <AiOutlineUser />
+                      <HiOutlineUserGroup />
                     </InputGroupAddon>
                     <InputGroupInput
                       {...field}
                       id="auth-last-name-signup"
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      placeholder="Last name"
+                      placeholder="Last Name"
                       autoComplete="family-name"
                       disabled={formDisabled}
                     />
@@ -544,7 +573,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                     id="auth-email-signup"
                     type="email"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Email Address"
+                    placeholder="you@example.com"
                     autoComplete="email"
                     disabled={formDisabled}
                   />
@@ -570,7 +599,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                     id="auth-password-signup"
                     type={showPassword ? "text" : "password"}
                     aria-invalid={fieldState.invalid}
-                    placeholder="Password"
+                    placeholder="At least 8 characters"
                     disabled={formDisabled}
                     autoComplete="new-password"
                   />
@@ -596,31 +625,16 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
 
           <div id="clerk-captcha" />
 
-          {activeGlobalError && (
-            <div className="space-y-1">
-              <p role="alert" className="text-destructive text-[13px]">
-                {activeGlobalError}
-              </p>
-              {formDisabled && (
-                <p className="text-muted-foreground text-xs">
-                  Email sign-up is temporarily rate-limited. Please use{" "}
-                  <span className="text-foreground font-medium">
-                    Continue with Google
-                  </span>{" "}
-                  above.
-                </p>
-              )}
-            </div>
-          )}
+          {renderGlobalError(googleHint)}
 
           <Button
             type="submit"
             size="lg"
-            variant="dark"
+            variant="red"
             disabled={formDisabled}
             isLoading={isLoading}
             loadingTxt="Please wait.."
-            className="text-[13px]"
+            className="w-full text-[13px]"
           >
             {copy.submitLabel}
           </Button>
@@ -641,7 +655,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                     id="auth-email-signin"
                     type="email"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Email Address"
+                    placeholder="you@example.com"
                     autoComplete="email"
                     disabled={formDisabled}
                   />
@@ -667,7 +681,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
                     id="auth-password-signin"
                     type={showPassword ? "text" : "password"}
                     aria-invalid={fieldState.invalid}
-                    placeholder="Password"
+                    placeholder="Your password"
                     disabled={formDisabled}
                     autoComplete="current-password"
                   />
@@ -691,31 +705,18 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
             )}
           />
 
-          {activeGlobalError && (
-            <div className="space-y-1">
-              <p role="alert" className="text-destructive text-[13px]">
-                {activeGlobalError}
-              </p>
-              {formDisabled && (
-                <p className="text-muted-foreground text-xs">
-                  Verification requests are temporarily rate-limited. Please use{" "}
-                  <span className="text-foreground font-medium">
-                    Continue with Google
-                  </span>{" "}
-                  above.
-                </p>
-              )}
-            </div>
-          )}
+          <div id="clerk-captcha" />
+
+          {renderGlobalError(googleHint)}
 
           <Button
             type="submit"
             size="lg"
-            variant="dark"
+            variant="red"
             disabled={formDisabled}
             isLoading={isLoading}
             loadingTxt="Please wait.."
-            className="text-[13px]"
+            className="w-full text-[13px]"
           >
             {copy.submitLabel}
           </Button>
