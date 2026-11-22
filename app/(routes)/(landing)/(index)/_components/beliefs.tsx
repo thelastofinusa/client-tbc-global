@@ -40,7 +40,7 @@ export const BeliefsComponent = () => {
                 <br className="hidden md:block" /> to go.{" "}
                 <br className="md:hidden" /> A place to
                 <br className="hidden md:block" />{" "}
-                <span className="text-accent">become.</span>
+                <span className="text-primary">become.</span>
               </h2>
               <p className="mb-7 text-sm leading-[1.75] sm:text-[15px]">
                 {siteConfig.description}

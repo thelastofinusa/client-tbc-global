@@ -2,7 +2,7 @@ import { cn } from "cn";
 import {
   Geist_Mono as FontMono,
   // Hanken_Grotesk as FontSans,
-  DM_Sans as FontSans,
+  Noto_Sans as FontSans,
   Manrope as FontSerif,
 } from "next/font/google";
 
@@ -10,7 +10,7 @@ const fontSans = FontSans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["100", "300", "400", "700", "900"],
+  weight: ["400"],
 });
 
 const fontSerif = FontSerif({

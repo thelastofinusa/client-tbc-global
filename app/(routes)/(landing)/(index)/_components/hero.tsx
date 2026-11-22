@@ -1,93 +1,152 @@
 "use client";
 
 import { Image } from "keltra/image/next";
-import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
+import { CalendarDaysIcon, ChevronRightIcon, FlameIcon } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
+import { siteConfig } from "~/config/site.config";
+
+const motto = ["Love God", "Serve People", "Transform Our Community"];
 
 export const HomeHeroComponent = () => {
   return (
-    <section
-      aria-label="Hero"
-      className="text-primary-foreground relative w-full overflow-hidden"
-    >
-      {/* Keltra Image layer */}
-      <Image
-        src="/hero.avif"
-        alt="Faith that moves forward."
-        className="pointer-events-none absolute inset-0 size-full object-cover object-[center_42%] max-md:object-[57%_center]"
-        fill
-        loading="eager"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(20,15,13,0.83)_0%,rgba(22,15,13,0.63)_40%,rgba(23,15,13,0.08)_100%),linear-gradient(0deg,rgba(20,15,13,0.34),transparent_45%)] max-md:bg-[linear-gradient(90deg,#150f0dd9,#180f0d56_90%),linear-gradient(0deg,#150f0db0,transparent_55%)]"
-      />
-
+    <section aria-label="Hero" className="relative w-full overflow-hidden">
       <Container>
-        <div className="relative py-16 md:py-24 md:pt-28 lg:pt-32">
-          <h1 className="mb-6 font-serif text-[clamp(56px,7vw,88px)] leading-[0.97] font-extrabold tracking-[-0.075em] max-md:text-5xl">
-            Faith that
-            <br />
-            moves <em className="text-accent not-italic">forward.</em>
-          </h1>
+        <div className="grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
+          {/* ─── Left: message ─── */}
+          <div>
+            <Eyebrow
+              lineClass="bg-primary"
+              label="Kudenda, Kaduna · Everyone is welcome"
+            />
 
-          <p className="text-secondary mb-7 max-w-md text-sm sm:text-base">
-            We're building a community where young people find purpose, families
-            find hope, and faith turns into action.
-          </p>
+            <h1 className="my-6 font-serif text-[clamp(48px,7vw,92px)] leading-[0.95] font-extrabold tracking-[-0.075em]">
+              Faith that
+              <br />
+              moves <em className="text-primary not-italic">forward.</em>
+            </h1>
 
-          <div className="flex gap-2">
-            <Button
-              size="lg"
-              nativeButton={false}
-              render={<Link href="/sign-up" />}
-            >
-              <span>Join the family</span>
-              <ChevronRightIcon size={16} />
-            </Button>
-            <Button
-              variant="glass"
-              size="lg"
-              nativeButton={false}
-              render={<Link href="/projects" />}
-              className="flex-1 sm:flex-none"
-            >
-              <span>See what we're building</span>
-            </Button>
+            <p className="text-muted-foreground mb-8 max-w-md text-sm leading-[1.75] sm:text-base">
+              We’re building a community where young people find purpose,
+              families find hope, and faith turns into action.
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/sign-up" />}
+                className="flex-1 sm:flex-none"
+              >
+                <span>Join the family</span>
+                <ChevronRightIcon size={16} />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/projects" />}
+              >
+                <span>See what we’re building</span>
+              </Button>
+            </div>
+
+            <p className="text-muted-foreground mt-8 flex items-center gap-2 text-xs">
+              <FlameIcon size={14} className="text-primary" />
+              Gathering every Wednesday, Saturday and Sunday
+            </p>
           </div>
 
-          <div className="mt-16 flex flex-col items-start justify-between gap-6 max-md:mt-11 md:flex-row md:items-end">
-            <Eyebrow label="Kudenda, Kaduna · Everyone is welcome" />
+          {/* ─── Right: framed photo + floating card ─── */}
+          <div className="relative isolate">
+            {/* Offset color block behind the photo */}
+            <div
+              aria-hidden="true"
+              className="bg-primary absolute -right-3 -bottom-3 -z-10 hidden size-3/4 sm:block"
+            />
 
-            <Link
-              href="/services"
-              aria-label="See service details"
-              className="text-ink bg-background flex w-full items-center gap-4 p-4 shadow-[0_12px_40px_#17100d33] sm:max-w-84"
-            >
-              <div className="text-red bg-card grid size-10 shrink-0 place-items-center">
-                <CalendarDaysIcon size={18} />
-              </div>
-              <div className="flex flex-1 flex-col">
-                <span className="text-muted-foreground font-serif text-[8px] font-semibold tracking-[0.14em]">
-                  NEXT GATHERING
-                </span>
-                <strong className="text-sm font-semibold">
-                  Sunday service - 9:00 AM
-                </strong>
-                <small className="text-muted-foreground text-xs">
-                  Kudenda, Kaduna
-                </small>
-              </div>
-              <span className="text-red grid size-10 place-items-center transition-transform hover:translate-x-0.5">
-                <ChevronRightIcon size={18} />
+            <div className="relative aspect-4/5 w-full overflow-hidden sm:aspect-5/4 lg:aspect-auto lg:h-155">
+              <Image
+                src="/hero.avif"
+                alt="Faith that moves forward."
+                className="pointer-events-none absolute inset-0 size-full object-cover object-[58%_center]"
+                fill
+                loading="eager"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/45 via-transparent to-transparent"
+              />
+
+              <span className="bg-navy absolute top-4 left-4 flex items-center gap-2 px-3 py-2 text-[10px] font-semibold tracking-[0.14em] text-white uppercase">
+                <FlameIcon size={14} className="text-accent" />
+                {siteConfig.slogan}
               </span>
-            </Link>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.4,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="absolute right-4 bottom-4 left-4 sm:right-auto sm:w-80"
+              >
+                <Link
+                  href="/services"
+                  aria-label="See service details"
+                  className="bg-background text-foreground group flex w-full items-center gap-4 p-4 shadow-xl"
+                >
+                  <div className="text-primary bg-muted grid size-10 shrink-0 place-items-center">
+                    <CalendarDaysIcon size={18} />
+                  </div>
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-muted-foreground font-serif text-[9px] font-semibold tracking-[0.14em]">
+                      NEXT GATHERING
+                    </span>
+                    <strong className="text-sm font-semibold">
+                      Sunday service · 9:00 AM
+                    </strong>
+                    <small className="text-muted-foreground text-xs">
+                      Kudenda, Kaduna
+                    </small>
+                  </div>
+                  <span className="text-primary grid size-10 place-items-center transition-transform group-hover:translate-x-0.5">
+                    <ChevronRightIcon size={18} />
+                  </span>
+                </Link>
+              </motion.div>
+            </div>
           </div>
         </div>
       </Container>
+
+      {/* ─── Motto strip ─── */}
+      <div className="bg-navy text-white">
+        <Container>
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-4">
+            {motto.map((item, i) => (
+              <li
+                key={item}
+                className="flex items-center gap-6 font-serif text-[11px] font-semibold tracking-[0.16em] uppercase"
+              >
+                {item}
+                {i < motto.length - 1 && (
+                  <FlameIcon
+                    size={12}
+                    aria-hidden="true"
+                    className="text-accent max-sm:hidden"
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </div>
     </section>
   );
 };

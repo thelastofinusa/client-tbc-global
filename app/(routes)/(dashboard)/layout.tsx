@@ -1,23 +1,20 @@
-import { auth } from "@clerk/nextjs/server";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import {
-  ArchiveIcon,
   BarChart3Icon,
   BellIcon,
+  CalendarIcon,
   ChevronsUpDownIcon,
-  CopyIcon,
   CreditCardIcon,
-  FileTextIcon,
-  FolderIcon,
-  InboxIcon,
-  LayersIcon,
   LayoutDashboardIcon,
   LogOutIcon,
-  MoreHorizontalIcon,
-  PlusIcon,
-  RocketIcon,
+  QrCodeIcon,
   UserIcon,
+  UsersIcon,
 } from "lucide-react";
-import { ReactNode, Suspense } from "react";
+import type { Route } from "next";
+import Link from "next/link";
+import { type ReactNode, Suspense } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -47,91 +44,84 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
 } from "~/components/reusable/shadcn/sidebar";
+import { Container } from "~/components/shared/container";
 import { LogoComponent } from "~/components/shared/logo";
 
 interface NavItem {
   id: string;
   label: string;
+  href: string;
   icon: ReactNode;
-  badge?: number;
   isActive?: boolean;
 }
 
-const NAV: NavItem[] = [
+interface SidebarUser {
+  fullName: string;
+  email: string;
+  imageUrl: string;
+  initials: string;
+}
+
+const CHURCH_NAV: NavItem[] = [
   {
     id: "overview",
     label: "Overview",
+    href: "/dashboard",
     icon: <LayoutDashboardIcon aria-hidden="true" />,
-  },
-  {
-    id: "inbox",
-    label: "Inbox",
-    badge: 12,
-    icon: <InboxIcon aria-hidden="true" />,
-  },
-  {
-    id: "deployments",
-    label: "Deployments",
     isActive: true,
-    icon: <RocketIcon aria-hidden="true" />,
   },
   {
-    id: "analytics",
-    label: "Analytics",
+    id: "members",
+    label: "Members",
+    href: "/dashboard/members",
+    icon: <UsersIcon aria-hidden="true" />,
+  },
+  {
+    id: "attendance",
+    label: "Attendance",
+    href: "/dashboard/attendance",
+    icon: <QrCodeIcon aria-hidden="true" />,
+  },
+  {
+    id: "services",
+    label: "Services & Events",
+    href: "/dashboard/services",
+    icon: <CalendarIcon aria-hidden="true" />,
+  },
+  {
+    id: "reports",
+    label: "Reports",
+    href: "/dashboard/reports",
     icon: <BarChart3Icon aria-hidden="true" />,
   },
-  {
-    id: "logs",
-    label: "Logs",
-    badge: 3,
-    icon: <FileTextIcon aria-hidden="true" />,
-  },
-  {
-    id: "storage",
-    label: "Storage",
-    icon: <LayersIcon aria-hidden="true" />,
-  },
 ];
 
-const PROJECTS = [
-  { id: "checkout", name: "Checkout API" },
-  { id: "design-system", name: "Design system" },
-  { id: "marketing", name: "Marketing site" },
-  { id: "edge-cache", name: "Edge cache" },
-];
-
-function WorkspaceNav() {
+function ChurchNav() {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+      <SidebarGroupLabel>Church</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {NAV.map((item) => (
+          {CHURCH_NAV.map((item) => (
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
-                render={<a href="#" />}
                 isActive={item.isActive}
+                render={<Link href={item.href as Route} />}
               >
                 {item.icon}
                 <span>{item.label}</span>
               </SidebarMenuButton>
-              {item.badge ? (
-                <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
-              ) : null}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -140,59 +130,7 @@ function WorkspaceNav() {
   );
 }
 
-function ProjectNav() {
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
-      <SidebarGroupAction type="button">
-        <PlusIcon aria-hidden="true" />
-        <span className="sr-only">New project</span>
-      </SidebarGroupAction>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {PROJECTS.map((project) => (
-            <SidebarMenuItem key={project.id}>
-              <SidebarMenuButton render={<a href="#" />}>
-                <FolderIcon aria-hidden="true" />
-                <span>{project.name}</span>
-              </SidebarMenuButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <SidebarMenuAction
-                      showOnHover
-                      aria-label={`Actions for ${project.name}`}
-                    />
-                  }
-                >
-                  <MoreHorizontalIcon aria-hidden="true" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" align="start">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>Rename</DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CopyIcon aria-hidden="true" />
-                      Duplicate
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <ArchiveIcon aria-hidden="true" />
-                      Archive
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  );
-}
-
-function AccountMenu() {
+function AccountMenu({ user }: { user: SidebarUser }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -206,13 +144,15 @@ function AccountMenu() {
             }
           >
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="" />
-              <AvatarFallback>NR</AvatarFallback>
+              <AvatarImage src={user.imageUrl} alt={user.fullName} />
+              <AvatarFallback>{user.initials}</AvatarFallback>
             </Avatar>
             <span className="grid min-w-0 flex-1 text-left leading-tight">
-              <span className="truncate text-sm font-medium">Nadia Rahman</span>
+              <span className="truncate text-sm font-medium">
+                {user.fullName}
+              </span>
               <span className="text-sidebar-foreground/70 truncate text-xs">
-                nadia@reui.io
+                {user.email}
               </span>
             </span>
             <ChevronsUpDownIcon
@@ -220,9 +160,9 @@ function AccountMenu() {
               aria-hidden="true"
             />
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" align="end">
+          <DropdownMenuContent side="top" align="start">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Nadia Rahman</DropdownMenuLabel>
+              <DropdownMenuLabel>{user.fullName}</DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -232,7 +172,7 @@ function AccountMenu() {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCardIcon aria-hidden="true" />
-                Billing
+                Giving & Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BellIcon aria-hidden="true" />
@@ -256,6 +196,31 @@ function AccountMenu() {
 
 async function DashboardShell({ children }: { children: ReactNode }) {
   await auth.protect({ unauthenticatedUrl: "/sign-in" });
+  const clerkUser = await currentUser();
+
+  const fullName =
+    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ") ||
+    clerkUser?.username ||
+    "Member";
+  const email =
+    clerkUser?.primaryEmailAddress?.emailAddress ||
+    clerkUser?.emailAddresses[0]?.emailAddress ||
+    "";
+  const imageUrl = clerkUser?.imageUrl || "";
+  const initials =
+    fullName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "MB";
+
+  const sidebarUser: SidebarUser = {
+    fullName,
+    email,
+    imageUrl,
+    initials,
+  };
 
   return (
     <SidebarProvider className="relative h-dvh min-h-0 w-full overflow-hidden">
@@ -263,36 +228,54 @@ async function DashboardShell({ children }: { children: ReactNode }) {
         <SidebarHeader>
           <LogoComponent />
         </SidebarHeader>
-        <SidebarContent role="navigation" aria-label="Workspace">
-          <WorkspaceNav />
-          <ProjectNav />
+        <SidebarContent role="navigation" aria-label="Church navigation">
+          <ChurchNav />
         </SidebarContent>
         <SidebarFooter>
           <SidebarSeparator className="mx-0" />
-          <AccountMenu />
+          <AccountMenu user={sidebarUser} />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="min-w-0 overflow-hidden">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Breadcrumb className="min-w-0">
-            <BreadcrumbList className="flex-nowrap">
-              <BreadcrumbItem className="min-w-0">
-                <BreadcrumbLink href="/dashboard" className="truncate">
-                  Dashboard
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Overview</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <Button variant="outline" size="sm" className="ml-auto">
-            Invite
-          </Button>
+        <header className="h-12 border-b">
+          <Container size="lg" className="size-full">
+            <nav className="flex h-full items-center gap-2">
+              <SidebarTrigger className="-ml-1" />
+              <Breadcrumb className="min-w-0">
+                <BreadcrumbList className="flex-nowrap">
+                  <BreadcrumbItem className="min-w-0">
+                    <BreadcrumbLink href="/dashboard" className="truncate">
+                      Dashboard
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Overview</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+              <div className="ml-auto flex items-center gap-2">
+                <Suspense>
+                  <Show when="signed-out">
+                    <SignInButton />
+                    <SignUpButton>
+                      <Button>Sign Up</Button>
+                    </SignUpButton>
+                  </Show>
+                  <Show when="signed-in">
+                    <UserButton />
+                  </Show>
+                </Suspense>
+              </div>
+            </nav>
+          </Container>
         </header>
-        <div className="flex-1 overflow-auto p-4">{children}</div>
+
+        <div className="flex-1 overflow-auto py-3">
+          <Container size="lg" className="size-full">
+            {children}
+          </Container>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

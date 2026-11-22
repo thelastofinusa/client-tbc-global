@@ -30,7 +30,7 @@ const communityOrder: NavItemType["path"][] = ["/sign-up", "/sign-in"];
 
 const footerSections: FooterSection[] = [
   {
-    title: "EXPLORE",
+    title: "Explore",
     items: navItems
       .filter((item) => (item.kind ?? "nav") === "nav")
       .map(({ path, label, mobileLabel, kind, badge }) => ({
@@ -42,7 +42,7 @@ const footerSections: FooterSection[] = [
       })),
   },
   {
-    title: "COMMUNITY",
+    title: "Community",
     items: navItems
       .filter((item) => item.kind === "login" || item.kind === "join")
       .sort(
@@ -60,19 +60,28 @@ const footerSections: FooterSection[] = [
   },
 ];
 
+const gatheringDays = ["Wed", "Sat", "Sun"];
+
+// Coordinates taken from the embedded map below.
+const directionsUrl =
+  "https://www.google.com/maps/search/?api=1&query=10.478445,7.368035";
+
 export const Footer = () => {
   return (
-    <footer className="border-t border-white/10 bg-[#29221e] text-white">
-      <Container className="pt-14 pb-8 md:pt-16 md:pb-10">
-        {/* Top row: Brand identity + Gathering callout */}
-        <div className="flex flex-col justify-between gap-8 border-b border-white/10 pb-10 md:flex-row md:items-end">
-          <div className="max-w-md">
-            <LogoComponent path="/" className="inline-flex" />
-
-            {/* <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm"> */}
-            <p className="text-secondary mt-4 text-sm leading-[1.75]">
-              {siteConfig.about}
-            </p>
+    <footer className="bg-navy relative overflow-hidden text-white">
+      <Container className="pt-14 pb-8 md:pt-20 md:pb-10">
+        {/* 1. Big invitation */}
+        <div className="flex flex-col justify-between gap-8 border-b border-white/10 pb-12 md:flex-row md:items-end md:pb-14">
+          <div>
+            <Eyebrow
+              label="Next gathering · Sunday, 9:00 AM"
+              className="text-accent"
+            />
+            <h2 className="mt-5 font-serif text-4xl leading-[1.02] font-extrabold tracking-[-0.06em] md:text-6xl">
+              Come as you are.
+              <br />
+              <span className="text-accent">Leave on fire.</span>
+            </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -83,7 +92,7 @@ export const Footer = () => {
               render={<Link href="/services" />}
               className="flex-1 sm:flex-none"
             >
-              <span>Sunday Service · 9:00 AM</span>
+              <span>Plan your visit</span>
               <ArrowUpRightIcon size={16} />
             </Button>
             <Button
@@ -97,34 +106,39 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Middle row: Navigation & Gathering details */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-10 sm:grid-cols-2 md:grid-cols-4">
-          <div className="flex flex-col gap-4 md:col-span-2">
-            <Eyebrow label="Where to find us" className="text-accent" />
-
-            <div className="flex flex-col gap-2 sm:max-w-sm">
-              <div className="bg-muted/50 aspect-[1.3] sm:aspect-video">
-                <iframe
-                  title={`${siteConfig.title} location on Google Maps`}
-                  src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d773.2637856498449!2d7.368035125773172!3d10.478444737176677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDI4JzQyLjIiTiA3wrAyMicwNi41IkU!5e1!3m2!1sen!2sng!4v1795293027987!5m2!1sen!2sng"
-                  loading="lazy"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  className="size-full border-none"
-                />
-              </div>
+        {/* 2. Brand, links, map */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:py-14 lg:grid-cols-12 lg:gap-x-8">
+          <div className="col-span-2 flex flex-col gap-5 lg:col-span-4">
+            <LogoComponent path="/" className="inline-flex" />
+            <p className="text-secondary/80 max-w-sm text-sm leading-[1.75]">
+              {siteConfig.about}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {gatheringDays.map((day) => (
+                <span
+                  key={day}
+                  className="border border-white/15 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-white/80 uppercase"
+                >
+                  {day}
+                </span>
+              ))}
+              <span className="text-xs text-white/50">every week</span>
             </div>
           </div>
 
           {footerSections.map((section) => (
-            <div key={section.title} className="flex flex-col gap-4">
+            <div
+              key={section.title}
+              className="flex flex-col gap-4 lg:col-span-2"
+            >
               <Eyebrow label={section.title} className="text-accent" />
 
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col gap-2.5">
                 {section.items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="inline-flex items-center gap-2 text-[13px] text-white/80 transition-colors hover:text-white sm:text-sm"
+                      className="inline-flex items-center gap-2 text-[13px] text-white/75 transition-colors hover:text-white sm:text-sm"
                     >
                       {item.mobileLabel ? (
                         <>
@@ -148,10 +162,42 @@ export const Footer = () => {
               </ul>
             </div>
           ))}
+
+          <div className="col-span-2 flex flex-col gap-4 lg:col-span-4">
+            <Eyebrow label="Where to find us" className="text-accent" />
+
+            <div className="aspect-[4/3] overflow-hidden border border-white/10">
+              <iframe
+                title={`${siteConfig.title} location on Google Maps`}
+                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d773.2637856498449!2d7.368035125773172!3d10.478444737176677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDI4JzQyLjIiTiA3wrAyMicwNi41IkU!5e1!3m2!1sen!2sng!4v1795293027987!5m2!1sen!2sng"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                className="size-full border-none grayscale transition-[filter] duration-300 hover:grayscale-0"
+              />
+            </div>
+
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-max items-center gap-2 text-sm text-white/80 transition-colors hover:text-white"
+            >
+              <span>Kudenda, Kaduna · Get directions</span>
+              <ArrowUpRightIcon size={14} />
+            </a>
+          </div>
         </div>
 
-        {/* Bottom bar: Copyright & local anchor */}
-        <div className="flex flex-col justify-between gap-3 pt-6 text-[13px] sm:flex-row sm:items-center">
+        {/* 3. Oversized wordmark */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none overflow-hidden text-center font-serif text-[11vw] leading-[0.85] font-extrabold tracking-[-0.07em] whitespace-nowrap text-white/[0.05] select-none lg:text-[140px]"
+        >
+          Burning Church
+        </div>
+
+        {/* 4. Bottom bar */}
+        <div className="mt-6 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[13px] sm:flex-row sm:items-center">
           <p className="flex flex-col gap-1">
             <span className="text-white/60">
               &copy; 2026 {siteConfig.title}.

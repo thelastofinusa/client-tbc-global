@@ -23,15 +23,15 @@ const buttonVariants = cva(
         dark: "bg-foreground text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
         red: "bg-red text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
         cream:
-          "bg-[#f5eee1] text-[#231c19] transition-[transform,background] duration-200 hover:-translate-y-0.5",
+          "bg-cream text-navy transition-[transform,background] duration-200 hover:-translate-y-0.5",
         "brand-outline":
-          "text-ink border border-[#bdb5aa] bg-transparent transition-[transform,background] duration-200 hover:-translate-y-0.5",
+          "text-ink border-navy/30 border bg-transparent transition-[transform,background] duration-200 hover:-translate-y-0.5",
         glass:
           "border-white-overlay-48 bg-white-overlay-09 border text-white transition-[transform,background] duration-200 hover:-translate-y-0.5",
         approve:
-          "h-auto rounded-none bg-[#e7f1e9] px-2.5 py-[7px] text-[8px] text-[#2c714b]",
+          "bg-green/10 text-green h-auto rounded-none px-2.5 py-[7px] text-[8px]",
         manual:
-          "h-auto w-full rounded-none border border-dashed border-[#d6cfc5] bg-transparent p-2.5 text-[#6c635b]",
+          "border-border text-muted-foreground h-auto w-full rounded-none border border-dashed bg-transparent p-2.5",
       },
       size: {
         default:

@@ -63,70 +63,103 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --color-maroon: var(--maroon);
+  --color-navy: var(--navy);
+  --color-cream: var(--cream);
+  --color-gold: var(--gold);
 }
 
 :root {
-  --background: #f7f5ef;
-  --foreground: #211c1a;
+  /* Palette C: "Heritage". Maroon-led, cream surfaces, crimson action color,
+     sand-gold highlight. Token names kept so components don't break:
+     navy is now deep maroon (footer, sidebar base). */
+  --crimson: #a42024; /* main brand */
+  --maroon: #650a05; /* deep red: hover / pressed / emphasis */
+  --cream: #f9f0d7; /* client cream, soft surface */
+  --navy: #3a0a06; /* deep maroon: footer, dark surfaces */
+  --gold: #e9c27a; /* sand-gold highlight on DARK surfaces only */
+
+  /* Surfaces */
+  --background: #fffbf2;
+  --foreground: #2a0e0b; /* very dark maroon-brown: text + dark buttons */
   --card: #ffffff;
-  --card-foreground: #211c1a;
+  --card-foreground: #2a0e0b;
   --popover: #ffffff;
-  --popover-foreground: #211c1a;
-  --primary: #d62828;
+  --popover-foreground: #2a0e0b;
+
+  /* Brand */
+  --primary: #a42024;
   --primary-foreground: #ffffff;
-  --secondary: #f0ece4;
-  --secondary-foreground: #211c1a;
-  --muted: #f0ece4;
-  --muted-foreground: #77716c;
-  --accent: #f0a439;
-  --accent-foreground: #211c1a;
-  --destructive: #d62828;
+  --secondary: #f9f0d7; /* also used as light text on dark (hero / footer paragraphs) */
+  --secondary-foreground: #2a0e0b;
+  --muted: #f9f0d7;
+  --muted-foreground: #75554e;
+  --accent: #e9c27a;
+  --accent-foreground: #2a0e0b;
+  --destructive: #c2410c;
   --destructive-foreground: #ffffff;
-  --border: #e6e1d9;
-  --input: #e6e1d9;
-  --ring: #d62828;
-  --chart-1: #d62828;
-  --chart-2: #f0a439;
-  --chart-3: #277451;
-  --chart-4: #211c1a;
-  --chart-5: #e5e0d8;
-  --sidebar: #25201d;
-  --sidebar-foreground: #f7f2ea;
-  --sidebar-primary: #d62828;
+
+  /* Lines + focus */
+  --border: #ebddbf;
+  --input: #ebddbf;
+  --ring: #a42024;
+
+  /* Charts */
+  --chart-1: #a42024;
+  --chart-2: #650a05;
+  --chart-3: #e9c27a;
+  --chart-4: #2a0e0b;
+  --chart-5: #c9a99f;
+
+  /* Dashboard sidebar (deep maroon) */
+  --sidebar: #320906;
+  --sidebar-foreground: #f9f0d7;
+  --sidebar-primary: #a42024;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #413833;
+  --sidebar-accent: #531410;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #4a413b;
-  --sidebar-ring: #f0a439;
+  --sidebar-border: #5e1f1a;
+  --sidebar-ring: #e9c27a;
+
   --radius: 0.8rem;
+
+  /* Maroon-tinted shadows */
   --shadow-x: 0;
   --shadow-y: 1px;
   --shadow-blur: 3px;
   --shadow-spread: 0px;
-  --shadow-opacity: 0.1;
-  --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-opacity: 0.08;
+  --shadow-color: hsl(5 60% 12%);
+  --shadow-2xs: 0 1px 2px 0 hsl(5 60% 12% / 0.05);
+  --shadow-xs: 0 1px 2px 0 hsl(5 60% 12% / 0.06);
   --shadow-sm:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    0 1px 3px 0 hsl(5 60% 12% / 0.08), 0 1px 2px -1px hsl(5 60% 12% / 0.08);
+  --shadow:
+    0 1px 3px 0 hsl(5 60% 12% / 0.08), 0 1px 2px -1px hsl(5 60% 12% / 0.08);
   --shadow-md:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    0 2px 6px 0 hsl(5 60% 12% / 0.08), 0 2px 4px -1px hsl(5 60% 12% / 0.08);
   --shadow-lg:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    0 4px 12px 0 hsl(5 60% 12% / 0.1), 0 4px 6px -1px hsl(5 60% 12% / 0.08);
   --shadow-xl:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    0 8px 24px 0 hsl(5 60% 12% / 0.12), 0 8px 10px -1px hsl(5 60% 12% / 0.08);
+  --shadow-2xl: 0 16px 40px 0 hsl(5 60% 12% / 0.22);
+
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
   --white-overlay-48: rgb(255 255 255 / 0.48);
   --white-overlay-32: rgb(255 255 255 / 0.32);
   --white-overlay-09: rgb(255 255 255 / 0.09);
+
+  /* Legacy aliases your components already use (text-red, bg-paper, ...) */
   --paper: var(--background);
   --ink: var(--foreground);
   --red: var(--primary);
   --line: var(--border);
-  --green: var(--chart-3);
+  --green: #2e7d5b;
+
+  /* Optional, for the full effect: hero gradient rgba(14,30,48,…) →
+   rgba(42,14,11,…) and the hero card shadow #0e1e3033 → #2a0e0b33. */
 }
 
 @layer base {
