@@ -30,6 +30,6 @@ export const navItems: NavItemType[] = [
     path: "/partner",
     kind: "nav",
   },
-  { label: "Login", path: "/login", kind: "login" },
-  { label: "Join the family", path: "/join", kind: "join" },
+  { label: "Login", path: "/sign-in", kind: "login" },
+  { label: "Join the family", path: "/sign-up", kind: "join" },
 ];

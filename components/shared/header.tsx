@@ -1,9 +1,11 @@
 "use client";
 
+import { Show, UserAvatar} from "@clerk/nextjs";
 import { ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
@@ -83,23 +85,32 @@ export const Header = () => {
           </div>
 
           <div className="flex items-center justify-end gap-2 sm:w-60">
-            <Button
-              variant="dark"
-              nativeButton={false}
-              render={<Link href="/join" />}
-              className="hidden md:inline-flex"
-            >
-              <span>Join the Family</span>
-              <ChevronRightIcon />
-            </Button>
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href="/login" />}
-              className="hidden md:inline-flex"
-            >
-              <span>Log In</span>
-            </Button>
+            <Suspense>
+              <Show when="signed-out">
+                <Button
+                  variant="dark"
+                  nativeButton={false}
+                  render={<Link href="/sign-up" />}
+                  className="hidden md:inline-flex"
+                >
+                  <span>Join the Family</span>
+                  <ChevronRightIcon />
+                </Button>
+                <Button
+                  variant="outline"
+                  nativeButton={false}
+                  render={<Link href="/sign-in" />}
+                  className="hidden md:inline-flex"
+                >
+                  <span>Log In</span>
+                </Button>
+              </Show>
+              <Show when="signed-in">
+                <Button variant="secondary" nativeButton={false} render={<Link href="/dashboard" />}>
+                  Dashboard
+                </Button>
+              </Show>
+            </Suspense>
             <Separator
               orientation="vertical"
               className="my-auto ml-2 hidden h-4! md:block lg:hidden"

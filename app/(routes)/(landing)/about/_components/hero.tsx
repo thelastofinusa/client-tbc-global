@@ -274,7 +274,7 @@ export const AboutHeroComponent = () => {
                 variant="glass"
                 size="lg"
                 nativeButton={false}
-                render={<Link href="/join" />}
+                render={<Link href="/sign-up" />}
               >
                 <span>Join the family</span>
               </Button>

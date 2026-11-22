@@ -43,7 +43,7 @@ export const HomeHeroComponent = () => {
             <Button
               size="lg"
               nativeButton={false}
-              render={<Link href="/join" />}
+              render={<Link href="/sign-up" />}
             >
               <span>Join the family</span>
               <ChevronRightIcon size={16} />

@@ -22,11 +22,11 @@ type FooterSection = {
 };
 
 const communityLabels: Partial<Record<NavItemType["path"], string>> = {
-  "/join": "Join the Family",
-  "/login": "Member Login",
+  "/sign-up": "Join the Family",
+  "/sign-in": "Member Login",
 };
 
-const communityOrder: NavItemType["path"][] = ["/join", "/login"];
+const communityOrder: NavItemType["path"][] = ["/sign-up", "/sign-in"];
 
 const footerSections: FooterSection[] = [
   {
@@ -90,7 +90,7 @@ export const Footer = () => {
               variant="glass"
               size="lg"
               nativeButton={false}
-              render={<Link href="/join" />}
+              render={<Link href="/sign-up" />}
             >
               <span>Join the family</span>
             </Button>
