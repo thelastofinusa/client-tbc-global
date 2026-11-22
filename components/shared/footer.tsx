@@ -33,12 +33,11 @@ const footerSections: FooterSection[] = [
     title: "Explore",
     items: navItems
       .filter((item) => (item.kind ?? "nav") === "nav")
-      .map(({ path, label, mobileLabel, kind, badge }) => ({
+      .map(({ path, label, mobileLabel, kind }) => ({
         href: path,
         label,
         mobileLabel,
         kind,
-        badge,
       })),
   },
   {
@@ -49,12 +48,11 @@ const footerSections: FooterSection[] = [
         (a, b) =>
           communityOrder.indexOf(a.path) - communityOrder.indexOf(b.path),
       )
-      .map(({ path, label, mobileLabel, kind, badge }) => ({
+      .map(({ path, label, mobileLabel, kind }) => ({
         href: path,
         label: communityLabels[path] ?? label,
         mobileLabel,
         kind,
-        badge,
       })),
     showArrow: true,
   },
@@ -147,11 +145,6 @@ export const Footer = () => {
                         </>
                       ) : (
                         <span>{item.label}</span>
-                      )}
-                      {item.badge && (
-                        <span className="bg-accent/15 text-accent px-1.5 py-0.5 text-[9px] font-semibold tracking-wider uppercase">
-                          {item.badge}
-                        </span>
                       )}
                       {section.showArrow && (
                         <ArrowUpRightIcon size={13} className="text-white/50" />

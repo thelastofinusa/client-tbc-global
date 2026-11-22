@@ -5,7 +5,6 @@ export type NavItemType = {
   mobileLabel?: string;
   path: Route;
   kind?: "nav" | "login" | "join";
-  badge?: string;
 };
 
 export const navItems: NavItemType[] = [
@@ -16,7 +15,6 @@ export const navItems: NavItemType[] = [
     mobileLabel: "Missions & Builds",
     path: "/projects",
     kind: "nav",
-    badge: "Mount Zion",
   },
   {
     label: "Services & Visit",
