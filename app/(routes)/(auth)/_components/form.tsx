@@ -38,17 +38,14 @@ const signUpSchema = z.object({
   firstName: z
     .string()
     .max(50, "First name must be at most 50 characters.")
-    .optional()
     .or(z.literal("")),
   lastName: z
     .string()
     .max(50, "Last name must be at most 50 characters.")
-    .optional()
     .or(z.literal("")),
   email: z
-    .string()
-    .min(1, "Email address is required.")
     .email("Please enter a valid email address.")
+    .min(1, "Email address is required.")
     .max(100, "Email must be at most 100 characters."),
   password: z
     .string()
@@ -426,7 +423,7 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
           isLoading={isLoading}
           loadingTxt="Verifying..."
           disabled={formDisabled || otpCode.length < 6}
-          className="w-full"
+          className="w-full text-[13px]"
         >
           Verify & Continue
         </Button>
