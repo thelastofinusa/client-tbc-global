@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { ServicesBoard } from "~/components/dashboard/services-board";
 import { services } from "~/lib/dashboard/mock-data";
 
 export const metadata: Metadata = { title: "Services & Events" };
 
-export default function Page() {
+function Content() {
   return (
     <>
       <PageHeader
@@ -15,5 +16,13 @@ export default function Page() {
       />
       <ServicesBoard initialServices={services} />
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="services">
+      <Content />
+    </RoleGate>
   );
 }

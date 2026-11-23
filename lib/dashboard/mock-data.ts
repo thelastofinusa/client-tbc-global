@@ -167,12 +167,12 @@ export const members: Member[] = [
     firstName: "Abdullahi",
     lastName: "Salihu",
     email: "thelastofinusa@gmail.com",
-    role: "admin",
-    requestedRole: "admin",
-    status: "approved",
-    joinedAt: "2026-07-26",
-    attendanceRate: 123,
-    lastAttended: "2026-09-27",
+    role: "super_admin", // was "attendee"
+    requestedRole: "attendee",
+    status: "approved", // was "suspended"
+    joinedAt: "2026-07-01",
+    attendanceRate: 92,
+    lastAttended: "2026-11-22",
   },
 ];
 

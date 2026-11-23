@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MembersTable } from "~/components/dashboard/members-table";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { ResetSampleDataButton } from "~/components/dashboard/reset-sample-data";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { members } from "~/lib/dashboard/mock-data";
+import { applyOverrides, readOverrides } from "~/lib/dashboard/overrides";
 import type { MemberStatus } from "~/lib/dashboard/types";
 
 export const metadata: Metadata = { title: "Members" };
@@ -18,19 +21,19 @@ async function MembersContent({
 }) {
   const { status } = await searchParams;
   const initialFilter = statuses.find((s) => s === status) ?? "all";
+  const list = applyOverrides(members, await readOverrides());
 
-  return (
-    <MembersTable initialMembers={members} initialFilter={initialFilter} />
-  );
+  return <MembersTable initialMembers={list} initialFilter={initialFilter} />;
 }
 
 export default function Page(props: { searchParams: SearchParams }) {
   return (
-    <>
+    <RoleGate section="members">
       <PageHeader
         eyebrow="Church"
         title="Members"
-        description="Everyone who has registered. Approve new people, confirm the role they asked for, or change it at any time."
+        description="Everyone who has registered. New sign-ups start as attendees. Approve them and give them a role, or change a role at any time."
+        actions={<ResetSampleDataButton />}
       />
       <Suspense
         fallback={
@@ -39,6 +42,6 @@ export default function Page(props: { searchParams: SearchParams }) {
       >
         <MembersContent searchParams={props.searchParams} />
       </Suspense>
-    </>
+    </RoleGate>
   );
 }

@@ -13,11 +13,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/reusable/shadcn/sidebar";
-import { dashboardNav, isDashboardActive } from "./nav-config";
+import type { Role } from "~/lib/dashboard/types";
+import { isDashboardActive, navForRole } from "./nav-config";
 
 export function DashboardSidebarNav({
+  role,
   pendingCount = 0,
 }: {
+  role: Role;
   pendingCount?: number;
 }) {
   const pathname = usePathname();
@@ -25,7 +28,7 @@ export function DashboardSidebarNav({
 
   return (
     <>
-      {dashboardNav.map((group) => (
+      {navForRole(role).map((group) => (
         <SidebarGroup key={group.label}>
           <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -42,7 +45,7 @@ export function DashboardSidebarNav({
                     }
                   >
                     <item.icon aria-hidden="true" />
-                    <span>{item.label}</span>
+                    <span>{item.roleLabels?.[role] ?? item.label}</span>
                   </SidebarMenuButton>
                   {item.href === "/dashboard/members" && pendingCount > 0 && (
                     <SidebarMenuBadge>{pendingCount}</SidebarMenuBadge>

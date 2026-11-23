@@ -23,6 +23,12 @@ import {
 } from "~/components/reusable/shadcn/table";
 import { Tabs, TabsList, TabsTrigger } from "~/components/reusable/shadcn/tabs";
 import { toast } from "~/components/reusable/shadcn/toast";
+import {
+  approveMember,
+  removeMember,
+  setMemberRole,
+  setMemberStatus,
+} from "~/lib/dashboard/actions";
 import { ROLE_ITEMS, ROLE_META } from "~/lib/dashboard/roles";
 import type { Member, MemberStatus, Role } from "~/lib/dashboard/types";
 import { MemberStatusBadge, RoleBadge } from "./badges";
@@ -43,12 +49,12 @@ export function MembersTable({
   initialMembers: Member[];
   initialFilter?: Filter;
 }) {
-  // Pending people start with the role they asked for, so approving confirms it.
-  const [members, setMembers] = React.useState<Member[]>(() =>
-    initialMembers.map((m) =>
-      m.status === "pending" ? { ...m, role: m.requestedRole } : m,
-    ),
-  );
+  const [members, setMembers] = React.useState<Member[]>(initialMembers);
+  const [, startTransition] = React.useTransition();
+  const persist = (action: () => Promise<unknown>) =>
+    startTransition(async () => {
+      await action();
+    });
   const [filter, setFilter] = React.useState<Filter>(initialFilter);
   const [query, setQuery] = React.useState("");
 
@@ -69,8 +75,8 @@ export function MembersTable({
     return `${m.firstName} ${m.lastName} ${m.email}`.toLowerCase().includes(q);
   });
 
-  // TODO: replace these local updates with server actions that call
-  // requireSuperAdmin() and write to the database.
+  // Changes are saved by server actions (see lib/dashboard/actions.ts).
+  // Until there is a database they live in a cookie in your browser.
   const update = (id: string, patch: Partial<Member>) =>
     setMembers((prev) =>
       prev.map((m) => (m.id === id ? { ...m, ...patch } : m)),
@@ -78,6 +84,7 @@ export function MembersTable({
 
   const approve = (m: Member) => {
     update(m.id, { status: "approved" });
+    persist(() => approveMember(m.email, m.role));
     toast.add({
       title: `${m.firstName} approved`,
       description: `Role confirmed: ${ROLE_META[m.role].label}.`,
@@ -86,11 +93,13 @@ export function MembersTable({
 
   const decline = (m: Member) => {
     setMembers((prev) => prev.filter((x) => x.id !== m.id));
+    persist(() => removeMember(m.email));
     toast.add({ title: "Registration declined", description: m.email });
   };
 
   const changeRole = (m: Member, role: Role) => {
     update(m.id, { role });
+    persist(() => setMemberRole(m.email, role));
     if (m.status !== "pending") {
       toast.add({
         title: "Role updated",
@@ -234,7 +243,10 @@ export function MembersTable({
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => update(m.id, { status: "suspended" })}
+                        onClick={() => {
+                          update(m.id, { status: "suspended" });
+                          persist(() => setMemberStatus(m.email, "suspended"));
+                        }}
                       >
                         Suspend
                       </Button>
@@ -243,7 +255,10 @@ export function MembersTable({
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => update(m.id, { status: "approved" })}
+                        onClick={() => {
+                          update(m.id, { status: "approved" });
+                          persist(() => setMemberStatus(m.email, "approved"));
+                        }}
                       >
                         Reinstate
                       </Button>

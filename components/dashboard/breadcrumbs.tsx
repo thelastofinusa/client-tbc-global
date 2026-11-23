@@ -35,7 +35,7 @@ export function DashboardBreadcrumbs() {
   return (
     <Breadcrumb className="min-w-0">
       <BreadcrumbList className="flex-nowrap">
-        <BreadcrumbItem className="min-w-0">
+        <BreadcrumbItem className="hidden min-w-0 md:inline-flex">
           <BreadcrumbLink href="/dashboard" className="truncate">
             Dashboard
           </BreadcrumbLink>
@@ -44,7 +44,9 @@ export function DashboardBreadcrumbs() {
           const isLast = index === crumbs.length - 1;
           return (
             <Fragment key={crumb.href}>
-              <BreadcrumbSeparator />
+              <BreadcrumbSeparator
+                className={index === 0 ? "hidden md:block" : undefined}
+              />
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>

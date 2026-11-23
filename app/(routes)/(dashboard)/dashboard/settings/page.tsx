@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { SettingsForm } from "~/components/dashboard/settings-form";
 
 export const metadata: Metadata = { title: "Settings" };
 
-export default function Page() {
+function Content() {
   return (
     <>
       <PageHeader
@@ -16,5 +17,13 @@ export default function Page() {
         <SettingsForm />
       </div>
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="settings">
+      <Content />
+    </RoleGate>
   );
 }

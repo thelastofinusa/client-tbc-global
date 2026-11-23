@@ -1,6 +1,7 @@
 import { HeartHandshakeIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { Badge } from "~/components/reusable/shadcn/badge";
 import { Card } from "~/components/reusable/shadcn/card";
 import { Progress } from "~/components/reusable/shadcn/progress";
@@ -8,7 +9,7 @@ import { projects } from "~/lib/dashboard/mock-data";
 
 export const metadata: Metadata = { title: "Projects" };
 
-export default function Page() {
+function Content() {
   return (
     <>
       <PageHeader
@@ -55,5 +56,13 @@ export default function Page() {
         ))}
       </div>
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="projects">
+      <Content />
+    </RoleGate>
   );
 }

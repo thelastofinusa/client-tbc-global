@@ -4,6 +4,8 @@ import { format, parseISO } from "date-fns";
 import {
   BellRingIcon,
   CircleDotIcon,
+  CopyIcon,
+  ExternalLinkIcon,
   PlayIcon,
   RefreshCwIcon,
   SquareIcon,
@@ -20,11 +22,20 @@ import {
   SelectValue,
 } from "~/components/reusable/shadcn/select";
 import { toast } from "~/components/reusable/shadcn/toast";
+import {
+  buildCheckInUrl,
+  type CheckInData,
+  CODE_TTL_MS,
+} from "~/lib/dashboard/checkin";
+import {
+  clearOpenSession,
+  saveOpenSession,
+} from "~/lib/dashboard/checkin-store";
 import type { ChurchService, Member } from "~/lib/dashboard/types";
 
-const CODE_LIFETIME_SECONDS = 30;
+const ROTATE_SECONDS = 30;
 
-function newToken() {
+function newCode() {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase();
 }
 
@@ -32,11 +43,14 @@ export function AttendanceSession({
   services,
   members,
   lastServiceDate,
+  mode = "full",
 }: {
   services: ChurchService[];
   members: Member[];
   /** ISO date of the service the present/absent lists describe. */
   lastServiceDate: string;
+  /** "qr-only" is the usher view: just the code and the live count. */
+  mode?: "full" | "qr-only";
 }) {
   const serviceItems = services.map((s) => ({
     value: s.id,
@@ -45,11 +59,32 @@ export function AttendanceSession({
 
   const [serviceId, setServiceId] = React.useState(services[0]?.id ?? "");
   const [live, setLive] = React.useState(false);
-  const [token, setToken] = React.useState<string | null>(null);
-  const [secondsLeft, setSecondsLeft] = React.useState(CODE_LIFETIME_SECONDS);
+  const [session, setSession] = React.useState<{
+    data: CheckInData;
+    url: string;
+  } | null>(null);
+  const [secondsLeft, setSecondsLeft] = React.useState(ROTATE_SECONDS);
   const [reminded, setReminded] = React.useState<Set<string>>(new Set());
 
   const service = services.find((s) => s.id === serviceId);
+
+  const issue = React.useCallback(() => {
+    if (!service) return;
+    const data: CheckInData = {
+      serviceId: service.id,
+      service: service.name,
+      day: service.day,
+      time: service.time,
+      code: newCode(),
+      expiresAt: Date.now() + CODE_TTL_MS,
+    };
+    saveOpenSession(data);
+    setSession({
+      data,
+      url: buildCheckInUrl(window.location.origin, data),
+    });
+    setSecondsLeft(ROTATE_SECONDS);
+  }, [service]);
 
   // Rotate the code every 30s while check-in is open.
   React.useEffect(() => {
@@ -57,25 +92,28 @@ export function AttendanceSession({
     const timer = window.setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
-          setToken(newToken());
-          return CODE_LIFETIME_SECONDS;
+          issue();
+          return ROTATE_SECONDS;
         }
         return prev - 1;
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [live]);
+  }, [live, issue]);
 
   const start = () => {
-    setToken(newToken());
-    setSecondsLeft(CODE_LIFETIME_SECONDS);
+    issue();
     setLive(true);
   };
 
-  const stop = () => {
+  const stop = React.useCallback(() => {
     setLive(false);
-    setToken(null);
-  };
+    setSession(null);
+    clearOpenSession();
+  }, []);
+
+  // Close the session if the page is left.
+  React.useEffect(() => () => clearOpenSession(), []);
 
   const approved = members.filter((m) => m.status === "approved");
   const present = approved.filter((m) => m.lastAttended === lastServiceDate);
@@ -100,10 +138,18 @@ export function AttendanceSession({
     });
   };
 
-  const qrValue = `tbcgm:checkin:${serviceId}:${token ?? ""}`;
+  const copyLink = async () => {
+    if (!session) return;
+    try {
+      await navigator.clipboard.writeText(session.url);
+      toast.add({ title: "Link copied" });
+    } catch {
+      toast.add({ title: "Couldn’t copy the link" });
+    }
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,380px)_1fr]">
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,400px)_1fr]">
       {/* Check-in code */}
       <Card variant="surface" className="h-fit gap-5">
         <div className="flex flex-col gap-2">
@@ -134,18 +180,20 @@ export function AttendanceSession({
         </div>
 
         <div className="border-line bg-background grid place-items-center border p-6">
-          {live && token ? (
+          {live && session ? (
             <div className="flex flex-col items-center gap-3">
               <QRCodeSVG
-                value={qrValue}
-                size={200}
+                value={session.url}
+                size={220}
                 level="M"
                 bgColor="transparent"
                 fgColor="currentColor"
                 className="text-foreground"
                 title="Attendance QR code"
               />
-              <p className="font-mono text-sm tracking-[0.3em]">{token}</p>
+              <p className="font-mono text-sm tracking-[0.3em]">
+                {session.data.code}
+              </p>
               <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <CircleDotIcon className="text-primary size-3 animate-pulse" />
                 New code in {secondsLeft}s
@@ -164,6 +212,55 @@ export function AttendanceSession({
           )}
         </div>
 
+        {/* What the QR code carries */}
+        {live && session && (
+          <div className="flex flex-col gap-3">
+            <dl className="border-line divide-line divide-y border text-xs">
+              {[
+                ["Service", session.data.service],
+                ["When", `${session.data.day}, ${session.data.time}`],
+                ["Code", session.data.code],
+                [
+                  "Valid until",
+                  format(new Date(session.data.expiresAt), "h:mm:ss a"),
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between gap-4 px-3 py-2"
+                >
+                  <dt className="text-muted-foreground">{label}</dt>
+                  <dd className="font-medium">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={copyLink}
+              >
+                <CopyIcon />
+                Copy link
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                nativeButton={false}
+                render={
+                  <a href={session.url} target="_blank" rel="noreferrer" />
+                }
+              >
+                <ExternalLinkIcon />
+                Test scan
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2">
           {live ? (
             <>
@@ -171,10 +268,7 @@ export function AttendanceSession({
                 variant="outline"
                 size="lg"
                 className="flex-1"
-                onClick={() => {
-                  setToken(newToken());
-                  setSecondsLeft(CODE_LIFETIME_SECONDS);
-                }}
+                onClick={issue}
               >
                 <RefreshCwIcon />
                 New code
@@ -217,54 +311,70 @@ export function AttendanceSession({
           ))}
         </div>
 
-        <Card variant="surface" className="gap-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="font-serif text-lg font-bold">Absent members</h2>
-              <p className="text-muted-foreground text-xs">
-                Didn’t check in on{" "}
-                {format(parseISO(lastServiceDate), "EEEE d MMM")}.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={remindAll}
-              disabled={absent.every((m) => reminded.has(m.id))}
-            >
-              <BellRingIcon />
-              Remind all
-            </Button>
-          </div>
-
-          <ul className="divide-line divide-y">
-            {absent.map((m) => (
-              <li
-                key={m.id}
-                className="flex items-center justify-between gap-3 py-3"
+        {mode === "full" ? (
+          <Card variant="surface" className="gap-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="font-serif text-lg font-bold">Absent members</h2>
+                <p className="text-muted-foreground text-xs">
+                  Didn’t check in on{" "}
+                  {format(parseISO(lastServiceDate), "EEEE d MMM")}.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={remindAll}
+                disabled={absent.every((m) => reminded.has(m.id))}
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">
-                    {m.firstName} {m.lastName}
-                  </p>
-                  <p className="text-muted-foreground truncate text-xs">
-                    {m.lastAttended
-                      ? `Last seen ${format(parseISO(m.lastAttended), "d MMM")}`
-                      : "Hasn’t attended yet"}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  disabled={reminded.has(m.id)}
-                  onClick={() => remind(m)}
+                <BellRingIcon />
+                Remind all
+              </Button>
+            </div>
+
+            <ul className="divide-line divide-y">
+              {absent.map((m) => (
+                <li
+                  key={m.id}
+                  className="flex items-center justify-between gap-3 py-3"
                 >
-                  {reminded.has(m.id) ? "Sent" : "Send reminder"}
-                </Button>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {m.firstName} {m.lastName}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {m.lastAttended
+                        ? `Last seen ${format(parseISO(m.lastAttended), "d MMM")}`
+                        : "Hasn’t attended yet"}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={reminded.has(m.id)}
+                    onClick={() => remind(m)}
+                  >
+                    {reminded.has(m.id) ? "Sent" : "Send reminder"}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        ) : (
+          <Card variant="surface" className="gap-2">
+            <h2 className="font-serif text-lg font-bold">How it works</h2>
+            <ol className="text-muted-foreground list-decimal space-y-1.5 pl-4 text-sm leading-relaxed">
+              <li>Pick the service and press “Start check-in”.</li>
+              <li>
+                Show the code at the entrance. It changes every 30 seconds.
               </li>
-            ))}
-          </ul>
-        </Card>
+              <li>
+                Members open “Scan to check in” on their dashboard and point
+                their camera at it.
+              </li>
+            </ol>
+          </Card>
+        )}
       </div>
     </div>
   );

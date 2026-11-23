@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { SubmissionsTable } from "~/components/dashboard/submissions-table";
 import { partnerSubmissions } from "~/lib/dashboard/mock-data";
 
 export const metadata: Metadata = { title: "Partners" };
 
-export default function Page() {
+function Content() {
   return (
     <>
       <PageHeader
@@ -19,5 +20,13 @@ export default function Page() {
         emptyLabel="No partnership requests yet."
       />
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="partners">
+      <Content />
+    </RoleGate>
   );
 }

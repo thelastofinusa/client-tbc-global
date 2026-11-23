@@ -13,6 +13,7 @@ import {
   SquarePlusIcon,
   TriangleAlertIcon,
   WifiOffIcon,
+  XIcon,
   ZapIcon,
 } from "lucide-react";
 import * as React from "react";
@@ -22,6 +23,7 @@ import type { IconType } from "react-icons/lib";
 import { Button } from "~/components/reusable/shadcn/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -48,7 +50,7 @@ type PlatformTab = "ios" | "android" | "desktop";
 const devicesInfo: { value: PlatformTab; label: string; icon: IconType }[] = [
   { value: "ios", label: "iPhone", icon: FaApple },
   { value: "android", label: "Android", icon: FaAndroid },
-  { value: "desktop", label: "Desktop", icon: IoIosLaptop },
+  { value: "desktop", label: "Computer", icon: IoIosLaptop },
 ];
 
 type Step = { id: string; icon: typeof ShareIcon; text: React.ReactNode };
@@ -247,7 +249,7 @@ export function InstallAppFab() {
             type="button"
             size="sm"
             aria-label="How to install the app"
-            className="fixed right-4 bottom-4 z-40 shadow-lg md:right-6 md:bottom-6"
+            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 shadow-lg md:right-6 md:bottom-6"
           >
             <DownloadIcon className="text-accent" />
             <span>Get App</span>
@@ -256,35 +258,49 @@ export function InstallAppFab() {
       />
 
       <DialogContent
-        className="bg-background gap-0 overflow-hidden rounded-none p-0 sm:max-w-md"
+        className="bg-background flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-w-md"
         showCloseButton={false}
       >
-        {/* Header band */}
-        <div className="bg-navy relative flex flex-col gap-4 p-6 text-white">
-          <div className="flex items-center gap-4">
+        {/* Header band (stays put while the steps scroll) */}
+        <div className="bg-navy relative flex shrink-0 flex-col gap-4 p-5 pr-14 text-white sm:p-6 sm:pr-16">
+          <DialogClose
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Close install guide"
+                className="absolute top-3 right-3 text-white hover:bg-white/10 hover:text-white"
+              />
+            }
+          >
+            <XIcon aria-hidden="true" />
+          </DialogClose>
+
+          <div className="flex items-center gap-3 sm:gap-4">
             <Image
               src="/icons/icon-192x192.png"
               alt=""
               width={56}
               height={56}
-              className="size-14 shrink-0 object-contain"
+              className="size-12 shrink-0 object-contain sm:size-14"
             />
-            <DialogHeader className="gap-1">
-              <DialogTitle className="font-serif text-xl font-extrabold tracking-[-0.03em] text-white">
+            <DialogHeader className="min-w-0 gap-1">
+              <DialogTitle className="font-serif text-lg font-extrabold tracking-[-0.03em] text-white sm:text-xl">
                 Install the app
               </DialogTitle>
-              <DialogDescription className="text-secondary/80 text-xs leading-relaxed">
+              <DialogDescription className="text-secondary/80 text-xs leading-relaxed [@media(max-height:560px)]:hidden">
                 Add {siteConfig.title} to your device. It takes less than a
                 minute.
               </DialogDescription>
             </DialogHeader>
           </div>
 
-          <ul className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-1.5 [@media(max-height:620px)]:hidden">
             {benefits.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-1.5 border border-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/85"
+                className="flex items-center gap-1.5 border border-white/15 px-2 py-1 text-[11px] font-semibold text-white/85 sm:px-2.5"
               >
                 <Icon className="text-accent size-3.5" aria-hidden="true" />
                 {label}
@@ -293,10 +309,10 @@ export function InstallAppFab() {
           </ul>
         </div>
 
-        <div className="flex flex-col gap-5 p-6">
+        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6">
           {/* One-tap install (when the browser allows it) */}
           {deferredPrompt && (
-            <div className="bg-primary text-primary-foreground flex items-center justify-between gap-3 p-4">
+            <div className="bg-primary text-primary-foreground flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="font-serif text-sm font-bold">
                   One-tap install is ready
@@ -309,6 +325,7 @@ export function InstallAppFab() {
                 type="button"
                 variant="cream"
                 size="sm"
+                className="w-full sm:w-auto"
                 disabled={isPrompting}
                 onClick={handleNativeInstall}
               >
@@ -326,19 +343,19 @@ export function InstallAppFab() {
             {/* Device picker */}
             <TabsList
               variant="line"
-              className="grid h-auto w-full grid-cols-3 gap-2 p-0"
+              className="grid w-full grid-cols-3 gap-2 p-0 group-data-horizontal/tabs:h-auto"
             >
               {devicesInfo.map((item) => (
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
                   className={cn(
-                    "border-line text-muted-foreground flex h-auto flex-col gap-1.5 rounded-none border bg-transparent py-3",
+                    "border-line text-muted-foreground flex h-auto min-w-0 flex-col gap-1.5 rounded-none border bg-transparent px-1 py-3 after:hidden",
                     "data-active:border-primary data-active:text-foreground data-active:bg-muted",
                   )}
                 >
                   <item.icon className="size-5" />
-                  <span className="font-serif text-[11px] font-semibold">
+                  <span className="font-serif text-xs font-semibold">
                     {item.label}
                   </span>
                 </TabsTrigger>
@@ -349,31 +366,27 @@ export function InstallAppFab() {
               const guide = guides[item.value];
               return (
                 <TabsContent key={item.value} value={item.value}>
-                  <div className="mb-4 flex items-baseline justify-between gap-3">
+                  <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                     <p className="font-serif text-sm font-bold">
                       {guide.title}
                     </p>
-                    <span className="text-muted-foreground text-[11px]">
+                    <span className="text-muted-foreground text-xs">
                       Use {guide.browser}
                     </span>
                   </div>
 
                   {/* Step timeline */}
-                  <ol className="relative flex flex-col gap-5">
-                    <span
-                      aria-hidden="true"
-                      className="bg-border absolute top-3 bottom-3 left-[15px] w-px"
-                    />
+                  <ol className="flex flex-col">
                     {guide.steps.map((step, index) => (
                       <li
                         key={step.id}
-                        className="relative flex items-start gap-4"
+                        className="not-last:after:bg-border relative flex items-start gap-4 pb-5 not-last:after:absolute not-last:after:top-9 not-last:after:bottom-1 not-last:after:left-[15px] not-last:after:w-px last:pb-0"
                       >
                         <span className="bg-background border-primary text-primary relative z-10 grid size-8 shrink-0 place-items-center border">
                           <step.icon className="size-4" aria-hidden="true" />
                         </span>
-                        <div className="pt-0.5">
-                          <span className="text-muted-foreground text-[10px] font-bold tracking-[0.14em] uppercase">
+                        <div className="min-w-0 pt-0.5">
+                          <span className="text-muted-foreground text-[11px] font-bold tracking-[0.14em] uppercase">
                             Step {index + 1}
                           </span>
                           <p className="mt-0.5 text-sm leading-snug">
@@ -398,19 +411,10 @@ export function InstallAppFab() {
             })}
           </Tabs>
 
-          <div className="border-line text-muted-foreground flex items-center justify-between gap-3 border-t pt-4 text-[11px]">
-            <span className="inline-flex items-center gap-1.5">
-              <WifiOffIcon className="text-green size-3.5" />
-              Works offline for visited pages
-            </span>
-            <button
-              type="button"
-              onClick={close}
-              className="text-foreground font-serif font-semibold underline underline-offset-2"
-            >
-              Close guide
-            </button>
-          </div>
+          <p className="border-line text-muted-foreground flex items-center gap-1.5 border-t pt-4 text-xs">
+            <WifiOffIcon className="text-green size-3.5 shrink-0" />
+            Works offline for pages you’ve already visited
+          </p>
         </div>
       </DialogContent>
     </Dialog>

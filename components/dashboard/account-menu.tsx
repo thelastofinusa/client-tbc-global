@@ -36,6 +36,7 @@ export function DashboardAccountMenu({
     email: string;
     imageUrl: string;
     initials: string;
+    roleLabel: string;
   };
 }) {
   const { signOut } = useClerk();
@@ -61,7 +62,7 @@ export function DashboardAccountMenu({
                 {user.fullName}
               </span>
               <span className="text-sidebar-foreground/70 truncate text-xs">
-                Super admin
+                {user.roleLabel}
               </span>
             </span>
             <ChevronsUpDownIcon

@@ -5,12 +5,13 @@ import {
   RegistrationsChart,
 } from "~/components/dashboard/charts";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { Card } from "~/components/reusable/shadcn/card";
 import { members } from "~/lib/dashboard/mock-data";
 
 export const metadata: Metadata = { title: "Reports" };
 
-export default function Page() {
+function Content() {
   const atRisk = members
     .filter((m) => m.status === "approved" && m.attendanceRate < 50)
     .sort((a, b) => a.attendanceRate - b.attendanceRate);
@@ -78,5 +79,13 @@ export default function Page() {
         )}
       </Card>
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="reports">
+      <Content />
+    </RoleGate>
   );
 }

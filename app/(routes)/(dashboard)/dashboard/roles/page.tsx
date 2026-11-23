@@ -2,6 +2,7 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { RoleBadge } from "~/components/dashboard/badges";
 import { PageHeader } from "~/components/dashboard/page-header";
+import { RoleGate } from "~/components/dashboard/role-gate";
 import { Card } from "~/components/reusable/shadcn/card";
 import {
   Table,
@@ -11,6 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/reusable/shadcn/table";
+import {
+  canAccess,
+  type DashboardSection,
+  SECTION_LABELS,
+} from "~/lib/dashboard/access-control";
 import { members } from "~/lib/dashboard/mock-data";
 import {
   PERMISSION_MATRIX,
@@ -22,7 +28,7 @@ import type { Role } from "~/lib/dashboard/types";
 
 export const metadata: Metadata = { title: "Roles & access" };
 
-export default function Page() {
+function Content() {
   const countFor = (role: Role) =>
     members.filter((m) => m.status === "approved" && m.role === role).length;
 
@@ -95,6 +101,57 @@ export default function Page() {
           </TableBody>
         </Table>
       </div>
+      <h2 className="mt-8 mb-3 font-serif text-lg font-bold">
+        Dashboard pages
+      </h2>
+      <div className="border-line bg-card overflow-x-auto border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Page</TableHead>
+              {ROLES.map((role) => (
+                <TableHead key={role} className="text-center">
+                  {ROLE_META[role].label}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(Object.keys(SECTION_LABELS) as DashboardSection[]).map(
+              (section) => (
+                <TableRow key={section}>
+                  <TableCell className="text-sm font-medium">
+                    {SECTION_LABELS[section]}
+                  </TableCell>
+                  {ROLES.map((role) => (
+                    <TableCell key={role} className="text-center">
+                      {canAccess(role, section) ? (
+                        <CheckIcon
+                          className="text-green mx-auto size-4"
+                          aria-label="Can open"
+                        />
+                      ) : (
+                        <MinusIcon
+                          className="text-muted-foreground/40 mx-auto size-4"
+                          aria-label="Can’t open"
+                        />
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ),
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </>
+  );
+}
+
+export default function Page() {
+  return (
+    <RoleGate section="roles">
+      <Content />
+    </RoleGate>
   );
 }
