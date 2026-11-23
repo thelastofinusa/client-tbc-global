@@ -96,7 +96,7 @@ export const Header = () => {
 
       <header
         className={cn(
-          "bg-background/85 border-line sticky top-0 left-0 z-50 h-18 w-full border-b backdrop-blur-md transition-colors md:h-18",
+          "bg-background md:bg-background/85 border-line sticky top-0 left-0 z-50 h-18 w-full border-b backdrop-blur-md transition-colors md:h-18",
           isOpen && "bg-background border-b-transparent",
         )}
       >
