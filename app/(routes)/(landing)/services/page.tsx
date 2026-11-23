@@ -1,12 +1,13 @@
-import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
+import { ServicesHeroComponent } from "./_components/hero";
+import { ServiceTime } from "./_components/service-time";
+import { WhatToExpect } from "./_components/what-to-expect";
 
-export default function Page() {
+export default function ServicesPage() {
   return (
-    <div className="py-5">
-      <Container>
-        <p className="text-sm">{siteConfig.description}</p>
-      </Container>
-    </div>
+    <main className="bg-background text-foreground">
+      <ServicesHeroComponent />
+      <ServiceTime />
+      <WhatToExpect />
+    </main>
   );
 }

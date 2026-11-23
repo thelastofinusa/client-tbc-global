@@ -5,6 +5,10 @@ export const siteConfig = {
   about:
     "A generation set on fire. Join Burning Church Global Ministries in Kudenda, Kaduna — a community where faith turns into action.",
   slogan: "Living Flames",
+  map: {
+    direction:
+      "https://www.google.com/maps/search/?api=1&query=10.478445,7.368035",
+  },
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",
@@ -21,21 +25,4 @@ export const siteConfig = {
     process.env.NODE_ENV === "production"
       ? process.env.NEXT_PUBLIC_BASE_URL || "https://tbcg.vercel.app"
       : "http://localhost:3000",
-  socials: [
-    { platform: "whatsApp", url: "https://wa.link/bjgckl" },
-    { platform: "twitter", url: "https://twitter.com/thelastofinusa" },
-    { platform: "gitHub", url: "https://github.com/thelastofinusa" },
-    { platform: "instagram", url: "https://www.instagram.com/thelastofinusa/" },
-    { platform: "telegram", url: "https://t.me/thelastofinusa" },
-    {
-      platform: "linkedIn",
-      url: "https://www.linkedin.com/in/thelastofinusa/",
-    },
-    { platform: "youtube", url: "https://www.youtube.com/@thelastofinusa" },
-    { platform: "medium", url: "https://medium.com/@thelastofinusa" },
-    {
-      platform: "productHunt",
-      url: "https://www.producthunt.com/@thelastofinusa",
-    },
-  ],
 };

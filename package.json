@@ -10,7 +10,8 @@
     "lint": "biome check",
     "format": "biome format --write",
     "biome:migrate": "biome migrate",
-    "biome:migrate:write": "biome migrate --write"
+    "biome:migrate:write": "biome migrate --write",
+    "clean": "rm -rf .next node_modules .keltra bun.lock tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

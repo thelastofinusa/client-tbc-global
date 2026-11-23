@@ -1,12 +1,13 @@
-import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
+import { Callout } from "./_components/callout";
+import { Filters } from "./_components/filters";
+import { ProjectsHeroComponent } from "./_components/hero";
 
-export default function Page() {
+export default function ProjectsPage() {
   return (
-    <div className="py-5">
-      <Container>
-        <p className="text-sm">{siteConfig.description}</p>
-      </Container>
-    </div>
+    <main className="bg-background text-foreground">
+      <ProjectsHeroComponent />
+      <Filters />
+      <Callout />
+    </main>
   );
 }

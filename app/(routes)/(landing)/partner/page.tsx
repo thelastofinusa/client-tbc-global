@@ -1,12 +1,11 @@
-import { Container } from "~/components/shared/container";
-import { siteConfig } from "~/config/site.config";
+import { PartnerHeroComponent } from "./_components/hero";
+import { Tracks } from "./_components/tracks";
 
-export default function Page() {
+export default function PartnerPage() {
   return (
-    <div className="py-5">
-      <Container>
-        <p className="text-sm">{siteConfig.description}</p>
-      </Container>
-    </div>
+    <main className="bg-background text-foreground">
+      <PartnerHeroComponent />
+      <Tracks />
+    </main>
   );
 }
