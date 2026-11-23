@@ -29,7 +29,7 @@ export function DashboardSidebarNav({
   return (
     <>
       {navForRole(role).map((group) => (
-        <SidebarGroup key={group.label}>
+        <SidebarGroup key={group.label} className="last-of-type:mt-auto">
           <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

@@ -11,6 +11,10 @@
     "format": "biome format --write",
     "biome:migrate": "biome migrate",
     "biome:migrate:write": "biome migrate --write",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
     "clean": "rm -rf .next node_modules .keltra bun.lock tsconfig.tsbuildinfo"
   },
   "dependencies": {
@@ -18,9 +22,6 @@
     "@aws-sdk/s3-request-presigner": "^3.1176.0",
     "@base-ui/react": "^1.9.0",
     "@better-auth/drizzle-adapter": "^1.7.27",
-    "@clerk/elements": "^0.24.13",
-    "@clerk/nextjs": "^7.10.7",
-    "@clerk/ui": "^1.44.3",
     "@hookform/resolvers": "^7.0.8",
     "@neondatabase/serverless": "^1.2.1",
     "@shadcn/react": "^0.3.1",

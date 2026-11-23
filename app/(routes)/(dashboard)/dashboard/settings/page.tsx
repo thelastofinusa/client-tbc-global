@@ -2,21 +2,28 @@ import type { Metadata } from "next";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { SettingsForm } from "~/components/dashboard/settings-form";
+import { getDashboardViewer } from "~/lib/dashboard/access";
+import { getCommunities } from "~/lib/dashboard/actions";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export const instant = false;
 
-function Content() {
+async function Content() {
+  const viewer = await getDashboardViewer();
+  if (!viewer) return null;
+
+  const communities = await getCommunities();
+
   return (
     <>
       <PageHeader
-        eyebrow="System"
+        eyebrow="Account"
         title="Settings"
-        description="Church details and what the super admin gets notified about."
+        description="Update your member profile information and connect with church groups."
       />
       <div className="max-w-3xl">
-        <SettingsForm />
+        <SettingsForm viewer={viewer} initialCommunities={communities} />
       </div>
     </>
   );

@@ -2,113 +2,206 @@
 
 import {
   ArrowUpRightIcon,
+  GlobeIcon,
   MessageCircleIcon,
+  PlusIcon,
   SendIcon,
+  Trash2Icon,
   UsersIcon,
 } from "lucide-react";
-import type * as React from "react";
+import * as React from "react";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Card } from "~/components/reusable/shadcn/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/reusable/shadcn/dialog";
 import { Input } from "~/components/reusable/shadcn/input";
 import { Label } from "~/components/reusable/shadcn/label";
-import { Switch } from "~/components/reusable/shadcn/switch";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "~/components/reusable/shadcn/native-select";
+import { Textarea } from "~/components/reusable/shadcn/textarea";
 import { toast } from "~/components/reusable/shadcn/toast";
-import { useDashboardStore } from "~/lib/dashboard/store";
+import type { Community } from "~/db/schema";
+import type { DashboardViewer } from "~/lib/dashboard/access";
+import {
+  addCommunity,
+  deleteCommunity,
+  updateUserProfile,
+} from "~/lib/dashboard/actions";
 
-const notificationOptions = [
-  {
-    id: "service-reminders",
-    label: "Service & gathering reminders",
-    description:
-      "Get notified ahead of Sunday, Wednesday, and Saturday gatherings.",
-    defaultChecked: true,
-  },
-  {
-    id: "attendance-updates",
-    label: "Attendance & check-in receipts",
-    description: "Confirmations when your check-in is recorded.",
-    defaultChecked: true,
-  },
-  {
-    id: "project-updates",
-    label: "Project & outreach updates",
-    description: "Milestones and drives you follow or support.",
-    defaultChecked: true,
-  },
-  {
-    id: "weekly-digest",
-    label: "Weekly community digest",
-    description: "A short weekly recap of announcements and events.",
-    defaultChecked: false,
-  },
-];
+function getCommunityIcon(iconName: string) {
+  switch (iconName?.toLowerCase()) {
+    case "telegram":
+    case "send":
+      return SendIcon;
+    case "users":
+    case "forum":
+    case "members":
+      return UsersIcon;
+    case "globe":
+    case "website":
+      return GlobeIcon;
+    case "whatsapp":
+    case "message":
+    default:
+      return MessageCircleIcon;
+  }
+}
 
-const communityChannels = [
-  {
-    id: "whatsapp",
-    name: "WhatsApp Community",
-    description: "Daily fellowship updates, reminders, and announcements.",
-    href: "https://chat.whatsapp.com/",
-    icon: MessageCircleIcon,
-    badge: "Active",
-  },
-  {
-    id: "telegram",
-    name: "Telegram Channel",
-    description: "Broadcasts, event notes, and shared resources.",
-    href: "https://t.me/",
-    icon: SendIcon,
-    badge: "Channel",
-  },
-  {
-    id: "fellowship-group",
-    name: "Member & Volunteer Forum",
-    description: "Coordinate serving, outreach, and small-group check-ins.",
-    href: "https://chat.whatsapp.com/",
-    icon: UsersIcon,
-    badge: "Members",
-  },
-];
+export function SettingsForm({
+  viewer,
+  initialCommunities = [],
+}: {
+  viewer: DashboardViewer;
+  initialCommunities?: Community[];
+}) {
+  const isSuperAdmin = viewer.baseRole === "super_admin";
 
-export function SettingsForm() {
-  const profile = useDashboardStore((s) => s.profile);
-  const updateProfile = useDashboardStore((s) => s.updateProfile);
-  const resetDemoData = useDashboardStore((s) => s.resetDemoData);
+  // Profile Form state
+  const [isSavingProfile, setIsSavingProfile] = React.useState(false);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // Communities state
+  const [communities, setCommunities] =
+    React.useState<Community[]>(initialCommunities);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isAddingCommunity, setIsAddingCommunity] = React.useState(false);
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+
+  // Update profile handler
+  async function handleProfileSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    updateProfile({
-      name: String(data.get("name") ?? ""),
-      location: String(data.get("location") ?? ""),
-      address: String(data.get("address") ?? ""),
-      phone: String(data.get("phone") ?? ""),
-      birthday: String(data.get("birthday") ?? ""),
-    });
-    toast.add({ title: "Profile & settings saved" });
+    setIsSavingProfile(true);
+
+    const formData = new FormData(e.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const location = String(formData.get("location") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const address = String(formData.get("address") ?? "").trim();
+    const birthday = String(formData.get("birthday") ?? "").trim();
+
+    try {
+      await updateUserProfile({
+        name,
+        location,
+        phone,
+        address,
+        birthday,
+      });
+      toast.add({ title: "Profile details updated in database" });
+    } catch (err) {
+      toast.add({
+        title: "Failed to update profile",
+        description: err instanceof Error ? err.message : "An error occurred",
+      });
+    } finally {
+      setIsSavingProfile(false);
+    }
+  }
+
+  // Add community handler (super admin only)
+  async function handleAddCommunity(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsAddingCommunity(true);
+
+    const formData = new FormData(e.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+    const href = String(formData.get("href") ?? "").trim();
+    const icon = String(formData.get("icon") ?? "message").trim();
+    const badge = String(formData.get("badge") ?? "Active").trim();
+
+    if (!name || !href) {
+      toast.add({ title: "Name and channel link are required" });
+      setIsAddingCommunity(false);
+      return;
+    }
+
+    try {
+      await addCommunity({
+        name,
+        description,
+        href,
+        icon,
+        badge,
+      });
+
+      // Add to local state
+      setCommunities((prev) => [
+        ...prev,
+        {
+          id: `comm_${Date.now()}`,
+          name,
+          description,
+          href,
+          icon,
+          badge,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+
+      setIsDialogOpen(false);
+      toast.add({ title: "Community channel added successfully" });
+    } catch (err) {
+      toast.add({
+        title: "Failed to add channel",
+        description: err instanceof Error ? err.message : "An error occurred",
+      });
+    } finally {
+      setIsAddingCommunity(false);
+    }
+  }
+
+  // Delete community handler (super admin only)
+  async function handleDeleteCommunity(id: string, name: string) {
+    if (!confirm(`Are you sure you want to remove "${name}"?`)) return;
+
+    setDeletingId(id);
+    try {
+      await deleteCommunity(id);
+      setCommunities((prev) => prev.filter((c) => c.id !== id));
+      toast.add({ title: `Channel "${name}" removed` });
+    } catch (err) {
+      toast.add({
+        title: "Failed to remove channel",
+        description: err instanceof Error ? err.message : "An error occurred",
+      });
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Personal Details */}
+      {/* Personal Details Card */}
       <Card variant="surface" className="gap-6 p-6">
         <div>
           <h2 className="font-serif text-xl font-bold">Personal details</h2>
           <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
             Update your profile information and contact details. Your email is
-            managed by your account sign-in and cannot be changed here.
+            tied to your sign-in account and cannot be modified here.
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleProfileSubmit} className="flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="settings-name">Full name</Label>
               <Input
                 id="settings-name"
                 name="name"
-                defaultValue={profile.name}
-                placeholder="Your name"
+                defaultValue={viewer.fullName}
+                placeholder="Your full name"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -117,7 +210,7 @@ export function SettingsForm() {
                 id="settings-email"
                 name="email"
                 type="email"
-                value={profile.email}
+                value={viewer.email}
                 disabled
                 readOnly
                 aria-describedby="settings-email-help"
@@ -126,7 +219,7 @@ export function SettingsForm() {
                 id="settings-email-help"
                 className="text-muted-foreground text-xs"
               >
-                Email is locked to your sign-in account.
+                Email is tied to your authenticated account.
               </p>
             </div>
           </div>
@@ -137,8 +230,8 @@ export function SettingsForm() {
               <Input
                 id="settings-location"
                 name="location"
-                defaultValue={profile.location}
-                placeholder="Kudenda, Kaduna"
+                defaultValue={viewer.location}
+                placeholder="e.g. Kudenda, Kaduna"
               />
             </div>
             <div className="space-y-2">
@@ -147,7 +240,7 @@ export function SettingsForm() {
                 id="settings-phone"
                 name="phone"
                 type="tel"
-                defaultValue={profile.phone}
+                defaultValue={viewer.phone}
                 placeholder="+234 ..."
               />
             </div>
@@ -159,8 +252,8 @@ export function SettingsForm() {
               <Input
                 id="settings-address"
                 name="address"
-                defaultValue={profile.address}
-                placeholder="Street, area"
+                defaultValue={viewer.address}
+                placeholder="Street address, area"
               />
             </div>
             <div className="space-y-2">
@@ -169,96 +262,214 @@ export function SettingsForm() {
                 id="settings-birthday"
                 name="birthday"
                 type="date"
-                defaultValue={profile.birthday}
+                defaultValue={viewer.birthday}
               />
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button type="submit" variant="red">
-              Save changes
-            </Button>
+          <div className="flex items-center gap-3 pt-2">
             <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                resetDemoData();
-                toast.add({ title: "Demo data reset" });
-              }}
+              type="submit"
+              variant="red"
+              disabled={isSavingProfile}
+              isLoading={isSavingProfile}
+              loadingTxt="Saving..."
             >
-              Reset demo data
+              Save changes
             </Button>
           </div>
         </form>
       </Card>
 
-      {/* Notifications */}
-      <Card variant="surface" className="gap-4 p-6">
-        <div>
-          <h2 className="font-serif text-xl font-bold">Notifications</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Choose what updates and reminders you receive.
-          </p>
-        </div>
+      {/* Community Links Card */}
+      <Card variant="surface" className="gap-6 p-6">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="font-serif text-xl font-bold">Join the community</h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Connect with fellow church members and receive announcements
+              across our official channels.
+            </p>
+          </div>
 
-        <ul className="divide-line divide-y">
-          {notificationOptions.map((option) => (
-            <li
-              key={option.id}
-              className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0"
-            >
-              <div>
-                <p className="text-sm font-medium">{option.label}</p>
-                <p className="text-muted-foreground mt-0.5 text-xs">
-                  {option.description}
-                </p>
-              </div>
-              <Switch defaultChecked={option.defaultChecked} />
-            </li>
-          ))}
-        </ul>
-      </Card>
+          {/* Super Admin Add Channel Action */}
+          {isSuperAdmin && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 self-start sm:self-auto shrink-0"
+                  >
+                    <PlusIcon className="size-4" />
+                    <span>Add Channel</span>
+                  </Button>
+                }
+              />
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add Community Channel</DialogTitle>
+                  <DialogDescription>
+                    Add a group link or broadcast channel for church members to
+                    connect.
+                  </DialogDescription>
+                </DialogHeader>
 
-      {/* Community Links */}
-      <Card variant="surface" className="gap-4 p-6">
-        <div>
-          <h2 className="font-serif text-xl font-bold">Join the community</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Connect with members and stay up to date across our group channels.
-          </p>
-        </div>
-
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {communityChannels.map((channel) => {
-            const Icon = channel.icon;
-            return (
-              <li key={channel.id}>
-                <a
-                  href={channel.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="border-line hover:border-primary group flex h-full flex-col gap-3 border p-4 transition-colors"
+                <form
+                  onSubmit={handleAddCommunity}
+                  className="flex flex-col gap-4 py-2"
                 >
-                  <div className="flex items-start justify-between">
-                    <span className="bg-muted text-primary grid size-9 place-items-center">
-                      <Icon className="size-4" />
-                    </span>
-                    <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-4 transition-colors" />
+                  <div className="space-y-2">
+                    <Label htmlFor="comm-name">Channel Name</Label>
+                    <Input
+                      id="comm-name"
+                      name="name"
+                      placeholder="e.g. WhatsApp Community"
+                      required
+                    />
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold">{channel.name}</p>
-                    <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-                      {channel.description}
-                    </p>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="comm-href">Link / URL</Label>
+                    <Input
+                      id="comm-href"
+                      name="href"
+                      type="url"
+                      placeholder="https://chat.whatsapp.com/..."
+                      required
+                    />
                   </div>
-                  <span className="text-muted-foreground mt-auto text-[10px] font-semibold tracking-wider uppercase">
-                    {channel.badge}
-                  </span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="comm-desc">Description</Label>
+                    <Textarea
+                      id="comm-desc"
+                      name="description"
+                      placeholder="Brief note about what this channel is used for"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="comm-icon">Platform Icon</Label>
+                      <NativeSelect
+                        id="comm-icon"
+                        name="icon"
+                        defaultValue="whatsapp"
+                        className="w-full"
+                      >
+                        <NativeSelectOption value="whatsapp">
+                          WhatsApp
+                        </NativeSelectOption>
+                        <NativeSelectOption value="telegram">
+                          Telegram
+                        </NativeSelectOption>
+                        <NativeSelectOption value="users">
+                          Member Forum
+                        </NativeSelectOption>
+                        <NativeSelectOption value="globe">
+                          Website / Other
+                        </NativeSelectOption>
+                      </NativeSelect>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="comm-badge">Badge Label</Label>
+                      <Input
+                        id="comm-badge"
+                        name="badge"
+                        placeholder="e.g. Active, Channel"
+                        defaultValue="Active"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="pt-2">
+                    <DialogClose
+                      render={
+                        <Button type="button" variant="outline">
+                          Cancel
+                        </Button>
+                      }
+                    />
+                    <Button
+                      type="submit"
+                      variant="red"
+                      disabled={isAddingCommunity}
+                      isLoading={isAddingCommunity}
+                      loadingTxt="Adding..."
+                    >
+                      Add Channel
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+
+        {communities.length === 0 ? (
+          <div className="border-line border border-dashed p-8 text-center text-sm text-muted-foreground">
+            No community channels configured yet.
+          </div>
+        ) : (
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {communities.map((channel) => {
+              const Icon = getCommunityIcon(channel.icon);
+              const isDeleting = deletingId === channel.id;
+
+              return (
+                <li key={channel.id} className="group relative">
+                  <a
+                    href={channel.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="border-line hover:border-primary group/card flex h-full flex-col gap-3 border p-4 transition-colors bg-card"
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="bg-muted text-primary grid size-9 place-items-center">
+                        <Icon className="size-4" />
+                      </span>
+                      <ArrowUpRightIcon className="text-muted-foreground group-hover/card:text-primary size-4 transition-colors" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold">{channel.name}</p>
+                      <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+                        {channel.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between pt-2">
+                      <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+                        {channel.badge || "Active"}
+                      </span>
+                    </div>
+                  </a>
+
+                  {/* Super admin remove button */}
+                  {isSuperAdmin && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={isDeleting}
+                      onClick={() =>
+                        handleDeleteCommunity(channel.id, channel.name)
+                      }
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-3 right-3 size-7 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label={`Remove ${channel.name}`}
+                    >
+                      <Trash2Icon className="size-3.5" />
+                    </Button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </Card>
     </div>
   );

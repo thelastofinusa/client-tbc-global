@@ -2,7 +2,6 @@ import { FaRegHandshake } from "react-icons/fa6";
 import { FiSettings } from "react-icons/fi";
 import { GoSponsorTiers } from "react-icons/go";
 import { HiCalendarDays, HiOutlineUsers } from "react-icons/hi2";
-import { ImStatsBars2 } from "react-icons/im";
 import type { IconType } from "react-icons/lib";
 import { LuBadgeCheck, LuScanQrCode } from "react-icons/lu";
 import { MdHistory } from "react-icons/md";
@@ -105,17 +104,6 @@ export const dashboardNav: DashboardNavGroup[] = [
         section: "partners",
         href: "/dashboard/partners",
         icon: FaRegHandshake,
-      },
-    ],
-  },
-  {
-    label: "Analytics",
-    items: [
-      {
-        label: "Reports",
-        section: "reports",
-        href: "/dashboard/reports",
-        icon: ImStatsBars2,
       },
     ],
   },

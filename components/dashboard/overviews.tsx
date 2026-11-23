@@ -171,15 +171,6 @@ export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
               </h2>
               <p className="text-muted-foreground text-xs">Last 8 weeks</p>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/dashboard/reports" />}
-            >
-              Full reports
-              <ArrowRightIcon />
-            </Button>
           </div>
           <AttendanceChart />
         </Card>

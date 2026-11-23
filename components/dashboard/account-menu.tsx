@@ -1,6 +1,5 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
 import {
   ChevronsUpDownIcon,
   ExternalLinkIcon,
@@ -27,6 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/reusable/shadcn/sidebar";
+import { authClient } from "~/lib/auth/auth-client";
 
 export function DashboardAccountMenu({
   user,
@@ -39,8 +39,6 @@ export function DashboardAccountMenu({
     roleLabel: string;
   };
 }) {
-  const { signOut } = useClerk();
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -93,7 +91,15 @@ export function DashboardAccountMenu({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onClick={() => signOut({ redirectUrl: "/" })}
+                onClick={async () => {
+                  await authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        window.location.href = "/";
+                      },
+                    },
+                  });
+                }}
                 variant="destructive"
               >
                 <LogOutIcon aria-hidden="true" />

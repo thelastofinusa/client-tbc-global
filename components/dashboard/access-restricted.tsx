@@ -1,8 +1,10 @@
-import { SignOutButton } from "@clerk/nextjs";
+"use client";
+
 import { LockKeyholeIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Eyebrow } from "~/components/shared/eyebrow";
+import { authClient } from "~/lib/auth/auth-client";
 
 export function AccessRestricted({
   reason,
@@ -41,11 +43,21 @@ export function AccessRestricted({
               Sign in
             </Button>
           ) : (
-            <SignOutButton redirectUrl="/">
-              <Button variant="dark" size="lg">
-                Sign out
-              </Button>
-            </SignOutButton>
+            <Button
+              variant="dark"
+              size="lg"
+              onClick={async () => {
+                await authClient.signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      window.location.href = "/";
+                    },
+                  },
+                });
+              }}
+            >
+              Sign out
+            </Button>
           )}
           <Button
             variant="outline"

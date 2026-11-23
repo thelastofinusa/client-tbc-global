@@ -1,6 +1,6 @@
 "use client";
 
-import { Show } from "@clerk/nextjs";
+import { Show } from "~/components/shared/show";
 import { ArrowUpRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
