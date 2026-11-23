@@ -1,17 +1,13 @@
-import { auth } from "@clerk/nextjs/server";
 import { Image } from "keltra/image/next";
 import { CalendarDaysIcon } from "lucide-react";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { LogoComponent } from "~/components/shared/logo";
 
-async function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { userId } = await auth();
-  if (userId) {
-    redirect("/dashboard");
-  }
-
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="grid min-h-svh flex-1 lg:grid-cols-[1.05fr_0.95fr]">
       {/* Brand panel (desktop only) */}
@@ -69,17 +65,5 @@ async function AuthGuard({ children }: { children: React.ReactNode }) {
         </div>
       </main>
     </div>
-  );
-}
-
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <Suspense fallback={null}>
-      <AuthGuard>{children}</AuthGuard>
-    </Suspense>
   );
 }
