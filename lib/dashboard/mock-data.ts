@@ -162,18 +162,6 @@ export const members: Member[] = [
     attendanceRate: 12,
     lastAttended: "2026-09-27",
   },
-  {
-    id: "m_14",
-    firstName: "Abdullahi",
-    lastName: "Salihu",
-    email: "thelastofinusa@gmail.com",
-    role: "super_admin", // was "attendee"
-    requestedRole: "attendee",
-    status: "approved", // was "suspended"
-    joinedAt: "2026-07-01",
-    attendanceRate: 92,
-    lastAttended: "2026-11-22",
-  },
 ];
 
 export const services: ChurchService[] = [

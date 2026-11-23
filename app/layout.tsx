@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
@@ -108,14 +107,7 @@ export default function RootLayout(props: Readonly<LayoutProps<"/">>) {
       className={fontVariables("h-full antialiased")}
     >
       <body className="flex min-h-full flex-col">
-        <ClerkProvider
-          signInUrl="/sign-in"
-          signUpUrl="/sign-up"
-          signInFallbackRedirectUrl="/dashboard"
-          signUpFallbackRedirectUrl="/dashboard"
-        >
-          {props.children}
-        </ClerkProvider>
+        {props.children}
       </body>
     </html>
   );

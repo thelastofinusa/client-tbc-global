@@ -1,28 +1,24 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
+import { type NextRequest, NextResponse } from "next/server";
 
-const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
+export default async function middleware(req: NextRequest) {
+  const sessionCookie = getSessionCookie(req);
+  const pathname = req.nextUrl.pathname;
 
-/**
- * Auth redirects live here (not in layouts).
- *
- * With `cacheComponents` on, calling `redirect()` inside a layout while Next is
- * prefetching / validating `instant` UI throws NEXT_REDIRECT and breaks the
- * route. `/sso-callback` is deliberately NOT matched above: it has to render
- * the Clerk callback even after the session has just been created.
- */
-export default clerkMiddleware(async (auth, req) => {
-  const { userId, redirectToSignIn } = await auth();
+  const isAuthRoute =
+    pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
+  const isProtectedRoute = pathname.startsWith("/dashboard");
 
-  if (userId && isAuthRoute(req)) {
+  if (sessionCookie && isAuthRoute) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  if (!userId && isProtectedRoute(req)) {
-    return redirectToSignIn({ returnBackUrl: req.url });
+  if (!sessionCookie && isProtectedRoute) {
+    return NextResponse.redirect(new URL("/sign-in", req.url));
   }
-});
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

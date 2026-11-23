@@ -1,6 +1,6 @@
 "use client";
 
-import { Show } from "@clerk/nextjs";
+import { Show } from "~/components/shared/show";
 import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import Link from "next/link";
