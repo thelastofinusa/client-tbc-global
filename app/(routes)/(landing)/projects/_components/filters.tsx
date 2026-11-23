@@ -2,9 +2,11 @@
 "use client";
 
 import { cn } from "cn";
-import { ArrowUpRightIcon, CheckCircle2Icon, MapPinIcon } from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { RiMapPinRangeLine } from "react-icons/ri";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import {
@@ -109,7 +111,10 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="text-muted-foreground flex items-center gap-1 text-[11px] font-medium">
-                <MapPinIcon size={12} className="text-primary shrink-0" />
+                <RiMapPinRangeLine
+                  size={12}
+                  className="text-primary shrink-0"
+                />
                 <span className="truncate">{project.location}</span>
               </div>
 
@@ -157,7 +162,7 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
 
           <div className="shrink-0 text-right">
             <span className="text-foreground/80 inline-flex items-center gap-1 text-[11px] font-semibold">
-              <CheckCircle2Icon size={12} className="text-green" />
+              <IoMdCheckmarkCircleOutline size={12} className="text-green" />
               {completedMilestones}/{totalMilestones}
             </span>
             <p className="text-muted-foreground text-[10px] tracking-wider uppercase">

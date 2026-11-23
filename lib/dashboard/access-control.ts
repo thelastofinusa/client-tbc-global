@@ -29,7 +29,7 @@ export const SECTION_ACCESS: Record<DashboardSection, Role[]> = {
   sponsors: ["super_admin", "admin"],
   partners: ["super_admin", "admin"],
   reports: ["super_admin", "admin"],
-  settings: ["super_admin"],
+  settings: EVERYONE,
 };
 
 export function canAccess(role: Role, section: DashboardSection): boolean {

@@ -1,18 +1,16 @@
+import { FaRegHandshake } from "react-icons/fa6";
+import { FiSettings } from "react-icons/fi";
+import { GoSponsorTiers } from "react-icons/go";
+import { HiCalendarDays, HiOutlineUsers } from "react-icons/hi2";
+import { ImStatsBars2 } from "react-icons/im";
+import type { IconType } from "react-icons/lib";
+import { LuBadgeCheck, LuScanQrCode } from "react-icons/lu";
+import { MdHistory } from "react-icons/md";
 import {
-  BarChart3Icon,
-  BuildingIcon,
-  CalendarIcon,
-  HandshakeIcon,
-  HeartHandshakeIcon,
-  HistoryIcon,
-  LayoutDashboardIcon,
-  type LucideIcon,
-  QrCodeIcon,
-  ScanLineIcon,
-  SettingsIcon,
-  ShieldCheckIcon,
-  UsersIcon,
-} from "lucide-react";
+  PiCircleDashed,
+  PiProjectorScreenChart,
+  PiQrCode,
+} from "react-icons/pi";
 import {
   canAccess,
   type DashboardSection,
@@ -23,7 +21,7 @@ export interface DashboardNavItem {
   label: string;
   section: DashboardSection;
   href: string;
-  icon: LucideIcon;
+  icon: IconType;
   /** Different label for specific roles. */
   roleLabels?: Partial<Record<Role, string>>;
 }
@@ -35,100 +33,100 @@ export interface DashboardNavGroup {
 
 export const dashboardNav: DashboardNavGroup[] = [
   {
-    label: "You",
+    label: "Personal",
     items: [
       {
         label: "Overview",
         section: "overview",
         href: "/dashboard",
-        icon: LayoutDashboardIcon,
+        icon: PiCircleDashed,
       },
       {
         label: "Scan to check in",
         section: "scan",
         href: "/dashboard/scan",
-        icon: ScanLineIcon,
+        icon: LuScanQrCode,
       },
       {
         label: "My attendance",
         section: "my-attendance",
         href: "/dashboard/my-attendance",
-        icon: HistoryIcon,
+        icon: MdHistory,
       },
     ],
   },
   {
-    label: "Church",
+    label: "Congregation",
     items: [
       {
         label: "Members",
         section: "members",
         href: "/dashboard/members",
-        icon: UsersIcon,
+        icon: HiOutlineUsers,
       },
       {
         label: "Roles & access",
         section: "roles",
         href: "/dashboard/roles",
-        icon: ShieldCheckIcon,
+        icon: LuBadgeCheck,
       },
       {
         label: "Attendance",
         section: "attendance",
         href: "/dashboard/attendance",
-        icon: QrCodeIcon,
+        icon: PiQrCode,
         roleLabels: { usher: "Check-in code" },
       },
       {
         label: "Services & Events",
         section: "services",
         href: "/dashboard/services",
-        icon: CalendarIcon,
+        icon: HiCalendarDays,
       },
     ],
   },
   {
-    label: "Ministry",
+    label: "Outreach & Giving",
     items: [
       {
         label: "Projects",
         section: "projects",
         href: "/dashboard/projects",
-        icon: BuildingIcon,
+        icon: PiProjectorScreenChart,
       },
       {
         label: "Sponsors",
         section: "sponsors",
         href: "/dashboard/sponsors",
-        icon: HeartHandshakeIcon,
+        icon: GoSponsorTiers,
       },
       {
         label: "Partners",
         section: "partners",
         href: "/dashboard/partners",
-        icon: HandshakeIcon,
+        icon: FaRegHandshake,
       },
     ],
   },
   {
-    label: "Insights",
+    label: "Analytics",
     items: [
       {
         label: "Reports",
         section: "reports",
         href: "/dashboard/reports",
-        icon: BarChart3Icon,
+        icon: ImStatsBars2,
       },
     ],
   },
   {
-    label: "System",
+    label: "Configuration",
     items: [
       {
         label: "Settings",
         section: "settings",
         href: "/dashboard/settings",
-        icon: SettingsIcon,
+        icon: FiSettings,
       },
     ],
   },
