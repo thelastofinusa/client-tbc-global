@@ -1,8 +1,10 @@
 "use client";
 
+import { Show } from "@clerk/nextjs";
 import { ArrowUpRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
+import React, { Suspense } from "react";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { siteConfig } from "~/config/site.config";
@@ -60,11 +62,13 @@ const footerSections: FooterSection[] = [
 
 const gatheringDays = ["Wed", "Sat", "Sun"];
 
-// Coordinates taken from the embedded map below.
-const directionsUrl =
-  "https://www.google.com/maps/search/?api=1&query=10.478445,7.368035";
-
 export const Footer = () => {
+  const [year, setYear] = React.useState<number>(2026);
+
+  React.useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-navy relative overflow-hidden text-white">
       <Container className="pt-14 pb-8 md:pt-20 md:pb-10">
@@ -162,7 +166,7 @@ export const Footer = () => {
             <div className="aspect-2/1 overflow-hidden border border-white/10">
               <iframe
                 title={`${siteConfig.title} location on Google Maps`}
-                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d773.2637856498449!2d7.368035125773172!3d10.478444737176677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDI4JzQyLjIiTiA3wrAyMicwNi41IkU!5e1!3m2!1sen!2sng!4v1795293027987!5m2!1sen!2sng"
+                src={siteConfig.map.embed}
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"
                 className="size-full border-none grayscale transition-[filter] duration-300 hover:grayscale-0"
@@ -170,7 +174,7 @@ export const Footer = () => {
             </div>
 
             <a
-              href={directionsUrl}
+              href={siteConfig.map.direction}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-max items-center gap-2 text-sm text-white/80 transition-colors hover:text-white"
@@ -182,26 +186,53 @@ export const Footer = () => {
         </div>
 
         {/* 4. Bottom bar */}
-        <div className="flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[13px] sm:flex-row sm:items-center">
-          <p className="flex flex-col gap-1">
-            <span className="text-white/60">
-              &copy; 2026 {siteConfig.title}.
-            </span>
-            <span className="text-white">
-              All Rights Reserved - Designed and Developed by{" "}
-              <a
-                target="_blank"
-                href="http://thelastofinusa.vercel.app"
-                rel="noopener"
-                className="underline"
+        <div className="border-t border-white/10 pt-8">
+          <div className="text-secondary/65 flex flex-col justify-between gap-3 text-xs sm:flex-row sm:items-center">
+            <p className="flex flex-col gap-1">
+              <span>
+                © {year} {siteConfig.title}
+              </span>
+              <span className="text-white">
+                All Rights Reserved - Designed and Developed by{" "}
+                <a
+                  target="_blank"
+                  href="http://thelastofinusa.vercel.app"
+                  rel="noopener"
+                  className="underline"
+                >
+                  Osilama
+                </a>
+              </span>
+            </p>
+
+            <div className="flex items-center gap-5">
+              <Suspense>
+                <Show when="signed-out">
+                  <Link
+                    href="/sign-in"
+                    className="transition-colors hover:text-white"
+                  >
+                    Member Sign In
+                  </Link>
+                </Show>
+                <Show when="signed-in">
+                  <Link
+                    href="/dashboard"
+                    className="transition-colors hover:text-white"
+                  >
+                    Member Portal
+                  </Link>
+                </Show>
+              </Suspense>
+              <span className="h-3 w-px bg-white/15" />
+              <Link
+                href="/services"
+                className="transition-colors hover:text-white"
               >
-                Osilama
-              </a>
-            </span>
-          </p>
-          <p className="font-serif text-[11px] tracking-[0.12em] text-white/75 uppercase">
-            Love God · Serve People · Transform Our Community
-          </p>
+                Plan a Visit
+              </Link>
+            </div>
+          </div>
         </div>
       </Container>
     </footer>

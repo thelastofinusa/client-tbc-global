@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { GoFlame } from "react-icons/go";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
 import { RiMapPinRangeLine } from "react-icons/ri";
+import { siteConfig } from "~/config/site.config";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
@@ -43,10 +44,6 @@ const itemVariants: Variants = {
   closed: { opacity: 0, y: -8 },
   open: { opacity: 1, y: 0, transition: { duration: 0.22, ease: easeOutExpo } },
 };
-
-// Coordinates taken from the footer map embed.
-const directionsUrl =
-  "https://www.google.com/maps/search/?api=1&query=10.478445,7.368035";
 
 const links = navItems.filter((item) => (item.kind ?? "nav") === "nav");
 
@@ -84,7 +81,7 @@ export const Header = () => {
               </span>
               <span className="h-3 w-px bg-white/20" />
               <a
-                href={directionsUrl}
+                href={siteConfig.map.direction}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-white/80 transition-colors hover:text-white"
