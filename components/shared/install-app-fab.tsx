@@ -2,23 +2,18 @@
 
 import { Image } from "keltra/image/next";
 import {
-  AppWindowIcon,
   CheckIcon,
   DownloadIcon,
-  EllipsisVerticalIcon,
-  MaximizeIcon,
-  MonitorDownIcon,
-  QrCodeIcon,
+  LaptopIcon,
+  MoreVerticalIcon,
+  PlusSquareIcon,
   ShareIcon,
-  SquarePlusIcon,
-  TriangleAlertIcon,
-  WifiOffIcon,
+  SmartphoneIcon,
+  SparklesIcon,
   XIcon,
-  ZapIcon,
 } from "lucide-react";
 import * as React from "react";
 import { FaAndroid, FaApple } from "react-icons/fa";
-import { IoIosLaptop } from "react-icons/io";
 import type { IconType } from "react-icons/lib";
 import { Button } from "~/components/reusable/shadcn/button";
 import {
@@ -31,145 +26,102 @@ import {
   DialogTrigger,
 } from "~/components/reusable/shadcn/dialog";
 import { siteConfig } from "~/config/site.config";
-import { cn } from "~/lib/utils";
+import { cn, getInitials } from "~/lib/utils";
 import { useToggle } from "../providers/toggle";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../reusable/shadcn/tabs";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 }
 
-type PlatformTab = "ios" | "android" | "desktop";
+type Platform = "ios" | "android" | "desktop";
 
-const devicesInfo: { value: PlatformTab; label: string; icon: IconType }[] = [
-  { value: "ios", label: "iPhone", icon: FaApple },
-  { value: "android", label: "Android", icon: FaAndroid },
-  { value: "desktop", label: "Computer", icon: IoIosLaptop },
-];
+interface IndexRow {
+  code: string;
+  action: string;
+  control: string;
+  icon: typeof ShareIcon;
+}
 
-type Step = { id: string; icon: typeof ShareIcon; text: React.ReactNode };
+interface PlatformSheet {
+  label: string;
+  icon: IconType;
+  note?: string;
+  rows: IndexRow[];
+}
 
-const guides: Record<
-  PlatformTab,
-  { title: string; browser: string; note?: string; steps: Step[] }
-> = {
+const sheets: Record<Platform, PlatformSheet> = {
   ios: {
-    title: "iPhone & iPad",
-    browser: "Safari",
-    note: "Installing only works in Safari. If you’re inside Instagram, WhatsApp or another app, open this page in Safari first.",
-    steps: [
+    label: "iPhone",
+    icon: FaApple,
+    note: "Safari only — open outside WhatsApp or Instagram first.",
+    rows: [
       {
-        id: "share",
+        code: "01",
+        action: "Open share menu",
+        control: "Share",
         icon: ShareIcon,
-        text: (
-          <>
-            Tap the <strong>Share</strong> button in Safari’s toolbar.
-          </>
-        ),
       },
       {
-        id: "add",
-        icon: SquarePlusIcon,
-        text: (
-          <>
-            Scroll down and tap <strong>Add to Home Screen</strong>.
-          </>
-        ),
+        code: "02",
+        action: "Pin shortcut",
+        control: "Add to Home Screen",
+        icon: PlusSquareIcon,
       },
-      {
-        id: "done",
-        icon: CheckIcon,
-        text: (
-          <>
-            Tap <strong>Add</strong> in the top-right corner.
-          </>
-        ),
-      },
+      { code: "03", action: "Save app", control: "Add", icon: CheckIcon },
     ],
   },
   android: {
-    title: "Android",
-    browser: "Chrome",
-    steps: [
+    label: "Android",
+    icon: FaAndroid,
+    rows: [
       {
-        id: "menu",
-        icon: EllipsisVerticalIcon,
-        text: (
-          <>
-            Tap the <strong>⋮ menu</strong> in the top-right of Chrome.
-          </>
-        ),
+        code: "01",
+        action: "Open Chrome options",
+        control: "⋮ Menu",
+        icon: MoreVerticalIcon,
       },
       {
-        id: "install",
-        icon: DownloadIcon,
-        text: (
-          <>
-            Tap <strong>Install app</strong> or{" "}
-            <strong>Add to Home screen</strong>.
-          </>
-        ),
+        code: "02",
+        action: "Choose install",
+        control: "Install app",
+        icon: SmartphoneIcon,
       },
       {
-        id: "done",
+        code: "03",
+        action: "Confirm dialog",
+        control: "Install",
         icon: CheckIcon,
-        text: (
-          <>
-            Confirm with <strong>Install</strong>.
-          </>
-        ),
       },
     ],
   },
   desktop: {
-    title: "Computer",
-    browser: "Chrome or Edge",
-    steps: [
+    label: "Desktop",
+    icon: LaptopIcon,
+    rows: [
       {
-        id: "address-bar",
-        icon: MonitorDownIcon,
-        text: (
-          <>
-            Click the <strong>Install</strong> icon at the right end of the
-            address bar (or open the browser’s ⋮ menu).
-          </>
-        ),
+        code: "01",
+        action: "Click address-bar icon",
+        control: "Install",
+        icon: DownloadIcon,
       },
       {
-        id: "choose",
-        icon: AppWindowIcon,
-        text: (
-          <>
-            Choose <strong>Install {siteConfig.title}…</strong>
-          </>
-        ),
+        code: "02",
+        action: "Select app entry",
+        control: siteConfig.pwaName,
+        icon: SmartphoneIcon,
       },
       {
-        id: "done",
+        code: "03",
+        action: "Launch standalone",
+        control: "Install",
         icon: CheckIcon,
-        text: (
-          <>
-            Click <strong>Install</strong>. It opens in its own window.
-          </>
-        ),
       },
     ],
   },
 };
 
-const benefits = [
-  { icon: ZapIcon, label: "Opens instantly" },
-  { icon: MaximizeIcon, label: "Full screen" },
-  { icon: QrCodeIcon, label: "Quick check-in" },
-];
-
-function detectClientPlatform(): PlatformTab {
+function detectPlatform(): Platform {
   const ua = navigator.userAgent.toLowerCase();
   if (/iphone|ipad|ipod/.test(ua)) return "ios";
   if (/android/.test(ua)) return "android";
@@ -180,13 +132,13 @@ export function InstallAppFab() {
   const { toggle, close, isOpen } = useToggle("installation");
 
   const [isInstalled, setIsInstalled] = React.useState(false);
-  const [platform, setPlatform] = React.useState<PlatformTab>("desktop");
+  const [platform, setPlatform] = React.useState<Platform>("desktop");
   const [deferredPrompt, setDeferredPrompt] =
     React.useState<BeforeInstallPromptEvent | null>(null);
   const [isPrompting, setIsPrompting] = React.useState(false);
 
   React.useEffect(() => {
-    setPlatform(detectClientPlatform());
+    setPlatform(detectPlatform());
 
     const checkStandalone = () => {
       const standalone =
@@ -197,29 +149,26 @@ export function InstallAppFab() {
 
     checkStandalone();
 
-    const mediaQuery = window.matchMedia("(display-mode: standalone)");
-    mediaQuery.addEventListener("change", checkStandalone);
+    const mq = window.matchMedia("(display-mode: standalone)");
+    mq.addEventListener("change", checkStandalone);
 
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const onBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    const handleAppInstalled = () => {
+    const onInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
 
     return () => {
-      mediaQuery.removeEventListener("change", checkStandalone);
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt,
-      );
-      window.removeEventListener("appinstalled", handleAppInstalled);
+      mq.removeEventListener("change", checkStandalone);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
 
@@ -240,6 +189,8 @@ export function InstallAppFab() {
     }
   };
 
+  const active = sheets[platform];
+
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
       <DialogTrigger
@@ -248,173 +199,123 @@ export function InstallAppFab() {
             variant="dark"
             type="button"
             size="sm"
-            aria-label="How to install the app"
-            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 shadow-lg md:right-6 md:bottom-6"
+            aria-label="Install app"
+            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 rounded-full px-4 shadow-lg md:right-6 md:bottom-6"
           >
-            <DownloadIcon className="text-accent" />
+            <SparklesIcon className="text-accent size-3.5" />
             <span>Get App</span>
           </Button>
         }
       />
 
       <DialogContent
-        className="bg-background flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden rounded-none p-0 sm:max-w-md"
+        className="bg-background flex max-h-[85dvh] w-[calc(100%-1.25rem)] max-w-md flex-col gap-0 overflow-hidden rounded-xl p-0"
         showCloseButton={false}
       >
-        {/* Header band (stays put while the steps scroll) */}
-        <div className="bg-navy relative flex shrink-0 flex-col gap-4 p-5 pr-14 text-white sm:p-6 sm:pr-16">
+        {/* Minimal inline header */}
+        <div className="border-line flex shrink-0 items-center justify-between gap-2 border-b px-3.5 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <Image
+              src="/icons/icon-192x192.png"
+              alt=""
+              width={28}
+              height={28}
+              className="size-6 shrink-0 rounded-md object-contain sm:size-7"
+            />
+            <DialogHeader className="min-w-0 gap-0 text-left">
+              <DialogTitle className="truncate font-serif text-sm font-bold">
+                Add {getInitials(siteConfig.title)} to your{" "}
+                {sheets[platform].label}
+              </DialogTitle>
+
+              <DialogDescription className="sr-only">
+                Install instructions for iPhone, Android, and desktop.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
           <DialogClose
             render={
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-sm"
-                aria-label="Close install guide"
-                className="absolute top-3 right-3 text-white hover:bg-white/10 hover:text-white"
+                size="icon-xs"
+                aria-label="Close"
               />
             }
           >
-            <XIcon aria-hidden="true" />
+            <XIcon className="size-3.5" />
           </DialogClose>
-
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Image
-              src="/icons/icon-192x192.png"
-              alt=""
-              width={56}
-              height={56}
-              className="size-12 shrink-0 object-contain sm:size-14"
-            />
-            <DialogHeader className="min-w-0 gap-1">
-              <DialogTitle className="font-serif text-lg font-extrabold tracking-[-0.03em] text-white sm:text-xl">
-                Install the app
-              </DialogTitle>
-              <DialogDescription className="text-secondary/80 text-xs leading-relaxed [@media(max-height:560px)]:hidden">
-                Add {siteConfig.title} to your device. It takes less than a
-                minute.
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-
-          <ul className="flex flex-wrap gap-1.5 [@media(max-height:620px)]:hidden">
-            {benefits.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-1.5 border border-white/15 px-2 py-1 text-[11px] font-semibold text-white/85 sm:px-2.5"
-              >
-                <Icon className="text-accent size-3.5" aria-hidden="true" />
-                {label}
-              </li>
-            ))}
-          </ul>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6">
-          {/* One-tap install (when the browser allows it) */}
-          {deferredPrompt && (
-            <div className="bg-primary text-primary-foreground flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <p className="font-serif text-sm font-bold">
-                  One-tap install is ready
-                </p>
-                <p className="text-primary-foreground/80 text-xs">
-                  Skip the steps below.
-                </p>
-              </div>
-              <Button
+        {/* Underlined platform index tabs */}
+        <div className="border-line grid shrink-0 grid-cols-3 border-b px-1 sm:px-2">
+          {(Object.keys(sheets) as Platform[]).map((key) => {
+            const item = sheets[key];
+            const Icon = item.icon;
+            const selected = platform === key;
+
+            return (
+              <button
+                key={key}
                 type="button"
-                variant="cream"
-                size="sm"
-                className="w-full sm:w-auto"
-                disabled={isPrompting}
-                onClick={handleNativeInstall}
+                onClick={() => setPlatform(key)}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 border-b-2 py-2.5 text-xs font-semibold transition-colors",
+                  selected
+                    ? "border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground border-transparent",
+                )}
               >
-                <DownloadIcon />
-                <span>{isPrompting ? "Installing…" : "Install now"}</span>
-              </Button>
-            </div>
-          )}
+                <Icon className="size-3.5 shrink-0" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          <Tabs
-            value={platform}
-            onValueChange={(val) => setPlatform(val as PlatformTab)}
-            className="gap-4"
-          >
-            {/* Device picker */}
-            <TabsList
-              variant="line"
-              className="grid w-full grid-cols-3 gap-2 p-0 group-data-horizontal/tabs:h-auto"
-            >
-              {devicesInfo.map((item) => (
-                <TabsTrigger
-                  key={item.value}
-                  value={item.value}
-                  className={cn(
-                    "border-line text-muted-foreground flex h-auto min-w-0 flex-col gap-1.5 rounded-none border bg-transparent px-1 py-3 after:hidden",
-                    "data-active:border-primary data-active:text-foreground data-active:bg-muted",
-                  )}
-                >
-                  <item.icon className="size-5" />
-                  <span className="font-serif text-xs font-semibold">
-                    {item.label}
+        {/* Scrollable ledger body */}
+        <div className="divide-line min-h-0 flex-1 divide-y overflow-y-auto overscroll-contain px-3.5 sm:px-4">
+          {active.rows.map((row) => {
+            const RowIcon = row.icon;
+            return (
+              <div
+                key={row.code}
+                className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 py-2.5 text-xs"
+              >
+                <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+                  <span className="text-muted-foreground font-mono text-[11px]">
+                    {row.code}
                   </span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+                  <RowIcon className="text-primary size-3.5 shrink-0" />
+                  <span className="font-medium">{row.action}</span>
+                </div>
+                <span className="bg-muted text-foreground ml-auto max-w-full rounded px-2 py-0.5 font-mono text-[11px] font-semibold">
+                  {row.control}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-            {devicesInfo.map((item) => {
-              const guide = guides[item.value];
-              return (
-                <TabsContent key={item.value} value={item.value}>
-                  <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                    <p className="font-serif text-sm font-bold">
-                      {guide.title}
-                    </p>
-                    <span className="text-muted-foreground text-xs">
-                      Use {guide.browser}
-                    </span>
-                  </div>
-
-                  {/* Step timeline */}
-                  <ol className="flex flex-col">
-                    {guide.steps.map((step, index) => (
-                      <li
-                        key={step.id}
-                        className="not-last:after:bg-border relative flex items-start gap-4 pb-5 not-last:after:absolute not-last:after:top-9 not-last:after:bottom-1 not-last:after:left-[15px] not-last:after:w-px last:pb-0"
-                      >
-                        <span className="bg-background border-primary text-primary relative z-10 grid size-8 shrink-0 place-items-center border">
-                          <step.icon className="size-4" aria-hidden="true" />
-                        </span>
-                        <div className="min-w-0 pt-0.5">
-                          <span className="text-muted-foreground text-[11px] font-bold tracking-[0.14em] uppercase">
-                            Step {index + 1}
-                          </span>
-                          <p className="mt-0.5 text-sm leading-snug">
-                            {step.text}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-
-                  {guide.note && (
-                    <p className="border-accent bg-accent/15 mt-5 flex items-start gap-2 border-l-2 p-3 text-xs leading-relaxed">
-                      <TriangleAlertIcon
-                        className="mt-0.5 size-3.5 shrink-0"
-                        aria-hidden="true"
-                      />
-                      {guide.note}
-                    </p>
-                  )}
-                </TabsContent>
-              );
-            })}
-          </Tabs>
-
-          <p className="border-line text-muted-foreground flex items-center gap-1.5 border-t pt-4 text-xs">
-            <WifiOffIcon className="text-green size-3.5 shrink-0" />
-            Works offline for pages you’ve already visited
+        {/* Responsive footer strip */}
+        <div className="border-line bg-muted/40 flex shrink-0 flex-col gap-2 border-t px-3.5 py-2.5 text-[11px] sm:flex-row sm:items-center sm:justify-between sm:px-4">
+          <p className="text-muted-foreground leading-snug">
+            {active.note ?? "Quick access from your home screen."}
           </p>
+
+          {deferredPrompt && (
+            <Button
+              type="button"
+              size="xs"
+              disabled={isPrompting}
+              onClick={handleNativeInstall}
+              className="w-full shrink-0 sm:w-auto"
+            >
+              <DownloadIcon className="size-3" />
+              <span>{isPrompting ? "Installing…" : "Install"}</span>
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

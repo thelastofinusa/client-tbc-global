@@ -13,28 +13,7 @@ import { Input } from "~/components/reusable/shadcn/input";
 import { Label } from "~/components/reusable/shadcn/label";
 import { Switch } from "~/components/reusable/shadcn/switch";
 import { toast } from "~/components/reusable/shadcn/toast";
-
-export interface SettingsUserProfile {
-  name: string;
-  email: string;
-  location: string;
-  address: string;
-  phone: string;
-  birthday: string;
-}
-
-interface SettingsFormProps {
-  user?: Partial<SettingsUserProfile>;
-}
-
-const defaultUserProfile: SettingsUserProfile = {
-  name: "",
-  email: "member@example.org",
-  location: "Kudenda, Kaduna",
-  address: "",
-  phone: "",
-  birthday: "",
-};
+import { useDashboardStore } from "~/lib/dashboard/store";
 
 const notificationOptions = [
   {
@@ -91,107 +70,133 @@ const communityChannels = [
   },
 ];
 
-export function SettingsForm({ user }: SettingsFormProps) {
-  const profile: SettingsUserProfile = {
-    ...defaultUserProfile,
-    ...user,
-  };
+export function SettingsForm() {
+  const profile = useDashboardStore((s) => s.profile);
+  const updateProfile = useDashboardStore((s) => s.updateProfile);
+  const resetDemoData = useDashboardStore((s) => s.resetDemoData);
 
-  // TODO: persist profile & notification preferences via a server action.
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    updateProfile({
+      name: String(data.get("name") ?? ""),
+      location: String(data.get("location") ?? ""),
+      address: String(data.get("address") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      birthday: String(data.get("birthday") ?? ""),
+    });
     toast.add({ title: "Profile & settings saved" });
-  };
+  }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {/* Personal Details */}
-      <Card variant="surface" className="gap-5">
+      <Card variant="surface" className="gap-6 p-6">
         <div>
-          <h2 className="font-serif text-lg font-bold">Personal details</h2>
-          <p className="text-muted-foreground text-xs">
+          <h2 className="font-serif text-xl font-bold">Personal details</h2>
+          <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
             Update your profile information and contact details. Your email is
-            managed by your account sign-in.
+            managed by your account sign-in and cannot be changed here.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-name">Full name</Label>
-            <Input
-              id="user-name"
-              name="name"
-              type="text"
-              defaultValue={profile.name}
-              placeholder="Your full name"
-              required
-            />
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="settings-name">Full name</Label>
+              <Input
+                id="settings-name"
+                name="name"
+                defaultValue={profile.name}
+                placeholder="Your name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="settings-email">Email address</Label>
+              <Input
+                id="settings-email"
+                name="email"
+                type="email"
+                value={profile.email}
+                disabled
+                readOnly
+                aria-describedby="settings-email-help"
+              />
+              <p
+                id="settings-email-help"
+                className="text-muted-foreground text-xs"
+              >
+                Email is locked to your sign-in account.
+              </p>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-email">Email address</Label>
-            <Input
-              id="user-email"
-              name="email"
-              type="email"
-              value={profile.email}
-              disabled
-              readOnly
-              aria-readonly="true"
-              className="cursor-not-allowed opacity-70"
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="settings-location">Location</Label>
+              <Input
+                id="settings-location"
+                name="location"
+                defaultValue={profile.location}
+                placeholder="Kudenda, Kaduna"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="settings-phone">Phone number</Label>
+              <Input
+                id="settings-phone"
+                name="phone"
+                type="tel"
+                defaultValue={profile.phone}
+                placeholder="+234 ..."
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-location">Location</Label>
-            <Input
-              id="user-location"
-              name="location"
-              type="text"
-              defaultValue={profile.location}
-              placeholder="City, State"
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="settings-address">Address</Label>
+              <Input
+                id="settings-address"
+                name="address"
+                defaultValue={profile.address}
+                placeholder="Street, area"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="settings-birthday">Birthday</Label>
+              <Input
+                id="settings-birthday"
+                name="birthday"
+                type="date"
+                defaultValue={profile.birthday}
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-phone">Phone number</Label>
-            <Input
-              id="user-phone"
-              name="phone"
-              type="tel"
-              defaultValue={profile.phone}
-              placeholder="+234 800 000 0000"
-            />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="submit" variant="red">
+              Save changes
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                resetDemoData();
+                toast.add({ title: "Demo data reset" });
+              }}
+            >
+              Reset demo data
+            </Button>
           </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-address">Address</Label>
-            <Input
-              id="user-address"
-              name="address"
-              type="text"
-              defaultValue={profile.address}
-              placeholder="Street, area, or landmark"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-birthday">Birthday</Label>
-            <Input
-              id="user-birthday"
-              name="birthday"
-              type="date"
-              defaultValue={profile.birthday}
-            />
-          </div>
-        </div>
+        </form>
       </Card>
 
-      {/* Notification Settings */}
-      <Card variant="surface" className="gap-2">
-        <div className="pb-3">
-          <h2 className="font-serif text-lg font-bold">Notifications</h2>
-          <p className="text-muted-foreground text-xs">
+      {/* Notifications */}
+      <Card variant="surface" className="gap-4 p-6">
+        <div>
+          <h2 className="font-serif text-xl font-bold">Notifications</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
             Choose what updates and reminders you receive.
           </p>
         </div>
@@ -200,79 +205,61 @@ export function SettingsForm({ user }: SettingsFormProps) {
           {notificationOptions.map((option) => (
             <li
               key={option.id}
-              className="flex items-center justify-between gap-4 py-3"
+              className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
               <div>
-                <Label htmlFor={option.id}>{option.label}</Label>
+                <p className="text-sm font-medium">{option.label}</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   {option.description}
                 </p>
               </div>
-              <Switch
-                id={option.id}
-                name={option.id}
-                defaultChecked={option.defaultChecked}
-              />
+              <Switch defaultChecked={option.defaultChecked} />
             </li>
           ))}
         </ul>
       </Card>
 
       {/* Community Links */}
-      <Card variant="surface" className="gap-4">
+      <Card variant="surface" className="gap-4 p-6">
         <div>
-          <h2 className="font-serif text-lg font-bold">Join the community</h2>
-          <p className="text-muted-foreground text-xs">
+          <h2 className="font-serif text-xl font-bold">Join the community</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
             Connect with members and stay up to date across our group channels.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2">
           {communityChannels.map((channel) => {
             const Icon = channel.icon;
             return (
-              <a
-                key={channel.id}
-                href={channel.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group border-line bg-background hover:border-primary/50 flex flex-col justify-between rounded-xl border p-4 transition-colors"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="bg-navy text-accent inline-flex size-8 items-center justify-center rounded-lg">
-                      <Icon size={16} />
+              <li key={channel.id}>
+                <a
+                  href={channel.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="border-line hover:border-primary group flex h-full flex-col gap-3 border p-4 transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="bg-muted text-primary grid size-9 place-items-center">
+                      <Icon className="size-4" />
                     </span>
-                    <span className="bg-muted text-muted-foreground rounded-full px-2.5 py-0.5 text-[10px] font-semibold">
-                      {channel.badge}
-                    </span>
+                    <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-4 transition-colors" />
                   </div>
-                  <h3 className="group-hover:text-primary mt-3 text-sm font-bold transition-colors">
-                    {channel.name}
-                  </h3>
-                  <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-                    {channel.description}
-                  </p>
-                </div>
-
-                <div className="text-primary mt-4 inline-flex items-center gap-1 text-xs font-semibold">
-                  <span>Join group</span>
-                  <ArrowUpRightIcon
-                    size={14}
-                    className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
-                </div>
-              </a>
+                  <div>
+                    <p className="text-sm font-semibold">{channel.name}</p>
+                    <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+                      {channel.description}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground mt-auto text-[10px] font-semibold tracking-wider uppercase">
+                    {channel.badge}
+                  </span>
+                </a>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </Card>
-
-      <div className="flex justify-end">
-        <Button type="submit" variant="red" size="lg">
-          Save changes
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }

@@ -17,11 +17,115 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "~/components/reusable/shadcn/sidebar";
+import { Skeleton } from "~/components/reusable/shadcn/skeleton";
 import { Container } from "~/components/shared/container";
 import { LogoComponent } from "~/components/shared/logo";
 import { getDashboardViewer } from "~/lib/dashboard/access";
 import { members } from "~/lib/dashboard/mock-data";
 import { ROLE_META } from "~/lib/dashboard/roles";
+
+function DashboardLayoutSkeleton() {
+  return (
+    <div className="bg-background text-foreground flex h-dvh min-h-0 w-full overflow-hidden p-2">
+      {/* Static Sidebar Chrome Skeleton */}
+      <aside className="bg-sidebar border-line hidden w-72 shrink-0 flex-col justify-between rounded-xl border p-3 md:flex">
+        <div className="space-y-5">
+          <div className="px-1 py-1">
+            <Skeleton className="h-7 w-28 rounded-md" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Skeleton className="mx-2 mb-1.5 h-3 w-12" />
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-24" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-28" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-24" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Skeleton className="mx-2 mb-1.5 h-3 w-16" />
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-28" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-24" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-32" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Skeleton className="mx-2 mb-1.5 h-3 w-20" />
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Skeleton className="size-4 shrink-0 rounded" />
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-line space-y-2 border-t pt-3">
+          <div className="flex items-center gap-2.5 px-1.5">
+            <Skeleton className="size-8 shrink-0 rounded-lg" />
+            <div className="min-w-0 flex-1 space-y-1">
+              <Skeleton className="h-3.5 w-24" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Inset Chrome Skeleton */}
+      <div className="bg-card border-line flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border md:ml-2">
+        <header className="border-line h-12 shrink-0 border-b">
+          <Container size="lg" className="size-full">
+            <div className="flex h-full items-center gap-2">
+              <Skeleton className="size-7 shrink-0 rounded-md" />
+              <Skeleton className="h-3.5 w-20" />
+              <Skeleton className="h-3.5 w-3 rounded-full" />
+              <Skeleton className="h-3.5 w-24" />
+              <div className="ml-auto flex items-center gap-2">
+                <Skeleton className="h-7 w-28 rounded-md" />
+                <Skeleton className="hidden h-8 w-28 rounded-md sm:block" />
+              </div>
+            </div>
+          </Container>
+        </header>
+
+        <div className="flex-1 overflow-auto py-6">
+          <Container size="lg" className="space-y-4">
+            <Skeleton className="h-8 w-56" />
+            <Skeleton className="h-4 w-80 max-w-full" />
+            <Skeleton className="mt-4 h-64 w-full rounded-xl" />
+          </Container>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Signed-out visitors are redirected by proxy.ts. This layout never calls
@@ -108,7 +212,7 @@ async function DashboardShell({ children }: { children: ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<DashboardLayoutSkeleton />}>
       <DashboardShell>{children}</DashboardShell>
     </Suspense>
   );

@@ -34,6 +34,10 @@ export interface Project {
   name: string;
   category: "Building" | "Education" | "Outreach";
   description: string;
+  /** Optional: why the project exists / what it aims to achieve. */
+  purpose?: string;
+  /** Optional: how many people are currently participating. */
+  participants?: number;
   /** 0–100 */
   progress: number;
   sponsors: number;

@@ -5,6 +5,8 @@ import { SettingsForm } from "~/components/dashboard/settings-form";
 
 export const metadata: Metadata = { title: "Settings" };
 
+export const instant = false;
+
 function Content() {
   return (
     <>

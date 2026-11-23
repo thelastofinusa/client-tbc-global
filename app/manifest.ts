@@ -1,12 +1,11 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "~/config/site.config";
-import { getInitials } from "~/lib/utils";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: siteConfig.title,
-    short_name: getInitials(siteConfig.title),
+    name: siteConfig.pwaName,
+    short_name: siteConfig.pwaName,
     description: siteConfig.description,
     start_url: "/",
     scope: "/",
