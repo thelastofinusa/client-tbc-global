@@ -11,7 +11,7 @@ export const navItems: NavItemType[] = [
   { label: "Home", mobileLabel: "Sanctuary", path: "/", kind: "nav" },
   { label: "About Us", mobileLabel: "Our Story", path: "/about", kind: "nav" },
   {
-    label: "Project",
+    label: "Projects",
     mobileLabel: "Missions & Builds",
     path: "/projects",
     kind: "nav",

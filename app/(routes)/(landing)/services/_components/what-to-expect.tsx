@@ -1,10 +1,6 @@
-import {
-  ArrowUpRightIcon,
-  CalendarDaysIcon,
-  MapPinIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon, CalendarDaysIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
+import { RiMapPinRangeLine } from "react-icons/ri";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
@@ -35,7 +31,7 @@ export const WhatToExpect = () => {
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
           <div className="bg-card border-line rounded-xl border p-6 sm:p-8">
             <div className="text-primary flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-              <MapPinIcon size={15} />
+              <RiMapPinRangeLine size={15} />
               <span>Location &amp; Directions</span>
             </div>
             <h2 className="mt-3 font-serif text-2xl font-extrabold tracking-[-0.03em] sm:text-3xl">
@@ -49,7 +45,7 @@ export const WhatToExpect = () => {
             <dl className="border-line mt-6 space-y-3 border-t pt-5 text-sm">
               <div className="flex items-center justify-between gap-4">
                 <dt className="text-muted-foreground flex items-center gap-2">
-                  <MapPinIcon size={14} />
+                  <RiMapPinRangeLine size={14} />
                   <span>Area</span>
                 </dt>
                 <dd className="font-semibold">Kudenda, Kaduna</dd>

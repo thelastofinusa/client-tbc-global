@@ -1,4 +1,4 @@
-import { ClockIcon } from "lucide-react";
+import { FiClock } from "react-icons/fi";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 
@@ -97,7 +97,7 @@ export const ServiceTime = () => {
                     : "text-foreground mt-3 flex items-center gap-2 text-sm font-semibold"
                 }
               >
-                <ClockIcon size={15} />
+                <FiClock size={15} />
                 <span>{item.time}</span>
               </div>
 

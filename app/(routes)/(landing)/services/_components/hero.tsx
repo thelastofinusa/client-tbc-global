@@ -10,12 +10,12 @@ export const ServicesHeroComponent = () => {
     <section className="bg-navy border-b border-white/10 py-16 text-white md:py-24">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
-          <div>
+          <div className="max-w-2xl">
             <Eyebrow label="Services & Visits" className="text-accent" />
             <h1 className="mt-4 font-serif text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl md:text-6xl">
               Gather with us in Kudenda, Kaduna.
             </h1>
-            <p className="text-secondary/80 mt-5 max-w-2xl text-base leading-relaxed sm:text-lg">
+            <p className="text-secondary/80 mt-5 max-w-xl text-sm leading-[1.75] sm:text-base">
               Join us across our weekly rhythm—Wednesdays, Saturdays, and our
               Sunday service at 9:00 AM. Plan a visit or get directions ahead of
               time.

@@ -62,12 +62,11 @@ export const BeliefsComponent = () => {
           <div className="grid grid-cols-1 gap-3 md:col-span-7 md:grid-rows-2">
             {/* Mission */}
             <div className="bg-card border-line flex flex-col justify-between gap-10 border p-7 md:p-10">
-              <div className="flex items-center justify-between">
-                <span className="text-primary text-xs font-bold tracking-[0.16em] uppercase">
-                  01 · Mission
-                </span>
-                <span className="bg-border h-px w-10" />
-              </div>
+              <Eyebrow
+                label="01 · Mission"
+                className="text-primary"
+                lineClass="bg-border"
+              />
               <p className="font-serif text-2xl leading-[1.15] font-extrabold tracking-[-0.045em] md:text-3xl lg:text-4xl">
                 Love God. Serve people.
                 <br />
@@ -77,12 +76,11 @@ export const BeliefsComponent = () => {
 
             {/* Vision */}
             <div className="bg-primary text-primary-foreground flex flex-col justify-between gap-10 p-7 md:p-10">
-              <div className="flex items-center justify-between">
-                <span className="text-accent text-xs font-bold tracking-[0.16em] uppercase">
-                  02 · Vision
-                </span>
-                <span className="bg-primary-foreground/30 h-px w-10" />
-              </div>
+              <Eyebrow
+                label="02 · Vision"
+                className="text-accent"
+                lineClass="bg-primary-foreground/30"
+              />
               <p className="font-serif text-2xl leading-[1.15] font-extrabold tracking-[-0.045em] md:text-3xl lg:text-4xl">
                 To raise a generation
                 <br />

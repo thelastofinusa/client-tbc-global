@@ -55,7 +55,7 @@ export const Practices = () => {
                   {number}
                 </span>
                 <h3
-                  className={`${headingClass} mt-3 mb-2 text-3xl md:text-4xl`}
+                  className={`${headingClass} mt-3 mb-2 text-2xl md:text-3xl`}
                 >
                   {title}
                 </h3>
