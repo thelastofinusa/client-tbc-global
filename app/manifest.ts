@@ -4,8 +4,8 @@ import { siteConfig } from "~/config/site.config";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: siteConfig.pwaName,
-    short_name: siteConfig.pwaName,
+    name: siteConfig.slogan,
+    short_name: siteConfig.slogan,
     description: siteConfig.description,
     start_url: "/",
     scope: "/",

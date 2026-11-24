@@ -197,6 +197,11 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+// Source: sanity/queries/expression.query.ts
+// Variable: Q_ALL_EXPRESSIONS
+// Query: *[_type == "expression"] | order(coalesce(order, 99) asc, name asc) {        _id,    name,    "slug": slug.current,    category,    summary,    order  }
+export type Q_ALL_EXPRESSIONS_RESULT = Array<never>;
+
 // Source: sanity/queries/projectFilter.query.ts
 // Variable: Q_ALL_FILTERS
 // Query: *[_type == "projectFilter"] | order(_createdAt asc) {      _id,  name,  "slug": value.current,  }
@@ -210,6 +215,7 @@ export type Q_ALL_FILTERS_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  *[_type == "expression"] | order(coalesce(order, 99) asc, name asc) {\n    \n    _id,\n    name,\n    "slug": slug.current,\n    category,\n    summary,\n    order\n\n  }\n': Q_ALL_EXPRESSIONS_RESULT;
     '\n  *[_type == "projectFilter"] | order(_createdAt asc) {\n    \n  _id,\n  name,\n  "slug": value.current,\n\n  }\n': Q_ALL_FILTERS_RESULT;
   }
 }

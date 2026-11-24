@@ -38,7 +38,7 @@ export const ServicesHeroComponent = () => {
                 <ArrowUpRightIcon />
               </Button>
               <Button
-                variant="cream"
+                variant="glass"
                 size="lg"
                 nativeButton={false}
                 render={<Link href="/sign-up" />}

@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { cache } from "react";
 import { db } from "~/db";
 import { user as userTable } from "~/db/schema";
@@ -52,9 +53,17 @@ function superAdminEmails(): string[] {
  */
 export const getDashboardViewer = cache(
   async (): Promise<DashboardViewer | null> => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    await connection();
+
+    let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
+    try {
+      session = await auth.api.getSession({
+        headers: await headers(),
+      });
+    } catch {
+      return null;
+    }
+
     if (!session?.user) return null;
 
     // Fetch the freshest user record directly from the database
