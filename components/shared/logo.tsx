@@ -35,6 +35,7 @@ export const LogoComponent: React.FC<{
         width={imgSize}
         height={imgSize}
         preload
+        loading="eager"
         className="object-contain"
         style={{
           width: `${imgSize}px`,

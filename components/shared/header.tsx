@@ -1,14 +1,16 @@
 "use client";
 
-import { Show } from "~/components/shared/show";
 import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type React from "react";
 import { Suspense } from "react";
 import { GoFlame } from "react-icons/go";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
 import { RiMapPinRangeLine } from "react-icons/ri";
+import { Show } from "~/components/shared/show";
 import { siteConfig } from "~/config/site.config";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
@@ -47,7 +49,9 @@ const itemVariants: Variants = {
 
 const links = navItems.filter((item) => (item.kind ?? "nav") === "nav");
 
-export const Header = () => {
+export const Header: React.FC<{ shouldAccessStudio: boolean }> = ({
+  shouldAccessStudio,
+}) => {
   const pathname = usePathname();
   const { toggle, isOpen, close } = useToggle("menu");
 
@@ -188,6 +192,18 @@ export const Header = () => {
                   </div>
                 </Show>
                 <Show when="signed-in">
+                  {shouldAccessStudio && (
+                    <Button
+                      variant="ghost"
+                      nativeButton={false}
+                      render={
+                        <Link href={"/studio" as Route} target="_blank" />
+                      }
+                      className="hidden lg:inline-flex"
+                    >
+                      <span>Studio</span>
+                    </Button>
+                  )}
                   <Button
                     variant="dark"
                     nativeButton={false}
@@ -308,15 +324,31 @@ export const Header = () => {
                       </div>
                     </Show>
                     <Show when="signed-in">
-                      <Button
-                        variant="cream"
-                        size="lg"
-                        nativeButton={false}
-                        render={<Link href="/dashboard" />}
-                        onClick={close}
-                      >
-                        <span>Go to dashboard</span>
-                      </Button>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="cream"
+                          size="lg"
+                          nativeButton={false}
+                          render={<Link href="/dashboard" />}
+                          onClick={close}
+                          className="flex-1 sm:flex-none"
+                        >
+                          <span>Go to dashboard</span>
+                        </Button>
+                        {shouldAccessStudio && (
+                          <Button
+                            variant="glass"
+                            size="lg"
+                            nativeButton={false}
+                            onClick={close}
+                            render={
+                              <Link href={"/studio" as Route} target="_blank" />
+                            }
+                          >
+                            <span>Studio</span>
+                          </Button>
+                        )}
+                      </div>
                     </Show>
                   </Suspense>
                 </div>
