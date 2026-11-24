@@ -4,7 +4,6 @@ import "./globals.css";
 import { assetPath } from "keltra";
 import { siteConfig } from "~/config/site.config";
 import { fontVariables } from "~/lib/fonts";
-import { getInitials } from "~/lib/utils";
 
 export const metadata: Metadata = {
   title: {
@@ -84,7 +83,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: getInitials(siteConfig.title),
+    title: siteConfig.pwaName,
     statusBarStyle: "default",
   },
 };
@@ -106,9 +105,7 @@ export default function RootLayout(props: Readonly<LayoutProps<"/">>) {
       suppressHydrationWarning
       className={fontVariables("h-full antialiased")}
     >
-      <body className="flex min-h-full flex-col">
-        {props.children}
-      </body>
+      <body className="flex min-h-full flex-col">{props.children}</body>
     </html>
   );
 }

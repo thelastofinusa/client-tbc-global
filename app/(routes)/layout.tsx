@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/react";
 import NextJsToploader from "nextjs-toploader";
-import React from "react";
+import React, { Suspense } from "react";
 import { LenisSmoothScroll } from "~/components/providers/lenis";
 import { ThemeProvider } from "~/components/providers/theme";
 import { ToggleProvider } from "~/components/providers/toggle";
@@ -18,7 +18,9 @@ export default function RoutesLayout(props: Readonly<LayoutProps<"/">>) {
           <PwaRegister />
           {props.children}
 
-          <InstallAppFab />
+          <Suspense fallback={null}>
+            <InstallAppFab />
+          </Suspense>
           <PwaPullToRefresh />
           <Toaster />
           <NextJsToploader color="var(--primary)" showSpinner={false} />
