@@ -30,6 +30,26 @@ export interface DashboardViewer {
   member: Member | null;
 }
 
+async function withDbRetry<T>(
+  fn: () => Promise<T>,
+  retries = 2,
+  delayMs = 150,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+      if (attempt === retries) break;
+      await new Promise((resolve) =>
+        setTimeout(resolve, delayMs * (attempt + 1)),
+      );
+    }
+  }
+  throw lastError;
+}
+
 function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as string[]).includes(value);
 }
@@ -55,11 +75,15 @@ export const getDashboardViewer = cache(
   async (): Promise<DashboardViewer | null> => {
     await connection();
 
+    const requestHeaders = await headers();
     let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
+
     try {
-      session = await auth.api.getSession({
-        headers: await headers(),
-      });
+      session = await withDbRetry(() =>
+        auth.api.getSession({
+          headers: requestHeaders,
+        }),
+      );
     } catch {
       return null;
     }
