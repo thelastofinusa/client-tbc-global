@@ -15,7 +15,7 @@
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "clean": "rm -rf .next node_modules .keltra bun.lock tsconfig.tsbuildinfo",
+    "clean": "rm -rf .next node_modules .keltra bun.lock tsconfig.tsbuildinfo sanity.types.ts",
     "sanity:typegen": "sanity schema extract && sanity typegen generate"
   },
   "dependencies": {
