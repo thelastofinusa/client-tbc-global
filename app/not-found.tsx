@@ -20,7 +20,7 @@ export default function NotFound() {
               We couldn't find that page.
             </h1>
 
-            <p className="text-muted-foreground mt-4 max-w-xl text-base leading-relaxed sm:text-lg">
+            <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
               The link may have moved, expired, or been mistyped. You can head
               back home or check our gathering times in Kudenda, Kaduna.
             </p>
@@ -49,16 +49,6 @@ export default function NotFound() {
           </div>
         </Container>
       </section>
-
-      {/* Subtle bottom strip matching your site's gathering info */}
-      <div className="border-line border-t py-5">
-        <Container>
-          <div className="text-muted-foreground flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span>Next gathering: Sunday service · 9:00 AM</span>
-            <span>Kudenda, Kaduna · Wed · Sat · Sun</span>
-          </div>
-        </Container>
-      </div>
     </main>
   );
 }
