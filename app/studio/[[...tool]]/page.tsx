@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import config from "~/sanity.config";
 
 export const metadata: Metadata = {
-  title: "Studio",
+  title: "Content Studio",
   robots: {
     index: false,
     follow: false,

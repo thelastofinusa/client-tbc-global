@@ -1,4 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { type ReactNode, Suspense } from "react";
 import { AccessRestricted } from "~/components/dashboard/access-restricted";
@@ -20,9 +21,21 @@ import {
 import { Skeleton } from "~/components/reusable/shadcn/skeleton";
 import { Container } from "~/components/shared/container";
 import { LogoComponent } from "~/components/shared/logo";
+import { siteConfig } from "~/config/site.config";
 import { getDashboardViewer } from "~/lib/dashboard/access";
 import { members } from "~/lib/dashboard/mock-data";
 import { ROLE_META } from "~/lib/dashboard/roles";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Dashboard",
+    template: `%s – Dashboard | ${siteConfig.slogan}`,
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 function DashboardLayoutSkeleton() {
   return (

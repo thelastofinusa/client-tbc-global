@@ -1,6 +1,7 @@
 import { CheckIcon, MinusIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { RoleBadge } from "~/components/dashboard/badges";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { Card } from "~/components/reusable/shadcn/card";
@@ -26,7 +27,13 @@ import {
 } from "~/lib/dashboard/roles";
 import type { Role } from "~/lib/dashboard/types";
 
-export const metadata: Metadata = { title: "Roles & access" };
+const navItem = dashboardNavData("/dashboard/roles");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 function Content() {
   const countFor = (role: Role) =>

@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { AttendanceSession } from "~/components/dashboard/attendance-session";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { getDashboardViewer } from "~/lib/dashboard/access";
 import { members, services } from "~/lib/dashboard/mock-data";
 
-export const metadata: Metadata = { title: "Attendance" };
+const navItem = dashboardNavData("/dashboard/attendance");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 async function Content() {
   const viewer = await getDashboardViewer();

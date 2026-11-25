@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { ServicesBoard } from "~/components/dashboard/services-board";
 
-export const metadata: Metadata = { title: "Services & Events" };
+const navItem = dashboardNavData("/dashboard/services");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 function Content() {
   return (

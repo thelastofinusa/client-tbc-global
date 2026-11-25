@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { SettingsForm } from "~/components/dashboard/settings-form";
 import { getDashboardViewer } from "~/lib/dashboard/access";
 import { getCommunities } from "~/lib/dashboard/actions";
 
-export const metadata: Metadata = { title: "Settings" };
+const navItem = dashboardNavData("/dashboard/settings");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 export const instant = false;
 

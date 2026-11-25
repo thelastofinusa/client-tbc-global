@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MembersTable } from "~/components/dashboard/members-table";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { ResetSampleDataButton } from "~/components/dashboard/reset-sample-data";
 import { RoleGate } from "~/components/dashboard/role-gate";
@@ -8,7 +9,13 @@ import { members } from "~/lib/dashboard/mock-data";
 import { applyOverrides, readOverrides } from "~/lib/dashboard/overrides";
 import type { MemberStatus } from "~/lib/dashboard/types";
 
-export const metadata: Metadata = { title: "Members" };
+const navItem = dashboardNavData("/dashboard/members");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 const statuses: MemberStatus[] = ["pending", "approved", "suspended"];
 

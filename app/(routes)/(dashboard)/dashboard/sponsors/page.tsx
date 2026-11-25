@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { SubmissionsTable } from "~/components/dashboard/submissions-table";
 import { sponsorSubmissions } from "~/lib/dashboard/mock-data";
 
-export const metadata: Metadata = { title: "Sponsors" };
+const navItem = dashboardNavData("/dashboard/sponsors");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 function Content() {
   return (

@@ -8,7 +8,7 @@ import { fontVariables } from "~/lib/fonts";
 export const metadata: Metadata = {
   title: {
     default: siteConfig.title,
-    template: `%s – ${siteConfig.title}`,
+    template: `%s – ${siteConfig.slogan}`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url as string),
