@@ -6,9 +6,9 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title(`${getInitials(siteConfig.title)}'s Content`)
     .items([
-      // ==================================================
-      // CONTENT
-      // ==================================================
-
+      S.documentTypeListItem("service"),
+      S.documentTypeListItem("expression"),
+      S.divider(),
+      S.documentTypeListItem("project"),
       S.documentTypeListItem("projectFilter"),
     ]);

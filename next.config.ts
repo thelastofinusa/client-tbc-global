@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   reactCompiler: true,
   typedRoutes: true,
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
+  },
   turbopack: {
     rules: {
       "*.css": {

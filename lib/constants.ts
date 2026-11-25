@@ -40,12 +40,12 @@ export const navItems: NavItemType[] = [
     alternates: { canonical: "/projects" },
   },
   {
-    label: "Services & Visit",
+    label: "Services & Expressions",
     mobileLabel: "Gatherings & Visit",
     path: "/services",
     kind: "nav",
     description:
-      "View weekly services, house culture, and ministry expressions including School of Destiny, School Invasion, ITYAC, Sound & Beyond, 3 Nights of Mercy, and Campus Fellowship Minna.",
+      "Our weekly services and the expressions through which the house lives out its culture.",
     alternates: { canonical: "/services" },
   },
   {

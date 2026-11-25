@@ -87,6 +87,17 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
   const [authError, setAuthError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Better Auth sends people back here with ?error=... when Google sign-in fails.
+  React.useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("error");
+    if (!code) return;
+    setAuthError(
+      code === "account_not_linked"
+        ? "This email already has an account. Sign in with your password once, then try Google again."
+        : "Google sign-in didn’t complete. Please try again.",
+    );
+  }, []);
+
   const signUpForm = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -147,9 +158,6 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
         name: fullName,
         firstName: data.firstName?.trim() || "",
         lastName: data.lastName?.trim() || "",
-        role: "attendee",
-        requestedRole: "attendee",
-        status: "pending",
       });
 
       if (error) {
@@ -173,10 +181,20 @@ export const AuthForm: React.FC<{ type: "signin" | "signup" }> = ({ type }) => {
     setIsLoading(true);
 
     try {
-      await authClient.signIn.social({
+      const { error } = await authClient.signIn.social({
         provider: "google",
         callbackURL: "/dashboard",
+        newUserCallbackURL: "/dashboard",
+        errorCallbackURL: type === "signin" ? "/sign-in" : "/sign-up",
       });
+
+      if (error) {
+        setAuthError(
+          error.message ??
+            "Failed to authenticate with Google. Please try again.",
+        );
+        setIsLoading(false);
+      }
     } catch {
       setAuthError("Failed to authenticate with Google. Please try again.");
       setIsLoading(false);

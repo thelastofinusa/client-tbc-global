@@ -14,6 +14,7 @@ import { Show } from "~/components/shared/show";
 import { siteConfig } from "~/config/site.config";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
+import type { ServiceRow } from "~/sanity/queries/service.query";
 import { useToggle } from "../providers/toggle";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Button } from "../reusable/shadcn/button";
@@ -49,9 +50,10 @@ const itemVariants: Variants = {
 
 const links = navItems.filter((item) => (item.kind ?? "nav") === "nav");
 
-export const Header: React.FC<{ shouldAccessStudio: boolean }> = ({
-  shouldAccessStudio,
-}) => {
+export const Header: React.FC<{
+  shouldAccessStudio: boolean;
+  services: ServiceRow[];
+}> = ({ shouldAccessStudio, services }) => {
   const pathname = usePathname();
   const { toggle, isOpen, close } = useToggle("menu");
 
@@ -80,10 +82,14 @@ export const Header: React.FC<{ shouldAccessStudio: boolean }> = ({
             </Link>
 
             <div className="flex items-center gap-4 text-white/80">
-              <span className="font-serif text-[9px] tracking-[0.14em] uppercase">
-                Wed · Sat · Sun
-              </span>
-              <span className="h-3 w-px bg-white/20" />
+              {services && (
+                <>
+                  <span className="font-serif text-[9px] tracking-[0.14em] uppercase">
+                    {services.map((s) => s.day.slice(0, 3)).join(" · ")}
+                  </span>
+                  <span className="h-3 w-px bg-white/20" />
+                </>
+              )}
               <a
                 href={siteConfig.map.direction}
                 target="_blank"

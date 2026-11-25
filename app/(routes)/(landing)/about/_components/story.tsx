@@ -1,6 +1,7 @@
 import { GoFlame } from "react-icons/go";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
+import { siteConfig } from "~/config/site.config";
 
 const headingClass =
   "font-serif font-extrabold tracking-[-0.06em] leading-[1.05]";
@@ -25,11 +26,10 @@ export const Story = () => {
 
             <div className="text-muted-foreground flex flex-col gap-5 text-sm leading-[1.85] sm:text-base md:col-span-7">
               <p>
-                The Burning Church Global Ministries is a local church in
-                Kudende, Kaduna. We gather to worship, learn, and make room for
-                people at every stage of life. We want everyone who walks
-                through our doors to feel seen, welcomed, and encouraged to take
-                their next step.
+                {siteConfig.title} is a local church in Kudenda, Kaduna. We
+                gather to worship, learn, and make room for people at every
+                stage of life. We want everyone who walks through our doors to
+                feel seen, welcomed, and encouraged to take their next step.
               </p>
               <p>
                 Our community is built on real relationships: checking in on a

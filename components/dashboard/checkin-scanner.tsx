@@ -15,12 +15,12 @@ import { Button } from "~/components/reusable/shadcn/button";
 import { Card } from "~/components/reusable/shadcn/card";
 import { Input } from "~/components/reusable/shadcn/input";
 import { Label } from "~/components/reusable/shadcn/label";
+import { submitCheckIn } from "~/lib/dashboard/attendance";
 import {
   type CheckInData,
   isExpired,
   parseCheckIn,
 } from "~/lib/dashboard/checkin";
-import { addCheckIn, readOpenSession } from "~/lib/dashboard/checkin-store";
 
 type Result =
   | { kind: "success"; data: CheckInData; at: number }
@@ -62,14 +62,35 @@ export function CheckInScanner() {
         return;
       }
 
-      // TODO: send { serviceId, code } to the server, which verifies it and
-      // records the attendance against the signed-in member.
-      const outcome = addCheckIn(data);
-      setResult(
-        outcome === "added"
-          ? { kind: "success", data, at: Date.now() }
-          : { kind: "duplicate", data },
-      );
+      // The server verifies the signed code and records the attendance
+      // against the signed-in member.
+      void submitCheckIn({ serviceId: data.serviceId, code: data.code })
+        .then((outcome) => {
+          if (outcome.status === "error") {
+            setResult({ kind: "error", message: outcome.message });
+            return;
+          }
+          const confirmed: CheckInData = {
+            serviceId: outcome.service.id,
+            service: outcome.service.name,
+            day: outcome.service.day,
+            time: outcome.service.time,
+            code: outcome.code,
+            expiresAt: data.expiresAt,
+          };
+          setResult(
+            outcome.status === "added"
+              ? { kind: "success", data: confirmed, at: outcome.at }
+              : { kind: "duplicate", data: confirmed },
+          );
+        })
+        .catch(() =>
+          setResult({
+            kind: "error",
+            message:
+              "Something went wrong. Check your connection and try again.",
+          }),
+        );
     },
     [stopCamera],
   );
@@ -166,19 +187,34 @@ export function CheckInScanner() {
       return;
     }
 
-    // A bare code: check it against the session opened on this device.
-    const open = readOpenSession();
-    if (open && open.code.toLowerCase() === value.toLowerCase()) {
-      handleData(open);
-      setManual("");
-      return;
-    }
-
-    setResult({
-      kind: "error",
-      message:
-        "We couldn’t match that code. Paste the full link, or scan the QR code.",
-    });
+    // A bare code: the server works out which service it belongs to.
+    void submitCheckIn({ code: value })
+      .then((outcome) => {
+        if (outcome.status === "error") {
+          setResult({ kind: "error", message: outcome.message });
+          return;
+        }
+        const confirmed: CheckInData = {
+          serviceId: outcome.service.id,
+          service: outcome.service.name,
+          day: outcome.service.day,
+          time: outcome.service.time,
+          code: outcome.code,
+          expiresAt: 0,
+        };
+        setResult(
+          outcome.status === "added"
+            ? { kind: "success", data: confirmed, at: outcome.at }
+            : { kind: "duplicate", data: confirmed },
+        );
+        setManual("");
+      })
+      .catch(() =>
+        setResult({
+          kind: "error",
+          message: "Something went wrong. Check your connection and try again.",
+        }),
+      );
   };
 
   return (

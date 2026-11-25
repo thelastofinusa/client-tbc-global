@@ -15,6 +15,92 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type ProjectFilterReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "projectFilter";
+};
+
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type Project = {
+  _id: string;
+  _type: "project";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  code?: string;
+  category?: ProjectFilterReference;
+  status?: "Active" | "In Progress" | "Ongoing" | "Completed";
+  location?: string;
+  timeline?: string;
+  featured?: boolean;
+  order?: number;
+  summary?: string;
+  about?: Array<string>;
+  purposeHeading?: string;
+  purposeDescription?: string;
+  objectives?: Array<string>;
+  progressPercentage?: number;
+  raisedLabel?: string;
+  goalLabel?: string;
+  milestones?: Array<{
+    label?: string;
+    completed?: boolean;
+    _key: string;
+  }>;
+  banner?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  gallery?: Array<{
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    alt?: string;
+    caption?: string;
+    _key: string;
+  }>;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type ProjectFilter = {
   _id: string;
   _type: "projectFilter";
@@ -25,17 +111,44 @@ export type ProjectFilter = {
   value?: Slug;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
+export type Expression = {
+  _id: string;
+  _type: "expression";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  tagline?: string;
+  description?: string;
+  schedule?: string;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  order?: number;
 };
 
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+export type Service = {
+  _id: string;
+  _type: "service";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  kind?: "weekly" | "special";
+  day?: string;
+  time?: string;
+  location?: string;
+  expected?: number;
+  description?: string;
+  featured?: boolean;
+  order?: number;
 };
 
 export type BlockContent = Array<
@@ -68,20 +181,42 @@ export type BlockContent = Array<
     }
 >;
 
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityReleaseMetadata = {
+  _type: "sanity.releaseMetadata";
+  title?: string;
+  description?: string;
+  releaseType?: "asap" | "scheduled" | "undecided";
+  intendedPublishAt?: string;
+  cardinality?: "many" | "one";
 };
 
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
+export type SystemRelease = {
+  _id: string;
+  _type: "system.release";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  state?:
+    | "active"
+    | "archiving"
+    | "unarchiving"
+    | "archived"
+    | "published"
+    | "publishing"
+    | "scheduled"
+    | "scheduling";
+  error?: {
+    message?: string;
+  };
+  publishAt?: string;
+  publishedAt?: string;
+  metadata?: SanityReleaseMetadata;
+  finalDocumentStates?: Array<{
+    id?: string;
+    _key: string;
+  }>;
+  userId?: string;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -182,12 +317,18 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
-  | ProjectFilter
-  | Slug
+  | ProjectFilterReference
   | SanityImageAssetReference
-  | BlockContent
+  | Project
   | SanityImageCrop
   | SanityImageHotspot
+  | Slug
+  | ProjectFilter
+  | Expression
+  | Service
+  | BlockContent
+  | SanityReleaseMetadata
+  | SystemRelease
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -197,19 +338,95 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+// Source: sanity/queries/expression.query.ts
+// Variable: Q_EXPRESSIONS
+// Query: *[_type == "expression"] | order(coalesce(order, 999) asc, _createdAt asc) {    _id,    title,    "slug": slug.current,    tagline,    description,    schedule,    "image": image.asset->url,    "imageAlt": coalesce(image.alt, title)  }
+export type Q_EXPRESSIONS_RESULT = Array<{
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  tagline: string | null;
+  description: string | null;
+  schedule: string | null;
+  image: string | null;
+  imageAlt: string | null;
+}>;
+
+// Source: sanity/queries/project.query.ts
+// Variable: Q_PROJECTS
+// Query: *[_type == "project" && defined(slug.current)]    | order(coalesce(order, 999) asc, _createdAt asc) {   "slug": slug.current,  "code": coalesce(code, ""),  title,  "category": coalesce(category->name, "Outreach"),  "status": coalesce(status, "Active"),  "location": coalesce(location, "Kudenda, Kaduna"),  "timeline": coalesce(timeline, ""),  "bannerImage": banner.asset->url,  "bannerAlt": coalesce(banner.alt, title),  summary,  "about": coalesce(about, []),  "purpose": {    "heading": coalesce(purposeHeading, "Why this initiative matters"),    "description": coalesce(purposeDescription, ""),    "objectives": coalesce(objectives, [])  },  "progress": {    "percentage": coalesce(progressPercentage, 0),    "raisedLabel": coalesce(raisedLabel, ""),    "goalLabel": coalesce(goalLabel, ""),    "milestones": coalesce(milestones[]{ label, "completed": coalesce(completed, false) }, [])  },  "gallery": coalesce(gallery[defined(image.asset)]{    "src": image.asset->url,    "alt": coalesce(alt, caption, ""),    "caption": coalesce(caption, "")  }, []),  "featured": coalesce(featured, false) }
+export type Q_PROJECTS_RESULT = Array<{
+  slug: string;
+  code: string | "";
+  title: string | null;
+  category: string | "Outreach";
+  status: "Active" | "Completed" | "In Progress" | "Ongoing";
+  location: string | "Kudenda, Kaduna";
+  timeline: string | "";
+  bannerImage: string | null;
+  bannerAlt: string | null;
+  summary: string | null;
+  about: Array<string> | Array<never>;
+  purpose: {
+    heading: string | "Why this initiative matters";
+    description: string | "";
+    objectives: Array<string> | Array<never>;
+  };
+  progress: {
+    percentage: number | 0;
+    raisedLabel: string | "";
+    goalLabel: string | "";
+    milestones:
+      | Array<{
+          label: string | null;
+          completed: boolean | false;
+        }>
+      | Array<never>;
+  };
+  gallery:
+    | Array<{
+        src: string | null;
+        alt: string | "";
+        caption: string | "";
+      }>
+    | Array<never>;
+  featured: boolean | false;
+}>;
+
 // Source: sanity/queries/projectFilter.query.ts
 // Variable: Q_ALL_FILTERS
-// Query: *[_type == "projectFilter"] | order(_createdAt asc) {      _id,  name,  "slug": value.current,  }
+// Query: *[_type == "projectFilter"] | order(_createdAt asc) {    _id,    name,    "slug": value.current  }
 export type Q_ALL_FILTERS_RESULT = Array<{
   _id: string;
   name: string | null;
   slug: string | null;
 }>;
 
+// Source: sanity/queries/service.query.ts
+// Variable: Q_SERVICES
+// Query: *[_type == "service"] | order(coalesce(order, 999) asc, _createdAt asc) {    "id": slug.current,    name,    "kind": coalesce(kind, "weekly"),    day,    time,    "location": coalesce(location, "Kudenda, Kaduna"),    "expected": coalesce(expected, 0),    description,    "featured": coalesce(featured, false)  }
+export type Q_SERVICES_RESULT = Array<{
+  id: string | null;
+  name: string | null;
+  kind: "special" | "weekly";
+  day: string | null;
+  time: string | null;
+  location: string | "Kudenda, Kaduna";
+  expected: number | 0;
+  description: string | null;
+  featured: boolean | false;
+}>;
+
 // Query TypeMap
-import "@sanity/client";
-declare module "@sanity/client" {
+declare global {
   interface SanityQueries {
-    '\n  *[_type == "projectFilter"] | order(_createdAt asc) {\n    \n  _id,\n  name,\n  "slug": value.current,\n\n  }\n': Q_ALL_FILTERS_RESULT;
+    '\n  *[_type == "expression"] | order(coalesce(order, 999) asc, _createdAt asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    tagline,\n    description,\n    schedule,\n    "image": image.asset->url,\n    "imageAlt": coalesce(image.alt, title)\n  }\n': Q_EXPRESSIONS_RESULT;
+    '\n  *[_type == "project" && defined(slug.current)]\n    | order(coalesce(order, 999) asc, _createdAt asc) { \n  "slug": slug.current,\n  "code": coalesce(code, ""),\n  title,\n  "category": coalesce(category->name, "Outreach"),\n  "status": coalesce(status, "Active"),\n  "location": coalesce(location, "Kudenda, Kaduna"),\n  "timeline": coalesce(timeline, ""),\n  "bannerImage": banner.asset->url,\n  "bannerAlt": coalesce(banner.alt, title),\n  summary,\n  "about": coalesce(about, []),\n  "purpose": {\n    "heading": coalesce(purposeHeading, "Why this initiative matters"),\n    "description": coalesce(purposeDescription, ""),\n    "objectives": coalesce(objectives, [])\n  },\n  "progress": {\n    "percentage": coalesce(progressPercentage, 0),\n    "raisedLabel": coalesce(raisedLabel, ""),\n    "goalLabel": coalesce(goalLabel, ""),\n    "milestones": coalesce(milestones[]{ label, "completed": coalesce(completed, false) }, [])\n  },\n  "gallery": coalesce(gallery[defined(image.asset)]{\n    "src": image.asset->url,\n    "alt": coalesce(alt, caption, ""),\n    "caption": coalesce(caption, "")\n  }, []),\n  "featured": coalesce(featured, false)\n }\n': Q_PROJECTS_RESULT;
+    '\n  *[_type == "projectFilter"] | order(_createdAt asc) {\n    _id,\n    name,\n    "slug": value.current\n  }\n': Q_ALL_FILTERS_RESULT;
+    '\n  *[_type == "service"] | order(coalesce(order, 999) asc, _createdAt asc) {\n    "id": slug.current,\n    name,\n    "kind": coalesce(kind, "weekly"),\n    day,\n    time,\n    "location": coalesce(location, "Kudenda, Kaduna"),\n    "expected": coalesce(expected, 0),\n    description,\n    "featured": coalesce(featured, false)\n  }\n': Q_SERVICES_RESULT;
   }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module "@sanity/client" {
+  interface SanityQueries extends globalThis.SanityQueries {}
 }

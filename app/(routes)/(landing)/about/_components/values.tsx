@@ -32,7 +32,7 @@ const values = [
     icon: RiMapPinRangeLine,
     title: "Rooted in community",
     description:
-      "We are proud to call Kudende home and committed to its people and future.",
+      "We are proud to call Kudenda home and committed to its people and future.",
   },
 ];
 

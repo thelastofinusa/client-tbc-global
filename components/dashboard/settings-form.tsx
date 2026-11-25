@@ -300,7 +300,7 @@ export function SettingsForm({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 self-start sm:self-auto shrink-0"
+                    className="shrink-0 gap-1.5 self-start sm:self-auto"
                   >
                     <PlusIcon className="size-4" />
                     <span>Add Channel</span>
@@ -411,7 +411,7 @@ export function SettingsForm({
         </div>
 
         {communities.length === 0 ? (
-          <div className="border-line border border-dashed p-8 text-center text-sm text-muted-foreground">
+          <div className="border-line text-muted-foreground border border-dashed p-8 text-center text-sm">
             No community channels configured yet.
           </div>
         ) : (
@@ -426,7 +426,7 @@ export function SettingsForm({
                     href={channel.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="border-line hover:border-primary group/card flex h-full flex-col gap-3 border p-4 transition-colors bg-card"
+                    className="border-line hover:border-primary group/card bg-card flex h-full flex-col gap-3 border p-4 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <span className="bg-muted text-primary grid size-9 place-items-center">

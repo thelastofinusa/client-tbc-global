@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "~/components/reusable/shadcn/table";
 import { toast } from "~/components/reusable/shadcn/toast";
+import { updateSubmissionStatus } from "~/lib/dashboard/actions";
 import type { Submission, SubmissionStatus } from "~/lib/dashboard/types";
 import { SubmissionStatusBadge, submissionStatusLabel } from "./badges";
 
@@ -36,15 +37,23 @@ export function SubmissionsTable({
 }) {
   const [rows, setRows] = React.useState(initialRows);
 
-  // TODO: persist with a server action (requireSuperAdmin first).
-  const setStatus = (row: Submission, status: SubmissionStatus) => {
+  const setStatus = async (row: Submission, status: SubmissionStatus) => {
+    const previous = row.status;
     setRows((prev) =>
       prev.map((r) => (r.id === row.id ? { ...r, status } : r)),
     );
-    toast.add({
-      title: "Status updated",
-      description: `${row.name}: ${submissionStatusLabel[status]}`,
-    });
+    try {
+      await updateSubmissionStatus(row.id, status);
+      toast.add({
+        title: "Status updated",
+        description: `${row.name}: ${submissionStatusLabel[status]}`,
+      });
+    } catch {
+      setRows((prev) =>
+        prev.map((r) => (r.id === row.id ? { ...r, status: previous } : r)),
+      );
+      toast.add({ title: "Couldn’t update the status" });
+    }
   };
 
   return (
@@ -94,7 +103,7 @@ export function SubmissionsTable({
                     items={statusItems}
                     value={row.status}
                     onValueChange={(value) => {
-                      if (value) setStatus(row, value);
+                      if (value) void setStatus(row, value);
                     }}
                   >
                     <SelectTrigger size="sm" className="min-w-28">

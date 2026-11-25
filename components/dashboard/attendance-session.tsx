@@ -10,6 +10,7 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import * as React from "react";
 import { Button } from "~/components/reusable/shadcn/button";
@@ -22,36 +23,29 @@ import {
   SelectValue,
 } from "~/components/reusable/shadcn/select";
 import { toast } from "~/components/reusable/shadcn/toast";
+import { issueCheckInCode } from "~/lib/dashboard/attendance";
 import {
   buildCheckInUrl,
   type CheckInData,
-  CODE_TTL_MS,
+  CODE_ROTATE_SECONDS,
 } from "~/lib/dashboard/checkin";
-import {
-  clearOpenSession,
-  saveOpenSession,
-} from "~/lib/dashboard/checkin-store";
+import type { AttendanceSnapshot } from "~/lib/dashboard/data";
 import type { ChurchService, Member } from "~/lib/dashboard/types";
 
-const ROTATE_SECONDS = 30;
-
-function newCode() {
-  return crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase();
-}
+const ROTATE_SECONDS = CODE_ROTATE_SECONDS;
 
 export function AttendanceSession({
   services,
-  members,
-  lastServiceDate,
+  snapshot,
   mode = "full",
 }: {
   services: ChurchService[];
-  members: Member[];
-  /** ISO date of the service the present/absent lists describe. */
-  lastServiceDate: string;
+  /** Present/absent for the most recent day anyone checked in. */
+  snapshot: AttendanceSnapshot;
   /** "qr-only" is the usher view: just the code and the live count. */
   mode?: "full" | "qr-only";
 }) {
+  const router = useRouter();
   const serviceItems = services.map((s) => ({
     value: s.id,
     label: `${s.name} · ${s.day}, ${s.time}`,
@@ -64,24 +58,24 @@ export function AttendanceSession({
     url: string;
   } | null>(null);
   const [secondsLeft, setSecondsLeft] = React.useState(ROTATE_SECONDS);
-  const [reminded, setReminded] = React.useState<Set<string>>(new Set());
 
   const service = services.find((s) => s.id === serviceId);
 
-  const issue = React.useCallback(() => {
+  const issue = React.useCallback(async () => {
     if (!service) return;
-    const data: CheckInData = {
-      serviceId: service.id,
-      service: service.name,
-      day: service.day,
-      time: service.time,
-      code: newCode(),
-      expiresAt: Date.now() + CODE_TTL_MS,
-    };
-    saveOpenSession(data);
+    const result = await issueCheckInCode(service.id);
+    if (!result.ok) {
+      toast.add({
+        title: "Couldn’t start check-in",
+        description: result.message,
+      });
+      setLive(false);
+      setSession(null);
+      return;
+    }
     setSession({
-      data,
-      url: buildCheckInUrl(window.location.origin, data),
+      data: result.data,
+      url: buildCheckInUrl(window.location.origin, result.data),
     });
     setSecondsLeft(ROTATE_SECONDS);
   }, [service]);
@@ -92,7 +86,7 @@ export function AttendanceSession({
     const timer = window.setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
-          issue();
+          void issue();
           return ROTATE_SECONDS;
         }
         return prev - 1;
@@ -102,41 +96,32 @@ export function AttendanceSession({
   }, [live, issue]);
 
   const start = () => {
-    issue();
+    void issue();
     setLive(true);
   };
 
   const stop = React.useCallback(() => {
     setLive(false);
     setSession(null);
-    clearOpenSession();
   }, []);
 
-  // Close the session if the page is left.
-  React.useEffect(() => () => clearOpenSession(), []);
+  // While check-in is open, refresh the present/absent numbers every 15s.
+  React.useEffect(() => {
+    if (!live) return;
+    const timer = window.setInterval(() => router.refresh(), 15_000);
+    return () => window.clearInterval(timer);
+  }, [live, router]);
 
-  const approved = members.filter((m) => m.status === "approved");
-  const present = approved.filter((m) => m.lastAttended === lastServiceDate);
-  const absent = approved.filter((m) => m.lastAttended !== lastServiceDate);
+  const { absent, presentCount, lastServiceDate } = snapshot;
 
-  // TODO: send through the email provider once the backend exists.
-  const remind = (m: Member) => {
-    setReminded((prev) => new Set(prev).add(m.id));
-    toast.add({
-      title: "Reminder sent",
-      description: `${m.firstName} ${m.lastName} was emailed that service has started.`,
-    });
-  };
+  // No email provider yet, so reminders open the admin's own mail app.
+  const reminderBody = (name: string) =>
+    `Hello ${name}, we missed you at church. We hope you are well. Join us at the next gathering.`;
 
-  const remindAll = () => {
-    const pending = absent.filter((m) => !reminded.has(m.id));
-    if (pending.length === 0) return;
-    setReminded((prev) => new Set([...prev, ...pending.map((m) => m.id)]));
-    toast.add({
-      title: "Reminders sent",
-      description: `${pending.length} absent members were emailed.`,
-    });
-  };
+  const remindLink = (m: Member) =>
+    `mailto:${m.email}?subject=${encodeURIComponent("We missed you")}&body=${encodeURIComponent(reminderBody(m.firstName))}`;
+
+  const remindAllLink = `mailto:?bcc=${absent.map((m) => m.email).join(",")}&subject=${encodeURIComponent("We missed you")}&body=${encodeURIComponent(reminderBody("friend"))}`;
 
   const copyLink = async () => {
     if (!session) return;
@@ -296,7 +281,7 @@ export function AttendanceSession({
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Present", value: present.length },
+            { label: "Present", value: presentCount },
             { label: "Expected", value: service?.expected ?? 0 },
             { label: "Absent", value: absent.length },
           ].map((item) => (
@@ -317,21 +302,28 @@ export function AttendanceSession({
               <div>
                 <h2 className="font-serif text-lg font-bold">Absent members</h2>
                 <p className="text-muted-foreground text-xs">
-                  Didn’t check in on{" "}
-                  {format(parseISO(lastServiceDate), "EEEE d MMM")}.
+                  {lastServiceDate
+                    ? `Didn’t check in on ${format(parseISO(lastServiceDate), "EEEE d MMM")}.`
+                    : "Shows up after the first check-in."}
                 </p>
               </div>
               <Button
                 size="sm"
                 variant="outline"
-                onClick={remindAll}
-                disabled={absent.every((m) => reminded.has(m.id))}
+                disabled={absent.length === 0}
+                nativeButton={false}
+                render={<a href={remindAllLink} />}
               >
                 <BellRingIcon />
                 Remind all
               </Button>
             </div>
 
+            {absent.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                Nobody to follow up with yet.
+              </p>
+            )}
             <ul className="divide-line divide-y">
               {absent.map((m) => (
                 <li
@@ -351,10 +343,10 @@ export function AttendanceSession({
                   <Button
                     size="sm"
                     variant="ghost"
-                    disabled={reminded.has(m.id)}
-                    onClick={() => remind(m)}
+                    nativeButton={false}
+                    render={<a href={remindLink(m)} />}
                   >
-                    {reminded.has(m.id) ? "Sent" : "Send reminder"}
+                    Send reminder
                   </Button>
                 </li>
               ))}

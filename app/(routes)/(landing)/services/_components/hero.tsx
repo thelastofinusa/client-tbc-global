@@ -4,21 +4,26 @@ import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { siteConfig } from "~/config/site.config";
+import { getServices } from "~/lib/data/services";
 
-export const ServicesHeroComponent = () => {
+export const ServicesHeroComponent = async () => {
+  const services = await getServices();
+  // "Highlight on the website" in Sanity, else the first service.
+  const highlight = services.find((s) => s.featured) ?? services[0];
+
   return (
     <section className="bg-navy border-b border-white/10 py-16 text-white md:py-24">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
           <div className="max-w-2xl">
-            <Eyebrow label="Services & Visits" className="text-accent" />
+            <Eyebrow label="Services & Expressions" className="text-accent" />
             <h1 className="mt-4 font-serif text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl md:text-6xl">
-              Gather with us in Kudenda, Kaduna.
+              One house, many expressions.
             </h1>
             <p className="text-secondary/80 mt-5 max-w-xl text-sm leading-[1.75] sm:text-base">
-              Join us across our weekly rhythm—Wednesdays, Saturdays, and our
-              Sunday service at 9:00 AM. Plan a visit or get directions ahead of
-              time.
+              Gather with us in Kudenda, Kaduna every week, then step into the
+              expressions where the culture of the house is lived out: Christ,
+              the Word, prayer, fellowship, commitment, service and growth.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -26,15 +31,9 @@ export const ServicesHeroComponent = () => {
                 variant="red"
                 size="lg"
                 nativeButton={false}
-                render={
-                  <a
-                    href={siteConfig.map.direction}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  />
-                }
+                render={<a href="#services" />}
               >
-                <span>Get directions</span>
+                <span>See the schedule</span>
                 <ArrowUpRightIcon />
               </Button>
               <Button
@@ -48,20 +47,25 @@ export const ServicesHeroComponent = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-white/15 bg-white/5 p-6">
-            <span className="text-accent text-xs font-semibold tracking-wider uppercase">
-              Next Weekly Highlight
-            </span>
-            <p className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em]">
-              Sunday service · 9:00 AM
-            </p>
-            <p className="text-secondary/75 mt-1 text-sm">
-              Kudenda, Kaduna · Wed · Sat · Sun
-            </p>
-            <p className="mt-4 font-mono text-xs text-white/60">
-              Coords: 10.478445, 7.368035
-            </p>
-          </div>
+          {highlight && (
+            <div className="rounded-xl border border-white/15 bg-white/5 p-6">
+              <Eyebrow label="Join us" className="text-accent" />
+              <p className="mt-2 font-serif text-xl font-extrabold tracking-[-0.03em]">
+                {highlight.name} · {highlight.time}
+              </p>
+              <p className="text-secondary/75 mt-1 text-sm">
+                {highlight.day} · {highlight.location}
+              </p>
+              <a
+                href={siteConfig.map.direction}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent mt-4 inline-flex text-xs font-semibold underline-offset-4 hover:underline"
+              >
+                Get directions
+              </a>
+            </div>
+          )}
         </div>
       </Container>
     </section>

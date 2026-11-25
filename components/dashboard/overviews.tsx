@@ -18,29 +18,36 @@ import { Card } from "~/components/reusable/shadcn/card";
 import { Progress } from "~/components/reusable/shadcn/progress";
 import type { DashboardViewer } from "~/lib/dashboard/access";
 import {
-  attendanceTrend,
-  members,
-  partnerSubmissions,
-  projects,
-  services,
-  sponsorSubmissions,
-} from "~/lib/dashboard/mock-data";
+  getAttendanceSnapshot,
+  getMembers,
+  getMyAttendance,
+  getNewSubmissionCounts,
+  getSubmissions,
+  getTotalSubmissionCounts,
+} from "~/lib/dashboard/data";
+import { pickNextService } from "~/lib/dashboard/next-service";
+import type { ChurchService } from "~/lib/dashboard/types";
+import { getFeaturedProject, getProjects } from "~/lib/data/projects";
+import { getServices } from "~/lib/data/services";
 import { MemberStatusBadge, SubmissionStatusBadge } from "./badges";
 import { AttendanceChart } from "./charts";
 import { PageHeader } from "./page-header";
 import { StatCard } from "./stat-card";
 
-const nextService = services.find((s) => s.id === "s_sun") ?? services[0];
-const last = attendanceTrend.at(-1)?.present ?? 0;
-const before = attendanceTrend.at(-2)?.present ?? last;
-
 function greeting(viewer: DashboardViewer) {
   return `Welcome back, ${viewer.firstName}`;
 }
 
+function delta(current: number, previous: number) {
+  const diff = current - previous;
+  return `${diff >= 0 ? "+" : ""}${diff} vs the service before`;
+}
+
 function NextServiceCard({
+  service,
   action,
 }: {
+  service: ChurchService | null;
   action: { href: string; label: string; icon: typeof QrCodeIcon };
 }) {
   const Icon = action.icon;
@@ -50,12 +57,20 @@ function NextServiceCard({
         <p className="text-accent text-xs font-bold tracking-[0.14em] uppercase">
           Next service
         </p>
-        <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.04em]">
-          {nextService.name}
-        </h2>
-        <p className="mt-1 text-sm text-white/75">
-          {nextService.day} · {nextService.time} · {nextService.location}
-        </p>
+        {service ? (
+          <>
+            <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.04em]">
+              {service.name}
+            </h2>
+            <p className="mt-1 text-sm text-white/75">
+              {service.day} · {service.time} · {service.location}
+            </p>
+          </>
+        ) : (
+          <p className="mt-2 text-sm text-white/75">
+            No services yet. Add them in Sanity Studio.
+          </p>
+        )}
       </div>
       <Button
         variant="cream"
@@ -71,7 +86,13 @@ function NextServiceCard({
   );
 }
 
-function UpcomingList({ manage }: { manage?: boolean }) {
+function UpcomingList({
+  services,
+  manage,
+}: {
+  services: ChurchService[];
+  manage?: boolean;
+}) {
   return (
     <Card variant="surface" className="gap-4">
       <div className="flex items-center justify-between">
@@ -88,33 +109,87 @@ function UpcomingList({ manage }: { manage?: boolean }) {
           </Button>
         )}
       </div>
-      <ul className="divide-line divide-y">
-        {services.map((s) => (
-          <li
-            key={s.id}
-            className="flex items-center justify-between gap-3 py-3"
+      {services.length === 0 ? (
+        <p className="text-muted-foreground text-sm">Nothing scheduled yet.</p>
+      ) : (
+        <ul className="divide-line divide-y">
+          {services.map((s) => (
+            <li
+              key={s.id}
+              className="flex items-center justify-between gap-3 py-3"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{s.name}</p>
+                <p className="text-muted-foreground text-xs">
+                  {s.day} · {s.time}
+                </p>
+              </div>
+              <span className="text-muted-foreground text-xs capitalize">
+                {s.kind}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
+async function ProjectsCard({ manage }: { manage?: boolean }) {
+  const projects = await getProjects();
+  return (
+    <Card variant="surface" className="gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-serif text-lg font-bold">Projects</h2>
+        {manage && (
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/dashboard/projects" />}
           >
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{s.name}</p>
-              <p className="text-muted-foreground text-xs">
-                {s.day} · {s.time}
-              </p>
-            </div>
-            <span className="text-muted-foreground text-xs capitalize">
-              {s.kind}
-            </span>
-          </li>
-        ))}
-      </ul>
+            Manage
+            <ArrowRightIcon />
+          </Button>
+        )}
+      </div>
+      {projects.length === 0 ? (
+        <p className="text-muted-foreground text-sm">
+          No projects yet. Add them in Sanity Studio.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {projects.map((p) => (
+            <li key={p.slug} className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">{p.title}</span>
+                <span className="text-muted-foreground tabular-nums">
+                  {p.progress.percentage}%
+                </span>
+              </div>
+              <Progress value={p.progress.percentage} variant="project" />
+            </li>
+          ))}
+        </ul>
+      )}
     </Card>
   );
 }
 
 /* ───────────────────────── Super admin ───────────────────────── */
-export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
+export async function SuperAdminOverview({
+  viewer,
+}: {
+  viewer: DashboardViewer;
+}) {
+  const [members, snapshot, services, totals] = await Promise.all([
+    getMembers(),
+    getAttendanceSnapshot(),
+    getServices(),
+    getTotalSubmissionCounts(),
+  ]);
   const approved = members.filter((m) => m.status === "approved");
   const pending = members.filter((m) => m.status === "pending");
-  const sponsors = projects.reduce((sum, p) => sum + p.sponsors, 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -149,15 +224,19 @@ export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
           highlight={pending.length > 0}
         />
         <StatCard
-          label="Last Sunday"
-          value={last}
-          hint={`${last >= before ? "+" : ""}${last - before} vs the week before`}
+          label="Last service"
+          value={snapshot.presentCount}
+          hint={
+            snapshot.lastServiceDate
+              ? delta(snapshot.presentCount, snapshot.previousCount)
+              : "No check-ins yet"
+          }
           icon={CalendarCheckIcon}
         />
         <StatCard
           label="Sponsors & partners"
-          value={sponsors + partnerSubmissions.length}
-          hint={`${sponsors} sponsors · ${partnerSubmissions.length} partners`}
+          value={totals.sponsors + totals.partners}
+          hint={`${totals.sponsors} sponsors · ${totals.partners} partners`}
           icon={HeartHandshakeIcon}
         />
       </div>
@@ -166,13 +245,13 @@ export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
         <Card variant="surface" className="gap-4 xl:col-span-2">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-serif text-lg font-bold">
-                Sunday attendance
-              </h2>
-              <p className="text-muted-foreground text-xs">Last 8 weeks</p>
+              <h2 className="font-serif text-lg font-bold">Attendance</h2>
+              <p className="text-muted-foreground text-xs">
+                Check-ins at the last 8 service days
+              </p>
             </div>
           </div>
-          <AttendanceChart />
+          <AttendanceChart data={snapshot.trend} />
         </Card>
 
         <Card variant="surface" className="gap-4">
@@ -218,6 +297,7 @@ export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <NextServiceCard
+          service={pickNextService(services)}
           action={{
             href: "/dashboard/attendance",
             label: "Open check-in",
@@ -230,47 +310,19 @@ export function SuperAdminOverview({ viewer }: { viewer: DashboardViewer }) {
   );
 }
 
-function ProjectsCard({ manage }: { manage?: boolean }) {
-  return (
-    <Card variant="surface" className="gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg font-bold">Projects</h2>
-        {manage && (
-          <Button
-            variant="ghost"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/dashboard/projects" />}
-          >
-            Manage
-            <ArrowRightIcon />
-          </Button>
-        )}
-      </div>
-      <ul className="flex flex-col gap-4">
-        {projects.map((p) => (
-          <li key={p.id} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">{p.name}</span>
-              <span className="text-muted-foreground tabular-nums">
-                {p.progress}%
-              </span>
-            </div>
-            <Progress value={p.progress} variant="project" />
-          </li>
-        ))}
-      </ul>
-    </Card>
-  );
-}
-
 /* ───────────────────────── Admin ───────────────────────── */
-export function AdminOverview({ viewer }: { viewer: DashboardViewer }) {
-  const approved = members.filter((m) => m.status === "approved");
-  const absent = approved.filter((m) => m.lastAttended !== "2026-11-22");
-  const newSponsors = sponsorSubmissions.filter((s) => s.status === "new");
-  const newPartners = partnerSubmissions.filter((s) => s.status === "new");
-  const recent = [...sponsorSubmissions, ...partnerSubmissions]
+export async function AdminOverview({ viewer }: { viewer: DashboardViewer }) {
+  const [snapshot, services, newCounts, sponsors, partners] = await Promise.all(
+    [
+      getAttendanceSnapshot(),
+      getServices(),
+      getNewSubmissionCounts(),
+      getSubmissions("sponsor"),
+      getSubmissions("partner"),
+    ],
+  );
+
+  const recent = [...sponsors, ...partners]
     .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
     .slice(0, 4);
 
@@ -294,27 +346,31 @@ export function AdminOverview({ viewer }: { viewer: DashboardViewer }) {
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard
-          label="Last Sunday"
-          value={last}
-          hint={`${last >= before ? "+" : ""}${last - before} vs the week before`}
+          label="Last service"
+          value={snapshot.presentCount}
+          hint={
+            snapshot.lastServiceDate
+              ? delta(snapshot.presentCount, snapshot.previousCount)
+              : "No check-ins yet"
+          }
           icon={CalendarCheckIcon}
         />
         <StatCard
           label="Absent members"
-          value={absent.length}
-          hint="Didn’t check in last Sunday"
+          value={snapshot.absent.length}
+          hint="Didn’t check in at the last service"
           icon={BellRingIcon}
-          highlight={absent.length > 0}
+          highlight={snapshot.absent.length > 0}
         />
         <StatCard
           label="New sponsors"
-          value={newSponsors.length}
+          value={newCounts.sponsors}
           hint="Waiting for a reply"
           icon={HeartHandshakeIcon}
         />
         <StatCard
           label="New partners"
-          value={newPartners.length}
+          value={newCounts.partners}
           hint="Waiting for a reply"
           icon={UsersIcon}
         />
@@ -322,8 +378,8 @@ export function AdminOverview({ viewer }: { viewer: DashboardViewer }) {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <Card variant="surface" className="gap-4 xl:col-span-2">
-          <h2 className="font-serif text-lg font-bold">Sunday attendance</h2>
-          <AttendanceChart />
+          <h2 className="font-serif text-lg font-bold">Attendance</h2>
+          <AttendanceChart data={snapshot.trend} />
         </Card>
 
         <Card variant="surface" className="gap-4">
@@ -339,43 +395,53 @@ export function AdminOverview({ viewer }: { viewer: DashboardViewer }) {
               <ArrowRightIcon />
             </Button>
           </div>
-          <ul className="divide-line divide-y">
-            {recent.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-center justify-between gap-3 py-3"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{r.name}</p>
-                  <p className="text-muted-foreground truncate text-xs">
-                    {r.subject}
-                  </p>
-                </div>
-                <SubmissionStatusBadge status={r.status} />
-              </li>
-            ))}
-          </ul>
+          {recent.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No sponsor or partner requests yet.
+            </p>
+          ) : (
+            <ul className="divide-line divide-y">
+              {recent.map((r) => (
+                <li
+                  key={r.id}
+                  className="flex items-center justify-between gap-3 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{r.name}</p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {r.subject}
+                    </p>
+                  </div>
+                  <SubmissionStatusBadge status={r.status} />
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <NextServiceCard
+          service={pickNextService(services)}
           action={{
             href: "/dashboard/attendance",
             label: "Open check-in",
             icon: QrCodeIcon,
           }}
         />
-        <UpcomingList manage />
+        <UpcomingList services={services} manage />
       </div>
     </div>
   );
 }
 
 /* ───────────────────────── Usher ───────────────────────── */
-export function UsherOverview({ viewer }: { viewer: DashboardViewer }) {
-  const approved = members.filter((m) => m.status === "approved");
-  const present = approved.filter((m) => m.lastAttended === "2026-11-22");
+export async function UsherOverview({ viewer }: { viewer: DashboardViewer }) {
+  const [snapshot, services] = await Promise.all([
+    getAttendanceSnapshot(),
+    getServices(),
+  ]);
+  const next = pickNextService(services);
 
   return (
     <div className="flex flex-col gap-6">
@@ -387,6 +453,7 @@ export function UsherOverview({ viewer }: { viewer: DashboardViewer }) {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <NextServiceCard
+          service={next}
           action={{
             href: "/dashboard/attendance",
             label: "Show check-in code",
@@ -396,15 +463,15 @@ export function UsherOverview({ viewer }: { viewer: DashboardViewer }) {
 
         <div className="grid grid-cols-2 gap-3">
           <StatCard
-            label="Present last Sunday"
-            value={present.length}
+            label="Present last service"
+            value={snapshot.presentCount}
             hint="Checked in by QR"
             icon={CalendarCheckIcon}
           />
           <StatCard
             label="Expected next"
-            value={nextService.expected}
-            hint={nextService.name}
+            value={next?.expected ?? 0}
+            hint={next?.name ?? "No service scheduled"}
             icon={UsersIcon}
           />
           <Card variant="surface" className="col-span-2 gap-3">
@@ -432,9 +499,19 @@ export function UsherOverview({ viewer }: { viewer: DashboardViewer }) {
 }
 
 /* ───────────────────────── Media team ───────────────────────── */
-export function MediaOverview({ viewer }: { viewer: DashboardViewer }) {
-  const mountZion = projects.find((p) => p.id === "p_zion");
-  const sponsors = projects.reduce((sum, p) => sum + p.sponsors, 0);
+export async function MediaOverview({ viewer }: { viewer: DashboardViewer }) {
+  const [snapshot, services, featured, projects, totals] = await Promise.all([
+    getAttendanceSnapshot(),
+    getServices(),
+    getFeaturedProject(),
+    getProjects(),
+    getTotalSubmissionCounts(),
+  ]);
+  const next = pickNextService(services);
+  const sponsors = projects.reduce(
+    (sum, p) => sum + p.progress.supportersCount,
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -456,33 +533,33 @@ export function MediaOverview({ viewer }: { viewer: DashboardViewer }) {
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard
-          label="Last Sunday"
-          value={last}
+          label="Last service"
+          value={snapshot.presentCount}
           hint="People who attended"
           icon={CalendarCheckIcon}
         />
         <StatCard
-          label="Mount Zion"
-          value={`${mountZion?.progress ?? 0}%`}
-          hint="Of the building done"
+          label={featured?.title ?? "Featured project"}
+          value={featured ? `${featured.progress.percentage}%` : "—"}
+          hint="Of the project done"
           icon={UserCheckIcon}
         />
         <StatCard
           label="Sponsors"
-          value={sponsors}
+          value={Math.max(sponsors, totals.sponsors)}
           hint="Across all projects"
           icon={HeartHandshakeIcon}
         />
         <StatCard
           label="Next gathering"
-          value={nextService.time}
-          hint={nextService.day}
+          value={next?.time ?? "—"}
+          hint={next?.day ?? "Nothing scheduled"}
           icon={CalendarIcon}
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <UpcomingList manage />
+        <UpcomingList services={services} manage />
         <Card variant="surface" className="gap-3">
           <h2 className="font-serif text-lg font-bold">Check in</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
@@ -504,19 +581,28 @@ export function MediaOverview({ viewer }: { viewer: DashboardViewer }) {
 }
 
 /* ───────────────────────── Attendee ───────────────────────── */
-export function AttendeeOverview({ viewer }: { viewer: DashboardViewer }) {
-  const mountZion = projects.find((p) => p.id === "p_zion");
+export async function AttendeeOverview({
+  viewer,
+}: {
+  viewer: DashboardViewer;
+}) {
+  const [mine, services, featured] = await Promise.all([
+    getMyAttendance(viewer.id),
+    getServices(),
+    getFeaturedProject(),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow="Member"
         title={greeting(viewer)}
-        description="The Burning Church is a house of worship rooted in Kudenda, Kaduna. We’re glad you’re here."
+        description="The Burning Church Global is a house of worship rooted in Kudenda, Kaduna. We’re glad you’re here."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <NextServiceCard
+          service={pickNextService(services)}
           action={{
             href: "/dashboard/scan",
             label: "Scan to check in",
@@ -527,38 +613,43 @@ export function AttendeeOverview({ viewer }: { viewer: DashboardViewer }) {
         <div className="grid grid-cols-2 gap-3">
           <StatCard
             label="Attendance"
-            value={viewer.member ? `${viewer.member.attendanceRate}%` : "—"}
+            value={`${mine.attendanceRate}%`}
             hint="Last 8 weeks"
             icon={PercentIcon}
           />
           <StatCard
             label="Last attended"
             value={
-              viewer.member?.lastAttended
-                ? format(parseISO(viewer.member.lastAttended), "d MMM")
+              mine.lastAttended
+                ? format(parseISO(mine.lastAttended), "d MMM")
                 : "—"
             }
             hint="From church records"
             icon={HistoryIcon}
           />
-          <Card variant="surface" className="col-span-2 gap-3">
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-lg font-bold">
-                What we’re building
-              </h2>
-              <span className="text-muted-foreground text-xs tabular-nums">
-                {mountZion?.progress ?? 0}%
-              </span>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              {mountZion?.name}: {mountZion?.description}
-            </p>
-            <Progress value={mountZion?.progress ?? 0} variant="project" />
-          </Card>
+          {featured && (
+            <Card variant="surface" className="col-span-2 gap-3">
+              <div className="flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold">
+                  What we’re building
+                </h2>
+                <span className="text-muted-foreground text-xs tabular-nums">
+                  {featured.progress.percentage}%
+                </span>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                {featured.title}: {featured.summary}
+              </p>
+              <Progress
+                value={featured.progress.percentage}
+                variant="project"
+              />
+            </Card>
+          )}
         </div>
       </div>
 
-      <UpcomingList />
+      <UpcomingList services={services} />
     </div>
   );
 }

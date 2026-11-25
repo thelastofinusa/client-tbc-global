@@ -5,10 +5,10 @@ import { cache } from "react";
 import { db } from "~/db";
 import { user as userTable } from "~/db/schema";
 import { auth } from "~/lib/auth/auth";
-import { members as sampleMembers } from "./mock-data";
-import { readOverrides } from "./overrides";
+import { canAccess, type DashboardSection } from "./access-control";
+import { readPreviewRole } from "./preview";
 import { ROLES } from "./roles";
-import type { Member, Role } from "./types";
+import type { MemberStatus, Role } from "./types";
 
 export interface DashboardViewer {
   id: string;
@@ -26,8 +26,9 @@ export interface DashboardViewer {
   role: Role;
   /** The role the account really has in the database. Super admins can preview other roles. */
   baseRole: Role;
-  /** Matching sample member, if any (replace with a DB lookup later). */
-  member: Member | null;
+  status: MemberStatus;
+  requestedRole: Role;
+  emailVerified: boolean;
 }
 
 async function withDbRetry<T>(
@@ -54,6 +55,10 @@ function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as string[]).includes(value);
 }
 
+function isStatus(value: unknown): value is MemberStatus {
+  return value === "pending" || value === "approved" || value === "suspended";
+}
+
 function superAdminEmails(): string[] {
   return (process.env.SUPER_ADMIN_EMAILS ?? "")
     .split(",")
@@ -65,11 +70,10 @@ function superAdminEmails(): string[] {
  * Retrieves the current dashboard viewer from the database.
  * Returns null when signed out.
  *
- * Role hierarchy:
- *  1. Database user `role` column (stored in the database)
- *  2. If the user's email matches SUPER_ADMIN_EMAILS and DB is not super_admin,
- *     we automatically sync & persist `super_admin` in the database so it's backed by DB.
- *  3. Default fallback: "attendee"
+ * The role always comes from the `user.role` column. Emails listed in
+ * SUPER_ADMIN_EMAILS are promoted to super_admin once, but only when the
+ * email is verified (Google verifies it), so nobody can claim that role by
+ * typing someone else's address into the sign-up form.
  */
 export const getDashboardViewer = cache(
   async (): Promise<DashboardViewer | null> => {
@@ -80,56 +84,47 @@ export const getDashboardViewer = cache(
 
     try {
       session = await withDbRetry(() =>
-        auth.api.getSession({
-          headers: requestHeaders,
-        }),
+        auth.api.getSession({ headers: requestHeaders }),
       );
-    } catch {
+    } catch (err) {
+      // Don't hide this: a failing database would otherwise look like "signed out".
+      console.error("Dashboard session lookup failed:", err);
       return null;
     }
 
     if (!session?.user) return null;
 
-    // Fetch the freshest user record directly from the database
-    let [dbUser] = await db
+    const [dbUser] = await db
       .select()
       .from(userTable)
       .where(eq(userTable.id, session.user.id))
       .limit(1);
 
-    // Fallback lookup by email if not found by id
-    if (!dbUser && session.user.email) {
-      [dbUser] = await db
-        .select()
-        .from(userTable)
-        .where(eq(userTable.email, session.user.email))
-        .limit(1);
-    }
+    if (!dbUser) return null;
 
-    const email = dbUser?.email ?? session.user.email ?? "";
+    const email = dbUser.email;
     const emailKey = email.toLowerCase();
 
-    // Check if the user is in SUPER_ADMIN_EMAILS and sync to database if not yet marked
     if (
-      dbUser &&
+      dbUser.emailVerified &&
       superAdminEmails().includes(emailKey) &&
       dbUser.role !== "super_admin"
     ) {
       try {
         await db
           .update(userTable)
-          .set({ role: "super_admin" })
+          .set({ role: "super_admin", status: "approved" })
           .where(eq(userTable.id, dbUser.id));
         dbUser.role = "super_admin";
+        dbUser.status = "approved";
       } catch (err) {
-        console.error("Failed to sync super_admin role to database:", err);
+        console.error("Failed to promote super admin:", err);
       }
     }
 
     const fullName =
-      dbUser?.name ||
-      [dbUser?.firstName, dbUser?.lastName].filter(Boolean).join(" ") ||
-      session.user.name ||
+      dbUser.name ||
+      [dbUser.firstName, dbUser.lastName].filter(Boolean).join(" ") ||
       "Member";
 
     const initials =
@@ -140,42 +135,28 @@ export const getDashboardViewer = cache(
         .map((part) => part[0]?.toUpperCase())
         .join("") || "MB";
 
-    const sample =
-      sampleMembers.find((m) => m.email.toLowerCase() === emailKey) ?? null;
-
-    // The user's role comes from the database!
-    let baseRole: Role = "attendee";
-    if (dbUser && isRole(dbUser.role)) {
-      baseRole = dbUser.role;
-    } else if (superAdminEmails().includes(emailKey)) {
-      baseRole = "super_admin";
-    } else if (sample && sample.status !== "pending") {
-      baseRole = sample.role;
-    }
-
-    // Super admins can temporarily preview another role via header switcher
-    const overrides = baseRole === "super_admin" ? await readOverrides() : {};
-    const role = overrides[emailKey]?.role ?? baseRole;
-
-    const firstName = dbUser?.firstName || (fullName.split(" ")[0] ?? "there");
-    const lastName =
-      dbUser?.lastName || (fullName.split(" ").slice(1).join(" ") ?? "");
+    const baseRole: Role = isRole(dbUser.role) ? dbUser.role : "attendee";
+    const preview = baseRole === "super_admin" ? await readPreviewRole() : null;
 
     return {
-      id: dbUser?.id ?? session.user.id,
-      firstName,
-      lastName,
+      id: dbUser.id,
+      firstName: dbUser.firstName || (fullName.split(" ")[0] ?? "there"),
+      lastName: dbUser.lastName || fullName.split(" ").slice(1).join(" "),
       fullName,
       email,
-      imageUrl: dbUser?.image ?? session.user.image ?? "",
+      imageUrl: dbUser.image ?? "",
       initials,
-      phone: dbUser?.phone ?? "",
-      location: dbUser?.location ?? "",
-      address: dbUser?.address ?? "",
-      birthday: dbUser?.birthday ?? "",
-      role,
+      phone: dbUser.phone ?? "",
+      location: dbUser.location ?? "",
+      address: dbUser.address ?? "",
+      birthday: dbUser.birthday ?? "",
+      role: preview ?? baseRole,
       baseRole,
-      member: sample,
+      status: isStatus(dbUser.status) ? dbUser.status : "pending",
+      requestedRole: isRole(dbUser.requestedRole)
+        ? dbUser.requestedRole
+        : "attendee",
+      emailVerified: dbUser.emailVerified,
     };
   },
 );
@@ -192,13 +173,25 @@ export async function requireSuperAdmin(): Promise<DashboardViewer> {
   return viewer;
 }
 
-/**
- * Retrieves the current authenticated user or throws an unauthorized error.
- */
+/** Requires a signed-in, non-suspended user. */
 export async function requireAuth(): Promise<DashboardViewer> {
   const viewer = await getDashboardViewer();
   if (!viewer) {
     throw new Error("Unauthorized: Please sign in.");
+  }
+  if (viewer.baseRole !== "super_admin" && viewer.status === "suspended") {
+    throw new Error("Forbidden: this account is suspended.");
+  }
+  return viewer;
+}
+
+/** Requires the REAL role to be allowed on a dashboard section. */
+export async function requireAccess(
+  section: DashboardSection,
+): Promise<DashboardViewer> {
+  const viewer = await requireAuth();
+  if (!canAccess(viewer.baseRole, section)) {
+    throw new Error("Forbidden: your role can't do this.");
   }
   return viewer;
 }

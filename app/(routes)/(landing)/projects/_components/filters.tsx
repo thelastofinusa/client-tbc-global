@@ -9,12 +9,7 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { RiMapPinRangeLine } from "react-icons/ri";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
-import {
-  type ProjectCategory,
-  type ProjectItem,
-  projectCategories,
-  projectsData,
-} from "~/lib/projects";
+import type { ProjectCategory, ProjectItem } from "~/lib/projects";
 
 const RADIUS = 18;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -130,11 +125,13 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
 
             {/* Tilted Specimen Image Frame */}
             <div className="bg-navy border-line relative size-16 shrink-0 rotate-2 overflow-hidden rounded-lg border-2 shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0">
-              <img
-                src={project.bannerImage}
-                alt={project.bannerAlt}
-                className="size-full object-cover"
-              />
+              {project.bannerImage && (
+                <img
+                  src={project.bannerImage}
+                  alt={project.bannerAlt}
+                  className="size-full object-cover"
+                />
+              )}
             </div>
           </div>
 
@@ -188,14 +185,22 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
   );
 }
 
-export const Filters = () => {
+export const Filters = ({
+  projects,
+  categories,
+}: {
+  projects: ProjectItem[];
+  /** Names of the project filters in Sanity. "All" is added here. */
+  categories: string[];
+}) => {
   const [selectedCategory, setSelectedCategory] =
     React.useState<ProjectCategory>("All");
+  const projectCategories = ["All", ...categories];
 
   const filteredProjects =
     selectedCategory === "All"
-      ? projectsData
-      : projectsData.filter((project) => project.category === selectedCategory);
+      ? projects
+      : projects.filter((project) => project.category === selectedCategory);
 
   return (
     <section className="py-14 md:py-20">
@@ -241,6 +246,11 @@ export const Filters = () => {
       </Container>
 
       <Container size="lg">
+        {filteredProjects.length === 0 && (
+          <p className="text-muted-foreground mt-10 text-center text-sm">
+            New projects are on the way. Check back soon.
+          </p>
+        )}
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
             <ProjectLedgerCard key={project.slug} project={project} />
