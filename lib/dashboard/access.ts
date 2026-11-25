@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { cache } from "react";
 import { db } from "~/db";
 import { user as userTable } from "~/db/schema";
@@ -29,6 +30,26 @@ export interface DashboardViewer {
   member: Member | null;
 }
 
+async function withDbRetry<T>(
+  fn: () => Promise<T>,
+  retries = 2,
+  delayMs = 150,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+      if (attempt === retries) break;
+      await new Promise((resolve) =>
+        setTimeout(resolve, delayMs * (attempt + 1)),
+      );
+    }
+  }
+  throw lastError;
+}
+
 function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as string[]).includes(value);
 }
@@ -52,9 +73,21 @@ function superAdminEmails(): string[] {
  */
 export const getDashboardViewer = cache(
   async (): Promise<DashboardViewer | null> => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    await connection();
+
+    const requestHeaders = await headers();
+    let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
+
+    try {
+      session = await withDbRetry(() =>
+        auth.api.getSession({
+          headers: requestHeaders,
+        }),
+      );
+    } catch {
+      return null;
+    }
+
     if (!session?.user) return null;
 
     // Fetch the freshest user record directly from the database

@@ -8,11 +8,11 @@ import { fontVariables } from "~/lib/fonts";
 export const metadata: Metadata = {
   title: {
     default: siteConfig.title,
-    template: `%s – ${siteConfig.title}`,
+    template: `%s – ${siteConfig.slogan}`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url as string),
-  authors: [{ name: siteConfig.title }],
+  authors: [{ name: siteConfig.author.name, url: siteConfig.author.url }],
   generator: "Next.js",
   openGraph: {
     type: "website",
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: siteConfig.pwaName,
+    title: siteConfig.slogan,
     statusBarStyle: "default",
   },
 };

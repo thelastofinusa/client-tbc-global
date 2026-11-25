@@ -85,5 +85,13 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "overrides": {
+    "get-it": "8.8.3",
+    "@sanity/schema": "5.31.2"
+  },
+  "resolutions": {
+    "get-it": "8.8.3",
+    "@sanity/schema": "5.31.2"
+  }
 }

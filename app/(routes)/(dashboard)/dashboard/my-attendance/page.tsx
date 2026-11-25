@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MyAttendance } from "~/components/dashboard/my-attendance";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { getDashboardViewer } from "~/lib/dashboard/access";
 
-export const metadata: Metadata = { title: "My attendance" };
+const navItem = dashboardNavData("/dashboard/my-attendance");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 async function Content() {
   const viewer = await getDashboardViewer();

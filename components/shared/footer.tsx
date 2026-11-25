@@ -1,12 +1,12 @@
 "use client";
 
-import { Show } from "~/components/shared/show";
 import { ArrowUpRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import React, { Suspense } from "react";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
+import { Show } from "~/components/shared/show";
 import { siteConfig } from "~/config/site.config";
 import { type NavItemType, navItems } from "~/lib/constants";
 import { Eyebrow } from "./eyebrow";
@@ -169,7 +169,7 @@ export const Footer = () => {
                 src={siteConfig.map.embed}
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"
-                className="size-full border-none grayscale transition-[filter] duration-300 hover:grayscale-0"
+                className="size-full border-none"
               />
             </div>
 

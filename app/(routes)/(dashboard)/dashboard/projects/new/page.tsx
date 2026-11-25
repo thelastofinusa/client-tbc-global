@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { ProjectForm } from "~/components/dashboard/project-form";
 import { RoleGate } from "~/components/dashboard/role-gate";
 
-export const metadata: Metadata = { title: "New project" };
+const navItem = dashboardNavData("/dashboard/projects/new");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 export const instant = false;
 

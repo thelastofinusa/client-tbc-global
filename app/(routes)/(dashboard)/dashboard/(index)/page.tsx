@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
+import { dashboardNavData } from "~/components/dashboard/nav-config";
 import {
   AdminOverview,
   AttendeeOverview,
@@ -7,6 +9,14 @@ import {
   UsherOverview,
 } from "~/components/dashboard/overviews";
 import { getDashboardViewer } from "~/lib/dashboard/access";
+
+const navItem = dashboardNavData("/dashboard");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 export const instant = false;
 

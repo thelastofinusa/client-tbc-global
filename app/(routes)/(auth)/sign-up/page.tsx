@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { navItemsData } from "~/lib/constants";
 import { AuthForm } from "../_components/form";
+
+const navItem = navItemsData("/sign-up");
+
+export const metadata: Metadata = {
+  title: navItem?.label,
+  description: navItem?.description,
+  alternates: navItem?.alternates,
+};
 
 export default function Page() {
   return (

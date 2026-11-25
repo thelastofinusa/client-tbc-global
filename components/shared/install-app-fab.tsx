@@ -108,7 +108,7 @@ const sheets: Record<Platform, PlatformSheet> = {
       {
         code: "02",
         action: "Select app entry",
-        control: siteConfig.pwaName,
+        control: siteConfig.slogan,
         icon: SmartphoneIcon,
       },
       {
@@ -200,7 +200,7 @@ export function InstallAppFab() {
             type="button"
             size="sm"
             aria-label="Install app"
-            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 rounded-full px-4 shadow-lg md:right-6 md:bottom-6"
+            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-5 z-40 rounded-full px-4 shadow-lg"
           >
             <SparklesIcon className="text-accent size-3.5" />
             <span>Get App</span>
