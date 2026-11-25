@@ -30,7 +30,7 @@ const paths = [
     icon: FaRegHandshake,
     title: "Partner with us",
     description:
-      "Walk with us on the projects we’re building across Kudende and beyond.",
+      "Walk with us on the projects we’re building across Kudenda and beyond.",
     cta: "Start a partnership",
     href: "/partner",
   },

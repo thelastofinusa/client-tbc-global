@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AttendanceSession } from "~/components/dashboard/attendance-session";
 import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { RoleGate } from "~/components/dashboard/role-gate";
 import { getDashboardViewer } from "~/lib/dashboard/access";
-import { members, services } from "~/lib/dashboard/mock-data";
+import { getAttendanceSnapshot } from "~/lib/dashboard/data";
+import { getServices } from "~/lib/data/services";
 
 const navItem = dashboardNavData("/dashboard/attendance");
 
@@ -15,7 +17,11 @@ export const metadata: Metadata = {
 };
 
 async function Content() {
-  const viewer = await getDashboardViewer();
+  const [viewer, services, snapshot] = await Promise.all([
+    getDashboardViewer(),
+    getServices(),
+    getAttendanceSnapshot(),
+  ]);
   const isUsher = viewer?.role === "usher";
 
   return (
@@ -25,12 +31,17 @@ async function Content() {
         title={isUsher ? "Check-in code" : "Attendance"}
         description="Open check-in and show the code at the venue. Members scan it from their own dashboard, they never see the code themselves."
       />
-      <AttendanceSession
-        services={services}
-        members={members}
-        lastServiceDate="2026-11-22"
-        mode={isUsher ? "qr-only" : "full"}
-      />
+      {services.length === 0 ? (
+        <p className="text-muted-foreground text-sm">
+          Add at least one service in Sanity Studio to start taking attendance.
+        </p>
+      ) : (
+        <AttendanceSession
+          services={services}
+          snapshot={snapshot}
+          mode={isUsher ? "qr-only" : "full"}
+        />
+      )}
     </>
   );
 }
@@ -38,7 +49,9 @@ async function Content() {
 export default function Page() {
   return (
     <RoleGate section="attendance">
-      <Content />
+      <Suspense fallback={null}>
+        <Content />
+      </Suspense>
     </RoleGate>
   );
 }

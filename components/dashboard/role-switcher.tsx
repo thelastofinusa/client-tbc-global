@@ -9,20 +9,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/reusable/shadcn/select";
-import { setMemberRole } from "~/lib/dashboard/actions";
+import { setPreviewRole } from "~/lib/dashboard/actions";
 import { ROLE_ITEMS } from "~/lib/dashboard/roles";
 import type { Role } from "~/lib/dashboard/types";
 
 /**
  * Super admin only: preview the dashboard exactly as another role sees it.
- * Stored in a cookie until there is a database.
+ * Stored in a cookie in this browser only; nobody's real role changes.
  */
 export function RoleSwitcher({
-  email,
   role,
   baseRole,
 }: {
-  email: string;
   role: Role;
   baseRole: Role;
 }) {
@@ -42,7 +40,7 @@ export function RoleSwitcher({
         onValueChange={(value) => {
           if (!value) return;
           startTransition(async () => {
-            await setMemberRole(email, value);
+            await setPreviewRole(value);
           });
         }}
       >

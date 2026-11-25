@@ -9,6 +9,7 @@ import { Container } from "~/components/shared/container";
 import { Show } from "~/components/shared/show";
 import { siteConfig } from "~/config/site.config";
 import { type NavItemType, navItems } from "~/lib/constants";
+import { getServices, type ServiceRow } from "~/lib/data/services";
 import { Eyebrow } from "./eyebrow";
 import { LogoComponent } from "./logo";
 
@@ -60,9 +61,7 @@ const footerSections: FooterSection[] = [
   },
 ];
 
-const gatheringDays = ["Wed", "Sat", "Sun"];
-
-export const Footer = () => {
+export const Footer: React.FC<{ services: ServiceRow[] }> = ({ services }) => {
   const [year, setYear] = React.useState<number>(2026);
 
   React.useEffect(() => {
@@ -116,15 +115,11 @@ export const Footer = () => {
               {siteConfig.about}
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              {gatheringDays.map((day) => (
-                <span
-                  key={day}
-                  className="border border-white/15 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-white/80 uppercase"
-                >
-                  {day}
-                </span>
-              ))}
-              <span className="text-xs text-white/50">every week</span>
+              {services && (
+                <p className="border border-white/15 px-1.5 py-0.5 text-[11px] font-semibold text-white/80 uppercase">
+                  {services.map((s) => s.day.slice(0, 3)).join(" · ")}
+                </p>
+              )}
             </div>
           </div>
 

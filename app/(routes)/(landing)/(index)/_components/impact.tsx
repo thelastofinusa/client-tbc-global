@@ -1,45 +1,60 @@
 import { cn } from "cn";
+import { Suspense } from "react";
 import { HiOutlineAcademicCap } from "react-icons/hi";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { PiHammer } from "react-icons/pi";
 import { Container } from "~/components/shared/container";
 import { CountingNumber } from "~/components/shared/count-number";
 import { Eyebrow } from "~/components/shared/eyebrow";
+import { getFeaturedProject } from "~/lib/data/projects";
+import { getPublicStats } from "~/lib/data/public-stats";
 
-const impactStats = [
-  {
-    value: 5210,
-    suffix: "+",
-    label: "people in our community",
-    icon: HiOutlineUsers,
-    tile: "bg-primary text-primary-foreground",
-    suffixClassName: "text-accent",
-    labelClassName: "text-primary-foreground/85",
-    progress: null,
-  },
-  {
-    value: 209,
-    suffix: null,
-    label: "students to sponsor",
-    icon: HiOutlineAcademicCap,
-    tile: "bg-muted text-foreground border border-line",
-    suffixClassName: "",
-    labelClassName: "text-muted-foreground",
-    progress: null,
-  },
-  {
-    value: 85,
-    suffix: "%",
-    label: "of Mount Zion built",
-    icon: PiHammer,
-    tile: "bg-navy text-white",
-    suffixClassName: "text-accent",
-    labelClassName: "text-secondary/80",
-    progress: 85,
-  },
-] as const;
+interface ImpactData {
+  members: number;
+  supporters: number;
+  featured?: { title: string; percentage: number };
+}
 
-export const ImpactComponent = () => {
+function buildStats({ members, supporters, featured }: ImpactData) {
+  return [
+    {
+      value: members,
+      suffix: members > 0 ? "+" : null,
+      label: "members in our community",
+      icon: HiOutlineUsers,
+      tile: "bg-primary text-primary-foreground",
+      suffixClassName: "text-accent",
+      labelClassName: "text-primary-foreground/85",
+      progress: null as number | null,
+    },
+    {
+      value: supporters,
+      suffix: null,
+      label: "sponsors and partners walking with us",
+      icon: HiOutlineAcademicCap,
+      tile: "bg-muted text-foreground border border-line",
+      suffixClassName: "",
+      labelClassName: "text-muted-foreground",
+      progress: null as number | null,
+    },
+    {
+      value: featured?.percentage ?? 0,
+      suffix: "%",
+      label: featured
+        ? `of ${featured.title} complete`
+        : "of our featured project",
+      icon: PiHammer,
+      tile: "bg-navy text-white",
+      suffixClassName: "text-accent",
+      labelClassName: "text-secondary/80",
+      progress: (featured?.percentage ?? 0) as number | null,
+    },
+  ];
+}
+
+function ImpactView(data: ImpactData) {
+  const impactStats = buildStats(data);
+
   return (
     <section aria-label="Impact" className="flex-1 overflow-x-clip">
       <Container className="relative py-16 md:py-24">
@@ -54,7 +69,7 @@ export const ImpactComponent = () => {
           </div>
 
           <p className="text-muted-foreground max-w-xs text-sm leading-[1.75] md:text-right">
-            Every number below is a real person, a real child, a real brick.
+            Every number below is counted from real people and real projects.
           </p>
         </div>
 
@@ -120,4 +135,29 @@ export const ImpactComponent = () => {
       </Container>
     </section>
   );
-};
+}
+
+async function ImpactData() {
+  const [stats, featured] = await Promise.all([
+    getPublicStats(),
+    getFeaturedProject(),
+  ]);
+
+  return (
+    <ImpactView
+      members={stats.members}
+      supporters={stats.supporters}
+      featured={
+        featured
+          ? { title: featured.title, percentage: featured.progress.percentage }
+          : undefined
+      }
+    />
+  );
+}
+
+export const ImpactComponent = () => (
+  <Suspense fallback={<ImpactView members={0} supporters={0} />}>
+    <ImpactData />
+  </Suspense>
+);

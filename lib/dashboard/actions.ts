@@ -2,12 +2,18 @@
 
 import { asc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { db } from "~/db";
-import { communities, type Community, user as userTable } from "~/db/schema";
-import { requireAuth, requireSuperAdmin } from "./access";
-import { clearOverrides, readOverrides, writeOverrides } from "./overrides";
+import {
+  type Community,
+  communities,
+  submissions,
+  user as userTable,
+} from "~/db/schema";
+import { requireAccess, requireAuth, requireSuperAdmin } from "./access";
+import { PREVIEW_COOKIE } from "./preview";
 import { ROLES } from "./roles";
-import type { MemberStatus, Role } from "./types";
+import type { MemberStatus, Role, SubmissionStatus } from "./types";
 
 /* ─────────────────────────────────────────────────────────────
  * User Profile Actions
@@ -65,36 +71,36 @@ export async function getCommunities(): Promise<Community[]> {
 
     // Seed defaults if table is empty
     if (list.length === 0) {
-      const defaults = [
-        {
-          id: "comm_whatsapp",
-          name: "WhatsApp Community",
-          description:
-            "Daily fellowship updates, reminders, and announcements.",
-          href: "https://chat.whatsapp.com/",
-          icon: "whatsapp",
-          badge: "Active",
-        },
-        {
-          id: "comm_telegram",
-          name: "Telegram Channel",
-          description: "Broadcasts, event notes, and shared resources.",
-          href: "https://t.me/",
-          icon: "telegram",
-          badge: "Channel",
-        },
-        {
-          id: "comm_forum",
-          name: "Member & Volunteer Forum",
-          description:
-            "Coordinate serving, outreach, and small-group check-ins.",
-          href: "https://chat.whatsapp.com/",
-          icon: "users",
-          badge: "Members",
-        },
-      ];
+      // const defaults = [
+      //   {
+      //     id: "comm_whatsapp",
+      //     name: "WhatsApp Community",
+      //     description:
+      //       "Daily fellowship updates, reminders, and announcements.",
+      //     href: "https://chat.whatsapp.com/",
+      //     icon: "whatsapp",
+      //     badge: "Active",
+      //   },
+      //   {
+      //     id: "comm_telegram",
+      //     name: "Telegram Channel",
+      //     description: "Broadcasts, event notes, and shared resources.",
+      //     href: "https://t.me/",
+      //     icon: "telegram",
+      //     badge: "Channel",
+      //   },
+      //   {
+      //     id: "comm_forum",
+      //     name: "Member & Volunteer Forum",
+      //     description:
+      //       "Coordinate serving, outreach, and small-group check-ins.",
+      //     href: "https://chat.whatsapp.com/",
+      //     icon: "users",
+      //     badge: "Members",
+      //   },
+      // ];
 
-      await db.insert(communities).values(defaults);
+      // await db.insert(communities).values(defaults);
       return await db
         .select()
         .from(communities)
@@ -146,61 +152,124 @@ export async function deleteCommunity(id: string) {
 }
 
 /* ─────────────────────────────────────────────────────────────
- * Member Management Actions
+ * Member Management Actions (super admin only, stored in Neon)
  * ───────────────────────────────────────────────────────────── */
 
-async function patch(
+async function updateMember(
   email: string,
-  change: { role?: Role; status?: MemberStatus; removed?: boolean },
+  change: { role?: Role; status?: MemberStatus },
 ) {
+  const viewer = await requireSuperAdmin();
   const key = email.toLowerCase();
-  const overrides = await readOverrides();
-  overrides[key] = { ...overrides[key], ...change };
-  await writeOverrides(overrides);
+  const isSelf = key === viewer.email.toLowerCase();
 
-  // Sync to database if user exists in db
-  try {
-    const updateData: Record<string, unknown> = {};
-    if (change.role) updateData.role = change.role;
-    if (change.status) updateData.status = change.status;
+  if (isSelf) {
+    // Allow approving yourself as super_admin, while still blocking demoting yourself
+    // or locking yourself out with "suspended".
+    const locksSelfOut =
+      change.status === "suspended" ||
+      (change.role !== undefined && change.role !== "super_admin");
 
-    if (Object.keys(updateData).length > 0) {
-      await db
-        .update(userTable)
-        .set(updateData)
-        .where(eq(userTable.email, key));
+    if (locksSelfOut) {
+      throw new Error(
+        "You can't demote or suspend your own account. Use “View as” to preview other roles.",
+      );
     }
-  } catch (err) {
-    console.error("Failed to sync role change to database:", err);
+  }
+
+  await db.update(userTable).set(change).where(eq(userTable.email, key));
+  revalidatePath("/dashboard", "layout");
+}
+
+export async function setMemberRole(email: string, role: Role) {
+  if (!ROLES.includes(role)) throw new Error("Unknown role.");
+  await updateMember(email, { role });
+}
+
+export async function approveMember(email: string, role: Role) {
+  if (!ROLES.includes(role)) throw new Error("Unknown role.");
+  await updateMember(email, { role, status: "approved" });
+}
+
+export async function setMemberStatus(email: string, status: MemberStatus) {
+  await updateMember(email, { status });
+}
+
+/** Declines a registration or removes a member (their sessions and check-ins go with them). */
+export async function removeMember(email: string) {
+  const viewer = await requireSuperAdmin();
+  const key = email.toLowerCase();
+
+  if (key === viewer.email.toLowerCase()) {
+    throw new Error("You can't remove your own account here.");
+  }
+
+  const [target] = await db
+    .select({ role: userTable.role })
+    .from(userTable)
+    .where(eq(userTable.email, key))
+    .limit(1);
+
+  if (target?.role === "super_admin") {
+    throw new Error("Super admins can't be removed from the dashboard.");
+  }
+
+  await db.delete(userTable).where(eq(userTable.email, key));
+  revalidatePath("/dashboard", "layout");
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * "View as" preview (cookie only, never touches the database)
+ * ───────────────────────────────────────────────────────────── */
+
+export async function setPreviewRole(role: Role) {
+  const viewer = await requireSuperAdmin();
+  if (!ROLES.includes(role)) throw new Error("Unknown role.");
+
+  const store = await cookies();
+  if (role === viewer.baseRole) {
+    store.delete(PREVIEW_COOKIE);
+  } else {
+    store.set(PREVIEW_COOKIE, role, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    });
   }
 
   revalidatePath("/dashboard", "layout");
 }
 
-export async function setMemberRole(email: string, role: Role) {
-  await requireSuperAdmin();
-  if (!ROLES.includes(role)) throw new Error("Unknown role.");
-  await patch(email, { role });
-}
+/* ─────────────────────────────────────────────────────────────
+ * Sponsor / partner requests
+ * ───────────────────────────────────────────────────────────── */
 
-export async function approveMember(email: string, role: Role) {
-  await requireSuperAdmin();
-  if (!ROLES.includes(role)) throw new Error("Unknown role.");
-  await patch(email, { role, status: "approved" });
-}
+const SUBMISSION_STATUSES: SubmissionStatus[] = [
+  "new",
+  "in_review",
+  "active",
+  "declined",
+];
 
-export async function setMemberStatus(email: string, status: MemberStatus) {
-  await requireSuperAdmin();
-  await patch(email, { status });
-}
+export async function updateSubmissionStatus(
+  id: string,
+  status: SubmissionStatus,
+) {
+  if (!SUBMISSION_STATUSES.includes(status)) throw new Error("Unknown status.");
 
-export async function removeMember(email: string) {
-  await requireSuperAdmin();
-  await patch(email, { removed: true });
-}
+  const [row] = await db
+    .select({ type: submissions.type })
+    .from(submissions)
+    .where(eq(submissions.id, id))
+    .limit(1);
 
-export async function resetSampleData() {
-  await requireSuperAdmin();
-  await clearOverrides();
-  revalidatePath("/dashboard", "layout");
+  if (!row) throw new Error("That request no longer exists.");
+
+  await requireAccess(row.type === "partner" ? "partners" : "sponsors");
+  await db.update(submissions).set({ status }).where(eq(submissions.id, id));
+
+  revalidatePath("/dashboard/sponsors");
+  revalidatePath("/dashboard/partners");
 }

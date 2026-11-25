@@ -23,7 +23,7 @@ import { Container } from "~/components/shared/container";
 import { LogoComponent } from "~/components/shared/logo";
 import { siteConfig } from "~/config/site.config";
 import { getDashboardViewer } from "~/lib/dashboard/access";
-import { members } from "~/lib/dashboard/mock-data";
+import { getPendingCount } from "~/lib/dashboard/data";
 import { ROLE_META } from "~/lib/dashboard/roles";
 
 export const metadata: Metadata = {
@@ -150,18 +150,12 @@ async function DashboardShell({ children }: { children: ReactNode }) {
   const viewer = await getDashboardViewer();
 
   if (!viewer) return <AccessRestricted reason="signed-out" />;
-  if (
-    viewer.baseRole !== "super_admin" &&
-    viewer.member?.status === "suspended"
-  ) {
+  if (viewer.baseRole !== "super_admin" && viewer.status === "suspended") {
     return <AccessRestricted reason="suspended" />;
   }
 
-  // TODO: replace with a real count from the database.
   const pendingCount =
-    viewer.role === "super_admin"
-      ? members.filter((m) => m.status === "pending").length
-      : 0;
+    viewer.role === "super_admin" ? await getPendingCount() : 0;
 
   return (
     <SidebarProvider className="relative h-dvh min-h-0 w-full overflow-hidden">
@@ -194,11 +188,7 @@ async function DashboardShell({ children }: { children: ReactNode }) {
               <DashboardBreadcrumbs />
               <div className="ml-auto flex items-center gap-2">
                 {viewer.baseRole === "super_admin" && (
-                  <RoleSwitcher
-                    email={viewer.email}
-                    role={viewer.role}
-                    baseRole={viewer.baseRole}
-                  />
+                  <RoleSwitcher role={viewer.role} baseRole={viewer.baseRole} />
                 )}
                 <Button
                   variant="outline"

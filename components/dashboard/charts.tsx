@@ -7,7 +7,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/reusable/shadcn/chart";
-import { attendanceTrend, registrationsTrend } from "~/lib/dashboard/mock-data";
 
 const attendanceConfig = {
   present: { label: "Present", color: "var(--primary)" },
@@ -17,13 +16,27 @@ const registrationsConfig = {
   joined: { label: "New members", color: "var(--navy)" },
 } satisfies ChartConfig;
 
-export function AttendanceChart({ className }: { className?: string }) {
+export function AttendanceChart({
+  data,
+  className,
+}: {
+  data: { week: string; present: number }[];
+  className?: string;
+}) {
+  if (data.length === 0) {
+    return (
+      <p className="text-muted-foreground py-10 text-center text-sm">
+        No check-ins yet. The chart fills in as people scan in at church.
+      </p>
+    );
+  }
+
   return (
     <ChartContainer
       config={attendanceConfig}
       className={className ?? "aspect-auto h-64 w-full"}
     >
-      <AreaChart data={attendanceTrend} margin={{ left: 4, right: 12, top: 8 }}>
+      <AreaChart data={data} margin={{ left: 4, right: 12, top: 8 }}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="week"
@@ -45,16 +58,19 @@ export function AttendanceChart({ className }: { className?: string }) {
   );
 }
 
-export function RegistrationsChart({ className }: { className?: string }) {
+export function RegistrationsChart({
+  data,
+  className,
+}: {
+  data: { month: string; joined: number }[];
+  className?: string;
+}) {
   return (
     <ChartContainer
       config={registrationsConfig}
       className={className ?? "aspect-auto h-64 w-full"}
     >
-      <BarChart
-        data={registrationsTrend}
-        margin={{ left: 4, right: 12, top: 8 }}
-      >
+      <BarChart data={data} margin={{ left: 4, right: 12, top: 8 }}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"

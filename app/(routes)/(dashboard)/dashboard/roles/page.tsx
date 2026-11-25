@@ -1,5 +1,6 @@
 import { CheckIcon, MinusIcon } from "lucide-react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { RoleBadge } from "~/components/dashboard/badges";
 import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
@@ -18,7 +19,7 @@ import {
   type DashboardSection,
   SECTION_LABELS,
 } from "~/lib/dashboard/access-control";
-import { members } from "~/lib/dashboard/mock-data";
+import { getMembers } from "~/lib/dashboard/data";
 import {
   PERMISSION_MATRIX,
   PERMISSIONS,
@@ -35,7 +36,8 @@ export const metadata: Metadata = {
   alternates: navItem?.alternates,
 };
 
-function Content() {
+async function Content() {
+  const members = await getMembers();
   const countFor = (role: Role) =>
     members.filter((m) => m.status === "approved" && m.role === role).length;
 
@@ -158,7 +160,9 @@ function Content() {
 export default function Page() {
   return (
     <RoleGate section="roles">
-      <Content />
+      <Suspense fallback={null}>
+        <Content />
+      </Suspense>
     </RoleGate>
   );
 }

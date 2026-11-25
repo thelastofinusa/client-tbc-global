@@ -4,6 +4,7 @@ import { MyAttendance } from "~/components/dashboard/my-attendance";
 import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
 import { getDashboardViewer } from "~/lib/dashboard/access";
+import { getMyAttendance } from "~/lib/dashboard/data";
 
 const navItem = dashboardNavData("/dashboard/my-attendance");
 
@@ -15,13 +16,15 @@ export const metadata: Metadata = {
 
 async function Content() {
   const viewer = await getDashboardViewer();
+  if (!viewer) return null;
+
+  const mine = await getMyAttendance(viewer.id);
 
   return (
     <MyAttendance
-      baseline={{
-        attendanceRate: viewer?.member?.attendanceRate ?? null,
-        lastAttended: viewer?.member?.lastAttended ?? null,
-      }}
+      records={mine.records}
+      attendanceRate={mine.attendanceRate}
+      lastAttended={mine.lastAttended}
     />
   );
 }

@@ -2,46 +2,13 @@ import { FiClock } from "react-icons/fi";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 
-interface GatheringSchedule {
-  day: string;
-  title: string;
-  time: string;
-  cadence: string;
-  description: string;
-  featured?: boolean;
-}
+import { getServices } from "~/lib/data/services";
 
-const schedule: GatheringSchedule[] = [
-  {
-    day: "Sunday",
-    title: "Main Sunday Gathering",
-    time: "9:00 AM",
-    cadence: "Weekly · Main Service",
-    description:
-      "Our primary weekly gathering featuring worship, biblical teaching, prayer, and fellowship for the whole family.",
-    featured: true,
-  },
-  {
-    day: "Wednesday",
-    title: "Midweek Word & Prayer",
-    time: "5:30 PM",
-    cadence: "Weekly · Midweek",
-    description:
-      "Focused midweek teaching, intercession, and encouragement to carry you through the rest of the week.",
-  },
-  {
-    day: "Saturday",
-    title: "Prep, Fellowship & Outreach",
-    time: "10:00 AM",
-    cadence: "Weekly · Community",
-    description:
-      "Team preparation, small-group connection, and local community outreach across Kudenda.",
-  },
-];
+export const ServiceTime = async () => {
+  const services = await getServices();
 
-export const ServiceTime = () => {
   return (
-    <section className="py-14 md:py-20">
+    <section id="services" className="scroll-mt-20 py-14 md:py-20">
       <Container>
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
@@ -51,16 +18,22 @@ export const ServiceTime = () => {
             </h2>
           </div>
           <p className="text-muted-foreground text-sm font-medium">
-            Wed · Sat · Sun
+            {services.map((s) => s.day.slice(0, 3)).join(" · ")}
           </p>
         </div>
 
+        {services.length === 0 && (
+          <p className="text-muted-foreground mt-8 text-sm">
+            Our schedule is being updated. Check back shortly.
+          </p>
+        )}
+
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {schedule.map((item) => (
+          {services.map((item, index) => (
             <div
-              key={item.day}
+              key={item.id}
               className={
-                item.featured
+                index === 0
                   ? "bg-navy rounded-xl border border-white/15 p-6 text-white shadow-md sm:p-7"
                   : "bg-card border-line rounded-xl border p-6 shadow-xs sm:p-7"
               }
@@ -68,7 +41,7 @@ export const ServiceTime = () => {
               <div className="flex items-center justify-between gap-2">
                 <span
                   className={
-                    item.featured
+                    index === 0
                       ? "text-accent text-xs font-semibold tracking-wider uppercase"
                       : "text-primary text-xs font-semibold tracking-wider uppercase"
                   }
@@ -77,22 +50,22 @@ export const ServiceTime = () => {
                 </span>
                 <span
                   className={
-                    item.featured
+                    index === 0
                       ? "rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white"
                       : "bg-muted text-secondary-foreground rounded-full px-3 py-1 text-[11px] font-semibold"
                   }
                 >
-                  {item.cadence}
+                  {item.kind === "weekly" ? "Weekly" : "Special event"}
                 </span>
               </div>
 
               <h3 className="mt-4 font-serif text-2xl font-extrabold tracking-[-0.03em]">
-                {item.title}
+                {item.name}
               </h3>
 
               <div
                 className={
-                  item.featured
+                  index === 0
                     ? "text-accent mt-3 flex items-center gap-2 text-sm font-semibold"
                     : "text-foreground mt-3 flex items-center gap-2 text-sm font-semibold"
                 }
@@ -101,15 +74,17 @@ export const ServiceTime = () => {
                 <span>{item.time}</span>
               </div>
 
-              <p
-                className={
-                  item.featured
-                    ? "text-secondary/80 mt-3 text-sm leading-relaxed"
-                    : "text-muted-foreground mt-3 text-sm leading-relaxed"
-                }
-              >
-                {item.description}
-              </p>
+              {item.description && (
+                <p
+                  className={
+                    index === 0
+                      ? "text-secondary/80 mt-3 text-sm leading-relaxed"
+                      : "text-muted-foreground mt-3 text-sm leading-relaxed"
+                  }
+                >
+                  {item.description}
+                </p>
+              )}
             </div>
           ))}
         </div>

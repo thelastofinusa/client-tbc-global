@@ -3,22 +3,31 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Skeleton } from "~/components/reusable/shadcn/skeleton";
 import { Container } from "~/components/shared/container";
-import { getProjectBySlug, projectsData } from "~/lib/projects";
+import { getProjectBySlug } from "~/lib/data/projects";
+import { fetchProjects } from "~/sanity/queries/project.query";
 import { Banner } from "./_components/banner";
 import { MainContent } from "./_components/content";
 import { ProjectDetailsHeroComponents } from "./_components/hero";
 
 export async function generateStaticParams() {
-  return projectsData.map((project) => ({
-    slug: project.slug,
-  }));
+  try {
+    const projects = await fetchProjects();
+    if (projects.length > 0) {
+      return projects.map((project) => ({ slug: project.slug }));
+    }
+  } catch (err) {
+    console.error("Could not list projects for static params:", err);
+  }
+  // Cache Components needs at least one param to validate the route. This
+  // placeholder renders "not found"; real projects load on demand.
+  return [{ slug: "_" }];
 }
 
 export async function generateMetadata(
   props: PageProps<"/projects/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return { title: "Project Not Found" };
@@ -122,7 +131,7 @@ async function ProjectDetailsContent(props: {
   params: PageProps<"/projects/[slug]">["params"];
 }) {
   const { slug } = await props.params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) notFound();
 

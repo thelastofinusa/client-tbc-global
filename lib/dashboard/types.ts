@@ -29,21 +29,6 @@ export interface ChurchService {
   expected: number;
 }
 
-export interface Project {
-  id: string;
-  name: string;
-  category: "Building" | "Education" | "Outreach";
-  description: string;
-  /** Optional: why the project exists / what it aims to achieve. */
-  purpose?: string;
-  /** Optional: how many people are currently participating. */
-  participants?: number;
-  /** 0–100 */
-  progress: number;
-  sponsors: number;
-  status: "active" | "planning" | "completed";
-}
-
 export type SubmissionStatus = "new" | "in_review" | "active" | "declined";
 
 export interface Submission {

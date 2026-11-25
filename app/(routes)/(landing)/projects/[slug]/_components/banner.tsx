@@ -3,6 +3,8 @@ import { Container } from "~/components/shared/container";
 import type { ProjectItem } from "~/lib/projects";
 
 export const Banner: React.FC<{ project: ProjectItem }> = ({ project }) => {
+  if (!project.bannerImage) return null;
+
   return (
     <section className="-mt-6 md:-mt-10">
       <Container size="lg">

@@ -8,12 +8,12 @@
  * - Scanning it with the in-dashboard scanner reads the data directly.
  * - Scanning it with a phone's normal camera opens the page and checks in.
  *
- * NOTE: without a database the scanner can only check that the code hasn't
- * expired. Once there is a backend, verify `code` + `service` on the server.
+ * The code is signed on the server (see checkin-server.ts) and verified there
+ * when someone checks in, so a copied or guessed code is rejected.
  */
 
-/** How long a code is accepted after it is issued (it rotates every 30s). */
-export const CODE_TTL_MS = 45_000;
+/** The server accepts a code for 30–60 seconds; the QR rotates every 30s. */
+export const CODE_ROTATE_SECONDS = 30;
 
 export interface CheckInData {
   serviceId: string;
@@ -91,3 +91,16 @@ export function parseCheckIn(text: string): CheckInData | null {
 export function isExpired(data: CheckInData, now = Date.now()): boolean {
   return now > data.expiresAt;
 }
+
+export type CheckInResult =
+  | {
+      status: "added" | "duplicate";
+      service: { id: string; name: string; day: string; time: string };
+      code: string;
+      at: number;
+    }
+  | { status: "error"; message: string };
+
+export type IssueCodeResult =
+  | { ok: true; data: CheckInData }
+  | { ok: false; message: string };

@@ -1,19 +1,20 @@
 import { defineQuery } from "next-sanity";
-import type { Q_ALL_FILTERS_RESULT } from "~/sanity.types";
 import { sanityQuery } from "../lib/fetch";
 
-const fields = `
-  _id,
-  name,
-  "slug": value.current,
-`;
+export type ProjectFilterRow = {
+  _id: string;
+  name: string | null;
+  slug: string | null;
+};
 
 const Q_ALL_FILTERS = defineQuery(`
   *[_type == "projectFilter"] | order(_createdAt asc) {
-    ${fields}
+    _id,
+    name,
+    "slug": value.current
   }
 `);
 
-export async function fetchAllProjectFilters(): Promise<Q_ALL_FILTERS_RESULT> {
-  return sanityQuery<Q_ALL_FILTERS_RESULT>({ query: Q_ALL_FILTERS });
+export async function fetchAllProjectFilters(): Promise<ProjectFilterRow[]> {
+  return sanityQuery<ProjectFilterRow[]>({ query: Q_ALL_FILTERS, fallback: [] });
 }

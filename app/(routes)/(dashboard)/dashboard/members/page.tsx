@@ -3,10 +3,8 @@ import { Suspense } from "react";
 import { MembersTable } from "~/components/dashboard/members-table";
 import { dashboardNavData } from "~/components/dashboard/nav-config";
 import { PageHeader } from "~/components/dashboard/page-header";
-import { ResetSampleDataButton } from "~/components/dashboard/reset-sample-data";
 import { RoleGate } from "~/components/dashboard/role-gate";
-import { members } from "~/lib/dashboard/mock-data";
-import { applyOverrides, readOverrides } from "~/lib/dashboard/overrides";
+import { getMembers } from "~/lib/dashboard/data";
 import type { MemberStatus } from "~/lib/dashboard/types";
 
 const navItem = dashboardNavData("/dashboard/members");
@@ -28,7 +26,7 @@ async function MembersContent({
 }) {
   const { status } = await searchParams;
   const initialFilter = statuses.find((s) => s === status) ?? "all";
-  const list = applyOverrides(members, await readOverrides());
+  const list = await getMembers();
 
   return <MembersTable initialMembers={list} initialFilter={initialFilter} />;
 }
@@ -40,7 +38,6 @@ export default function Page(props: { searchParams: SearchParams }) {
         eyebrow="Church"
         title="Members"
         description="Everyone who has registered. New sign-ups start as attendees. Approve them and give them a role, or change a role at any time."
-        actions={<ResetSampleDataButton />}
       />
       <Suspense
         fallback={
