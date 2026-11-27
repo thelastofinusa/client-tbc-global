@@ -5,16 +5,6 @@ import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { fetchExpressions } from "~/sanity/queries/expression.query";
 
-const CULTURE = [
-  "Christ-centeredness",
-  "The Word",
-  "Prayer",
-  "Fellowship",
-  "Commitment",
-  "Service",
-  "Growth",
-];
-
 export const Expressions = async () => {
   const expressions = await fetchExpressions().catch((err) => {
     console.error("Could not load expressions:", err);
@@ -31,29 +21,15 @@ export const Expressions = async () => {
           {/* Intro stays in view while the list scrolls (desktop) */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <Eyebrow label="Expressions" className="text-primary" />
-            <h2 className="mt-2 font-serif text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Where the culture of the house is lived
             </h2>
             <p className="text-muted-foreground mt-4 text-sm leading-[1.75] sm:text-base">
-              An expression is a distinct gathering or outreach through which
-              the house’s culture is lived out in a specific setting. We are
-              building a people deeply rooted in Christ, established in the
-              Word, devoted to prayer, united in fellowship and faithful to the
-              assignment entrusted to us. Attendance isn’t about proving
-              loyalty. It’s about valuing the house and willingly prioritising
-              your spiritual family.
+              An expression is a gathering or outreach where we live out our
+              church culture together—rooted in Christ, the Word, prayer, and
+              fellowship. Showing up isn’t about obligation; it’s about valuing
+              and prioritizing your spiritual family.
             </p>
-
-            <ul className="mt-6 flex flex-wrap gap-2">
-              {CULTURE.map((value) => (
-                <li
-                  key={value}
-                  className="bg-card border-line rounded-full border px-3 py-1 text-xs font-semibold"
-                >
-                  {value}
-                </li>
-              ))}
-            </ul>
           </div>
 
           {expressions.length === 0 ? (
@@ -95,7 +71,7 @@ export const Expressions = async () => {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <h3 className="group-hover:text-primary font-serif text-xl font-extrabold tracking-[-0.03em] transition-colors">
+                      <h3 className="group-hover:text-primary font-serif text-2xl font-extrabold tracking-[-0.03em] transition-colors md:text-3xl">
                         {item.title}
                       </h3>
                       {item.schedule && (

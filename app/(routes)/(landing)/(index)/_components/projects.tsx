@@ -24,7 +24,7 @@ function ProjectsView({
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <Eyebrow lineClass="bg-primary" label="What we’re building" />
-            <h2 className="mt-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Faith with
               <br />
               sleeves rolled up.
@@ -33,7 +33,7 @@ function ProjectsView({
 
           {hasProjects && (
             <Button
-              variant="outline"
+              variant="dark"
               size="lg"
               className="w-max"
               nativeButton={false}

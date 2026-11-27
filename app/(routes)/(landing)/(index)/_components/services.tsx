@@ -6,37 +6,33 @@ import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { getServices } from "~/lib/data/services";
 
-const COUNT_WORDS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"];
-
 export const ServicesComponent = async () => {
   const services = await getServices();
-  const weekly = services.filter((s) => s.kind === "weekly");
-  const gatherings = weekly.map((s, index) => ({
+  const hasFeatured = services.some((s) => s.featured);
+
+  const gatherings = services.map((s, index) => ({
     id: s.id,
-    day: (s.weekday ?? s.day).slice(0, 3),
+    badge: (s.weekday ?? s.day ?? s.kind).slice(0, 3),
     title: s.name,
     time: s.time,
     location: s.location,
-    highlight: s.featured || (index === 0 && !weekly.some((w) => w.featured)),
+    highlight: s.featured || (index === 0 && !hasFeatured),
   }));
-  const countWord = COUNT_WORDS[gatherings.length - 1];
 
   return (
     <section aria-label="Services" className="flex-1 overflow-x-clip">
       <Container className="py-16 md:py-24">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_1.3fr] md:gap-x-16">
           <div className="flex flex-col items-start">
-            <Eyebrow lineClass="bg-primary" label="Join us this week" />
+            <Eyebrow lineClass="bg-primary" label="Gather with us" />
 
-            <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
-              {countWord
-                ? `${countWord} ${gatherings.length === 1 ? "day" : "days"} a week,`
-                : "Join us this week,"}
+            <h2 className="my-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
+              Many moments,
               <br />
               one open door.
             </h2>
 
-            <p className="text-muted-foreground max-w-sm text-sm leading-[1.75] sm:text-[15px]">
+            <p className="text-muted-foreground max-w-md text-sm leading-[1.75] sm:text-[15px]">
               Come as you are. Whether it’s your first time or your hundredth,
               there’s a seat and a warm welcome waiting for you.
             </p>
@@ -59,52 +55,54 @@ export const ServicesComponent = async () => {
                 Our schedule is being updated. Check back shortly.
               </li>
             )}
-            {gatherings.map(({ id, day, title, time, location, highlight }) => (
-              <li
-                key={id}
-                className={
-                  highlight
-                    ? "bg-primary text-primary-foreground border-primary grid grid-cols-[64px_1fr] items-center gap-x-5 gap-y-3 border p-5 sm:grid-cols-[72px_1fr_auto] md:p-6"
-                    : "bg-card border-line grid grid-cols-[64px_1fr] items-center gap-x-5 gap-y-3 border p-5 sm:grid-cols-[72px_1fr_auto] md:p-6"
-                }
-              >
-                <span
+            {gatherings.map(
+              ({ id, badge, title, time, location, highlight }) => (
+                <li
+                  key={id}
                   className={
                     highlight
-                      ? "text-accent font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
-                      : "text-primary font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
+                      ? "bg-primary text-primary-foreground border-primary grid grid-cols-[64px_1fr] items-center gap-x-5 gap-y-3 border p-5 sm:grid-cols-[72px_1fr_auto] md:p-6"
+                      : "bg-card border-line grid grid-cols-[64px_1fr] items-center gap-x-5 gap-y-3 border p-5 sm:grid-cols-[72px_1fr_auto] md:p-6"
                   }
                 >
-                  {day}
-                </span>
-
-                <div>
-                  <h3 className="font-serif text-lg font-bold tracking-[-0.02em] md:text-xl">
-                    {title}
-                  </h3>
-                  <p
+                  <span
                     className={
                       highlight
-                        ? "text-primary-foreground/80 mt-1 flex items-center gap-1.5 text-xs"
-                        : "text-muted-foreground mt-1 flex items-center gap-1.5 text-xs"
+                        ? "text-accent font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
+                        : "text-primary font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
                     }
                   >
-                    <RiMapPinRangeLine size={13} />
-                    {location}
-                  </p>
-                </div>
+                    {badge}
+                  </span>
 
-                <span
-                  className={
-                    highlight
-                      ? "col-start-2 text-sm font-semibold sm:col-start-auto"
-                      : "text-muted-foreground col-start-2 text-sm font-semibold sm:col-start-auto"
-                  }
-                >
-                  {time}
-                </span>
-              </li>
-            ))}
+                  <div>
+                    <h3 className="font-serif text-lg font-bold tracking-[-0.02em] md:text-xl">
+                      {title}
+                    </h3>
+                    <p
+                      className={
+                        highlight
+                          ? "text-primary-foreground/80 mt-1 flex items-center gap-1.5 text-xs"
+                          : "text-muted-foreground mt-1 flex items-center gap-1.5 text-xs"
+                      }
+                    >
+                      <RiMapPinRangeLine size={13} />
+                      {location}
+                    </p>
+                  </div>
+
+                  <span
+                    className={
+                      highlight
+                        ? "col-start-2 text-sm font-semibold sm:col-start-auto"
+                        : "text-muted-foreground col-start-2 text-sm font-semibold sm:col-start-auto"
+                    }
+                  >
+                    {time}
+                  </span>
+                </li>
+              ),
+            )}
           </ol>
         </div>
       </Container>

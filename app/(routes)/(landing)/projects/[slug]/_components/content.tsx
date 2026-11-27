@@ -27,7 +27,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
             {/* What It's About */}
             <div>
               <Eyebrow label="Overview" className="text-primary" />
-              <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em] sm:text-3xl">
+              <h2 className="mt-2 font-serif text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
                 What this project is about
               </h2>
               <div className="text-foreground/85 mt-4 space-y-4 text-base leading-relaxed">
@@ -43,7 +43,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                 <TargetIcon size={15} />
                 <span>Purpose &amp; Objectives</span>
               </div>
-              <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em]">
+              <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em] sm:text-3xl">
                 {project.purpose.heading}
               </h2>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed sm:text-base">
@@ -54,12 +54,9 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                 {project.purpose.objectives.map((objective) => (
                   <li
                     key={objective}
-                    className="flex items-start gap-3 text-sm leading-relaxed sm:text-base"
+                    className="flex items-start gap-2 text-sm leading-relaxed"
                   >
-                    <CheckCircle2Icon
-                      size={18}
-                      className="text-primary mt-0.5 shrink-0"
-                    />
+                    <CheckCircle2Icon className="text-primary mt-1 size-4 shrink-0" />
                     <span>{objective}</span>
                   </li>
                 ))}
@@ -67,39 +64,41 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
             </div>
 
             {/* Project Gallery */}
-            <div>
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <Eyebrow label="From the Field" className="text-primary" />
-                  <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em] sm:text-3xl">
-                    Project Gallery
-                  </h2>
+            {project.gallery.length > 0 && (
+              <div>
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <Eyebrow label="From the Field" className="text-primary" />
+                    <h2 className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em] sm:text-3xl">
+                      Project Gallery
+                    </h2>
+                  </div>
+                  <span className="text-muted-foreground text-xs font-semibold">
+                    {project.gallery.length} photos
+                  </span>
                 </div>
-                <span className="text-muted-foreground text-xs font-semibold">
-                  {project.gallery.length} photos
-                </span>
-              </div>
 
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {project.gallery.map((photo, index) => (
-                  <figure
-                    key={`${photo.src}-${index}`}
-                    className="bg-card border-line group overflow-hidden rounded-xl border"
-                  >
-                    <div className="bg-muted aspect-4/3 overflow-hidden">
-                      <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <figcaption className="text-muted-foreground p-3.5 text-xs leading-relaxed">
-                      {photo.caption}
-                    </figcaption>
-                  </figure>
-                ))}
+                <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {project.gallery.map((photo, index) => (
+                    <figure
+                      key={`${photo.src}-${index}`}
+                      className="bg-card border-line group overflow-hidden rounded-xl border"
+                    >
+                      <div className="bg-muted aspect-4/3 overflow-hidden">
+                        <img
+                          src={photo.src}
+                          alt={photo.alt}
+                          className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <figcaption className="text-muted-foreground p-3.5 text-xs leading-relaxed">
+                        {photo.caption}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right Aside: Progress & Support */}
@@ -110,7 +109,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                 <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                   Project Progress
                 </span>
-                <span className="text-primary font-serif text-xl font-extrabold">
+                <span className="text-primary font-mono text-xl font-extrabold">
                   {project.progress.percentage}%
                 </span>
               </div>
@@ -126,7 +125,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
               <div className="mt-4 flex items-baseline justify-between gap-2">
                 {project.progress.goalLabel ? (
                   <div>
-                    <p className="font-serif text-2xl font-extrabold tracking-[-0.03em]">
+                    <p className="font-mono text-2xl font-extrabold tracking-[-0.03em]">
                       {project.progress.raisedLabel || "₦0"}
                     </p>
                     <p className="text-muted-foreground text-xs">
@@ -134,7 +133,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                     </p>
                   </div>
                 ) : (
-                  <p className="font-serif text-2xl font-extrabold tracking-[-0.03em]">
+                  <p className="font-mono text-2xl font-extrabold tracking-[-0.03em]">
                     {project.progress.percentage}%
                     <span className="text-muted-foreground ml-1.5 text-xs font-normal">
                       complete
@@ -201,7 +200,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                 Kudenda, Kaduna.
               </p>
 
-              <div className="mt-5 flex flex-col gap-2.5">
+              <div className="mt-5 flex gap-2.5">
                 <Button
                   variant="red"
                   size="lg"
@@ -211,7 +210,6 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                       href={`/partner?project=${encodeURIComponent(project.slug)}`}
                     />
                   }
-                  className="w-full"
                 >
                   <span>Support This Project</span>
                   <ArrowUpRightIcon />
@@ -219,10 +217,9 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
 
                 <Button
                   variant="glass"
-                  size="default"
+                  size="lg"
                   nativeButton={false}
                   render={<Link href="/services" />}
-                  className="w-full"
                 >
                   <span>Plan Your Visit</span>
                 </Button>

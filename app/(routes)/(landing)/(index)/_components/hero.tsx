@@ -28,7 +28,7 @@ export const HomeHeroComponent = () => {
               label="Kudenda, Kaduna · Everyone is welcome"
             />
 
-            <h1 className="my-6 font-serif text-[clamp(48px,7vw,92px)] leading-[0.95] font-extrabold tracking-[-0.075em]">
+            <h1 className="my-6 font-serif text-7xl leading-[0.85] font-extrabold tracking-[-0.075em] md:text-8xl lg:text-[clamp(68px,8vw,118px)]">
               Faith that
               <br />
               moves <em className="text-primary not-italic">forward.</em>

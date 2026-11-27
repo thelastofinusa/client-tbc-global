@@ -17,7 +17,7 @@ export const Story = () => {
                 label="A church with its doors open"
                 lineClass="bg-primary"
               />
-              <h2 className={`${headingClass} mt-5 text-4xl md:text-5xl`}>
+              <h2 className="mt-5 font-serif text-5xl font-bold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
                 Faith is something
                 <br />
                 we <em className="text-primary not-italic">live together.</em>

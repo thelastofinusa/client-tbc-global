@@ -27,7 +27,10 @@ function buildStats({ members, sponsors, partners }: ImpactData) {
     {
       value: sponsors,
       suffix: null,
-      label: sponsors === 1 ? "sponsor backing our projects" : "sponsors backing our projects",
+      label:
+        sponsors === 1
+          ? "sponsor backing our projects"
+          : "sponsors backing our projects",
       icon: HiOutlineAcademicCap,
       tile: "bg-muted text-foreground border border-line",
       suffixClassName: "",
@@ -36,7 +39,8 @@ function buildStats({ members, sponsors, partners }: ImpactData) {
     {
       value: partners,
       suffix: null,
-      label: partners === 1 ? "partner walking with us" : "partners walking with us",
+      label:
+        partners === 1 ? "partner walking with us" : "partners walking with us",
       icon: HiOutlineHeart,
       tile: "bg-navy text-white",
       suffixClassName: "text-accent",
@@ -54,14 +58,14 @@ function ImpactView(data: ImpactData) {
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <Eyebrow lineClass="bg-primary" label="Faith, made visible" />
-            <h2 className="mt-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Good things happen
               <br />
               when we show up.
             </h2>
           </div>
 
-          <p className="text-muted-foreground max-w-xs text-sm leading-[1.75] md:text-right">
+          <p className="text-muted-foreground max-w-[280px] text-sm leading-[1.75] md:text-right">
             Every number below is counted from real people and real projects.
           </p>
         </div>

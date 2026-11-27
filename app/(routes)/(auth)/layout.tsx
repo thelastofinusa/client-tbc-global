@@ -30,7 +30,7 @@ export default function AuthLayout({
 
         <div className="relative z-10 p-10 xl:p-14">
           <Eyebrow label="Welcome to the family" />
-          <h2 className="mt-5 max-w-md font-serif text-5xl leading-[1.02] font-extrabold tracking-[-0.06em] xl:text-6xl">
+          <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
             A generation
             <br />
             set on <span className="text-accent">fire.</span>

@@ -9,12 +9,13 @@ export default async function middleware(req: NextRequest) {
     pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
   const isProtectedRoute = pathname.startsWith("/dashboard");
 
-  if (sessionCookie && isAuthRoute) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-
+  // Only redirect away from auth pages if the user has a session cookie AND
+  // isn't coming from a signed-out state. Even better: check / verify if needed,
+  // or avoid trapping users with stale cookies in a redirect loop.
   if (!sessionCookie && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/sign-in", req.url));
+    const signInUrl = new URL("/sign-in", req.url);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
   }
 
   return NextResponse.next();

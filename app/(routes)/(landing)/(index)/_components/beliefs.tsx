@@ -18,7 +18,7 @@ export const BeliefsComponent = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-end md:gap-12">
           <div className="md:col-span-7">
             <Eyebrow lineClass="bg-primary" label="Who we are" />
-            <h2 className="mt-5 font-serif text-4xl leading-[1.02] font-extrabold tracking-[-0.06em] md:text-5xl lg:text-[68px]">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Not just a place to go.
               <br />A place to <span className="text-primary">become.</span>
             </h2>
@@ -26,7 +26,7 @@ export const BeliefsComponent = () => {
 
           <div className="flex flex-col items-start gap-6 md:col-span-5">
             <p className="text-muted-foreground text-sm leading-[1.8] sm:text-[15px]">
-              {siteConfig.description}
+              {siteConfig.about}
             </p>
             <Button
               variant="dark"
@@ -42,7 +42,7 @@ export const BeliefsComponent = () => {
 
         {/* Photo + mission / vision */}
         <div className="mt-10 grid grid-cols-1 gap-3 md:mt-14 md:grid-cols-12">
-          <div className="relative aspect-[4/3] overflow-hidden md:col-span-5 md:aspect-auto md:min-h-[460px]">
+          <div className="relative aspect-4/3 overflow-hidden md:col-span-5 md:aspect-auto md:min-h-115">
             <Image
               src="/belief.avif"
               alt="Friends celebrating together at a long table"

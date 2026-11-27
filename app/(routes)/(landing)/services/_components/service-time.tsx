@@ -13,7 +13,7 @@ export const ServiceTime = async () => {
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
             <Eyebrow label="Weekly Rhythm" className="text-primary" />
-            <h2 className="mt-2 font-serif text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Service Schedule
             </h2>
           </div>
@@ -75,15 +75,15 @@ export const ServiceTime = async () => {
               </div>
 
               {item.description && (
-              <p
-                className={
-                  index === 0
-                    ? "text-secondary/80 mt-3 text-sm leading-relaxed"
-                    : "text-muted-foreground mt-3 text-sm leading-relaxed"
-                }
-              >
-                {item.description}
-              </p>
+                <p
+                  className={
+                    index === 0
+                      ? "text-secondary/80 mt-3 text-sm leading-relaxed"
+                      : "text-muted-foreground mt-3 text-sm leading-relaxed"
+                  }
+                >
+                  {item.description}
+                </p>
               )}
             </div>
           ))}

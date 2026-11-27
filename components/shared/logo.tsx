@@ -25,7 +25,7 @@ export const LogoComponent: React.FC<{
       href={path}
       onClick={close}
       className={cn(
-        "flex items-center gap-2 sm:gap-3 font-serif text-[13px] sm:text-sm",
+        "flex items-center gap-2 sm:gap-3 text-[13px] sm:text-sm",
         className,
       )}
     >
@@ -42,7 +42,7 @@ export const LogoComponent: React.FC<{
           height: `${imgSize}px`,
         }}
       />
-      <p className="flex flex-col font-serif leading-4 font-semibold">
+      <p className="flex flex-col leading-4 font-semibold">
         {suffix ? (
           <>
             <span className="origin-left scale-[80%]">{prefix}</span>

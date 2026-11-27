@@ -12,7 +12,7 @@ export const ProjectDetailsHeroComponents: React.FC<{
   return (
     <section className="bg-navy border-b border-white/10 pt-10 pb-14 text-white md:pt-14 md:pb-20">
       <Container>
-        <div className="max-w-2xl">
+        <div className="max-w-xl">
           <Link
             href="/projects"
             className="text-secondary/80 inline-flex items-center gap-2 text-xs font-semibold transition-colors hover:text-white"
@@ -26,7 +26,7 @@ export const ProjectDetailsHeroComponents: React.FC<{
             className="text-accent mt-6"
           />
 
-          <h1 className="mt-4 max-w-4xl font-serif text-3xl font-extrabold tracking-[-0.04em] sm:text-5xl md:text-6xl">
+          <h1 className="mt-6 font-serif text-[clamp(48px,8vw,78px)] leading-[0.85] font-extrabold tracking-[-0.075em]">
             {project.title}
           </h1>
 

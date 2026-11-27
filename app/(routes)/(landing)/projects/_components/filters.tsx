@@ -113,7 +113,7 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
                 <span className="truncate">{project.location}</span>
               </div>
 
-              <h2 className="mt-1.5 font-serif text-xl leading-snug font-extrabold tracking-[-0.03em]">
+              <h2 className="mt-1.5 font-serif text-2xl leading-snug font-extrabold tracking-[-0.03em] md:text-3xl">
                 <Link
                   href={`/projects/${project.slug}`}
                   className="group-hover:text-primary transition-colors before:absolute before:inset-0"
@@ -124,8 +124,8 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
             </div>
 
             {/* Tilted Specimen Image Frame */}
-            <div className="bg-navy border-line relative size-16 shrink-0 rotate-2 overflow-hidden rounded-lg border-2 shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0">
-              {(project.bannerThumb || project.bannerImage) && (
+            {(project.bannerThumb || project.bannerImage) && (
+              <div className="bg-navy border-line relative size-16 shrink-0 rotate-2 overflow-hidden rounded-lg border-2 shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0">
                 <img
                   src={project.bannerThumb || project.bannerImage}
                   alt={project.bannerAlt}
@@ -133,8 +133,8 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
                   decoding="async"
                   className="size-full object-cover"
                 />
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <p className="text-muted-foreground mt-3.5 line-clamp-3 text-sm leading-relaxed">
@@ -149,7 +149,7 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
           <div className="flex min-w-0 items-center gap-3">
             <RadialProgress percentage={project.progress.percentage} />
             <div className="min-w-0">
-              <p className="truncate font-serif text-base font-extrabold tracking-[-0.02em]">
+              <p className="truncate font-mono text-base font-extrabold tracking-[-0.02em]">
                 {project.progress.raisedLabel}
               </p>
               <p className="text-muted-foreground truncate text-[11px]">

@@ -5,6 +5,23 @@ import { CheckIcon, HeartHandshakeIcon, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Button } from "~/components/reusable/shadcn/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "~/components/reusable/shadcn/field";
+import { Input } from "~/components/reusable/shadcn/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/reusable/shadcn/select";
+import { Textarea } from "~/components/reusable/shadcn/textarea";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { submitRequest } from "~/lib/submissions";
@@ -62,9 +79,12 @@ const tracks: PartnershipTrack[] = [
   },
 ];
 
-const inputClass =
-  "border-input bg-background focus:border-ring focus:ring-ring/30 mt-2 w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none focus:ring-3";
-const labelClass = "block text-xs font-semibold tracking-wider uppercase";
+const cadenceOptions = [
+  "Monthly",
+  "Quarterly",
+  "One-time / Project",
+  "Weekly / Volunteer",
+] as const;
 
 export const Tracks = ({
   projects,
@@ -140,9 +160,9 @@ export const Tracks = ({
     <React.Fragment>
       <section className="py-14 md:py-20">
         <Container>
-          <div className="max-w-2xl">
+          <div className="max-w-sm">
             <Eyebrow label="Ways to Partner" className="text-primary" />
-            <h2 className="mt-2 font-serif text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">
+            <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
               Choose how you want to partner
             </h2>
           </div>
@@ -221,7 +241,7 @@ export const Tracks = ({
                 <HeartHandshakeIcon size={15} />
                 <span>Partnership Interest</span>
               </div>
-              <h2 className="mt-3 font-serif text-3xl font-extrabold tracking-[-0.03em]">
+              <h2 className="mt-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
                 Connect with our team
               </h2>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed sm:text-base">
@@ -286,198 +306,215 @@ export const Tracks = ({
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <fieldset className="flex flex-wrap gap-2">
-                    <legend className={labelClass}>I want to</legend>
-                    {(
-                      [
-                        ["partner", "Partner with the church"],
-                        ["sponsor", "Sponsor a student or project"],
-                      ] as const
-                    ).map(([value, label]) => (
-                      <label
-                        key={value}
-                        className={cn(
-                          "mt-2 cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                          requestType === value
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "border-line hover:border-foreground/30",
-                        )}
-                      >
-                        <input
-                          type="radio"
-                          name="request-type"
-                          value={value}
-                          checked={requestType === value}
-                          onChange={() => setRequestType(value)}
-                          className="sr-only"
-                        />
-                        {label}
-                      </label>
-                    ))}
-                  </fieldset>
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="partner-name" className={labelClass}>
-                        Full Name
-                      </label>
-                      <input
-                        id="partner-name"
-                        type="text"
-                        required
-                        autoComplete="name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Your name"
-                        className={inputClass}
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="partner-email" className={labelClass}>
-                        Email Address
-                      </label>
-                      <input
-                        id="partner-email"
-                        type="email"
-                        required
-                        autoComplete="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="partner-phone" className={labelClass}>
-                      Phone / WhatsApp (Optional)
-                    </label>
-                    <input
-                      id="partner-phone"
-                      type="tel"
-                      autoComplete="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-
-                  {requestType === "sponsor" ? (
-                    <div>
-                      <label htmlFor="sponsor-project" className={labelClass}>
-                        What would you like to sponsor?
-                      </label>
-                      <select
-                        id="sponsor-project"
-                        value={projectSlug}
-                        onChange={(e) => setProjectSlug(e.target.value)}
-                        className={inputClass}
-                      >
-                        <option value="">
-                          A student (general sponsorship)
-                        </option>
-                        {projects.map((project) => (
-                          <option key={project.slug} value={project.slug}>
-                            {project.title}
-                          </option>
+                <form onSubmit={handleSubmit}>
+                  <FieldGroup>
+                    <FieldSet>
+                      <FieldLegend variant="label">I want to</FieldLegend>
+                      <div className="flex flex-wrap gap-2">
+                        {(
+                          [
+                            ["partner", "Partner with the church"],
+                            ["sponsor", "Sponsor a student or project"],
+                          ] as const
+                        ).map(([value, label]) => (
+                          <Button
+                            key={value}
+                            type="button"
+                            variant={
+                              requestType === value ? "default" : "outline"
+                            }
+                            className="rounded-full"
+                            onClick={() => setRequestType(value)}
+                          >
+                            {label}
+                          </Button>
                         ))}
-                      </select>
-                    </div>
-                  ) : (
+                      </div>
+                    </FieldSet>
+
                     <div className="grid gap-5 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="partner-track" className={labelClass}>
-                          Partnership Track
-                        </label>
-                        <select
-                          id="partner-track"
-                          value={selectedTrack}
-                          onChange={(e) => setSelectedTrack(e.target.value)}
-                          className={inputClass}
-                        >
-                          {tracks.map((track) => (
-                            <option key={track.id} value={track.id}>
-                              {track.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <Field>
+                        <FieldLabel htmlFor="partner-name">
+                          Full Name
+                        </FieldLabel>
+                        <Input
+                          id="partner-name"
+                          type="text"
+                          required
+                          autoComplete="name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Your name"
+                        />
+                      </Field>
 
-                      <div>
-                        <label htmlFor="partner-cadence" className={labelClass}>
-                          Preferred Cadence
-                        </label>
-                        <select
-                          id="partner-cadence"
-                          value={frequency}
-                          onChange={(e) => setFrequency(e.target.value)}
-                          className={inputClass}
-                        >
-                          <option value="Monthly">Monthly</option>
-                          <option value="Quarterly">Quarterly</option>
-                          <option value="One-time / Project">
-                            One-time / Project
-                          </option>
-                          <option value="Weekly / Volunteer">
-                            Weekly / Volunteer
-                          </option>
-                        </select>
-                      </div>
+                      <Field>
+                        <FieldLabel htmlFor="partner-email">
+                          Email Address
+                        </FieldLabel>
+                        <Input
+                          id="partner-email"
+                          type="email"
+                          required
+                          autoComplete="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@example.com"
+                        />
+                      </Field>
                     </div>
-                  )}
 
-                  <div>
-                    <label htmlFor="partner-notes" className={labelClass}>
-                      Notes (Optional)
-                    </label>
-                    <textarea
-                      id="partner-notes"
-                      rows={4}
-                      maxLength={1000}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Anything you'd like us to know, or questions you have..."
-                      className={inputClass}
-                    />
-                  </div>
+                    <Field>
+                      <FieldLabel htmlFor="partner-phone">
+                        Phone / WhatsApp (Optional)
+                      </FieldLabel>
+                      <Input
+                        id="partner-phone"
+                        type="tel"
+                        autoComplete="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </Field>
 
-                  {/* Honeypot: hidden from people, filled in by bots. */}
-                  <div aria-hidden="true" className="absolute left-[-9999px]">
-                    <label htmlFor="partner-company">Company</label>
-                    <input
-                      id="partner-company"
-                      type="text"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                    />
-                  </div>
+                    {requestType === "sponsor" ? (
+                      <Field>
+                        <FieldLabel htmlFor="sponsor-project">
+                          What would you like to sponsor?
+                        </FieldLabel>
+                        <Select
+                          value={projectSlug || "__general__"}
+                          onValueChange={(val) =>
+                            setProjectSlug(
+                              !val || val === "__general__" ? "" : val,
+                            )
+                          }
+                        >
+                          <SelectTrigger
+                            id="sponsor-project"
+                            className="w-full"
+                          >
+                            <SelectValue placeholder="A student (general sponsorship)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__general__">
+                              A student (general sponsorship)
+                            </SelectItem>
+                            {projects.map((project) => (
+                              <SelectItem
+                                key={project.slug}
+                                value={project.slug}
+                              >
+                                {project.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                    ) : (
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <Field>
+                          <FieldLabel htmlFor="partner-track">
+                            Partnership Track
+                          </FieldLabel>
+                          <Select
+                            value={selectedTrack}
+                            onValueChange={(val) => {
+                              if (val) setSelectedTrack(val);
+                            }}
+                          >
+                            <SelectTrigger
+                              id="partner-track"
+                              className="w-full"
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {tracks.map((track) => (
+                                <SelectItem key={track.id} value={track.id}>
+                                  {track.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </Field>
 
-                  {error && (
-                    <p role="alert" className="text-destructive text-sm">
-                      {error}
-                    </p>
-                  )}
+                        <Field>
+                          <FieldLabel htmlFor="partner-cadence">
+                            Preferred Cadence
+                          </FieldLabel>
+                          <Select
+                            value={frequency}
+                            onValueChange={(val) => {
+                              if (val) setFrequency(val);
+                            }}
+                          >
+                            <SelectTrigger
+                              id="partner-cadence"
+                              className="w-full"
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {cadenceOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                      </div>
+                    )}
 
-                  <Button
-                    type="submit"
-                    variant="red"
-                    size="lg"
-                    disabled={pending}
-                    className="w-full sm:w-auto"
-                  >
-                    <span>
-                      {pending
-                        ? "Sending..."
-                        : requestType === "sponsor"
-                          ? "Submit Sponsorship Request"
-                          : "Submit Partnership Request"}
-                    </span>
-                  </Button>
+                    <Field>
+                      <FieldLabel htmlFor="partner-notes">
+                        Notes (Optional)
+                      </FieldLabel>
+                      <Textarea
+                        id="partner-notes"
+                        rows={4}
+                        maxLength={1000}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="min-h-36"
+                        placeholder="Anything you'd like us to know, or questions you have..."
+                      />
+                    </Field>
+
+                    {/* Honeypot: hidden from people, filled in by bots. */}
+                    <div aria-hidden="true" className="absolute left-[-9999px]">
+                      <FieldLabel htmlFor="partner-company">Company</FieldLabel>
+                      <Input
+                        id="partner-company"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                      />
+                    </div>
+
+                    {error && <FieldError>{error}</FieldError>}
+
+                    <div>
+                      <Button
+                        type="submit"
+                        variant="red"
+                        size="lg"
+                        disabled={pending}
+                        className="w-full sm:w-auto"
+                      >
+                        <span>
+                          {pending
+                            ? "Sending..."
+                            : requestType === "sponsor"
+                              ? "Submit Sponsorship Request"
+                              : "Submit Partnership Request"}
+                        </span>
+                      </Button>
+                    </div>
+                  </FieldGroup>
                 </form>
               )}
             </div>

@@ -12,7 +12,7 @@ export default function NotFound() {
           <div className="mx-auto max-w-2xl">
             <Eyebrow label="Error 404" className="text-primary" />
 
-            <p className="text-navy/10 mt-3 font-serif text-7xl font-extrabold tracking-[-0.06em] select-none sm:text-8xl md:text-9xl">
+            <p className="text-navy/10 mt-3 text-7xl font-extrabold tracking-[-0.06em] select-none sm:text-8xl md:text-9xl">
               404
             </p>
 

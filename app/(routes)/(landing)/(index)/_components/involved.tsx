@@ -45,7 +45,7 @@ export const InvolvedComponent = () => {
             lineClass="bg-primary"
             label="Find your place"
           />
-          <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
+          <h2 className="my-5 font-serif text-5xl font-extrabold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
             There’s a next step
             <br />
             with your name on it.

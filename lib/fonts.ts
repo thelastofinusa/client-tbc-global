@@ -1,28 +1,78 @@
 import { cn } from "cn";
-import {
-  Geist_Mono as FontMono,
-  // Hanken_Grotesk as FontSans,
-  Bricolage_Grotesque as FontSans,
-  Manrope as FontSerif,
-} from "next/font/google";
+import localFont from "next/font/local";
 
-const fontSans = FontSans({
+const fontSans = localFont({
+  src: [
+    {
+      path: "../public/fonts/Sansation/Sansation-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Sansation/Sansation-LightItalic.ttf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/Sansation/Sansation-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Sansation/Sansation-Italic.ttf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/Sansation/Sansation-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Sansation/Sansation-BoldItalic.ttf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
   variable: "--font-sans",
-  subsets: ["latin"],
   display: "swap",
-  // weight: ["100", "300", "400", "700", "900"],
 });
 
-const fontSerif = FontSerif({
+const fontSerif = localFont({
+  src: [
+    {
+      path: "../public/fonts/CormorantUpright/CormorantUpright-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/CormorantUpright/CormorantUpright-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/CormorantUpright/CormorantUpright-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/CormorantUpright/CormorantUpright-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/CormorantUpright/CormorantUpright-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-serif",
-  subsets: ["latin"],
   display: "swap",
-  style: "normal",
 });
 
-const fontMono = FontMono({
+const fontMono = localFont({
+  src: "../public/fonts/JetBrainsMono/JetBrainsMono-VariableFont_wght.ttf",
   variable: "--font-mono",
-  subsets: ["latin"],
   display: "swap",
   style: "normal",
 });

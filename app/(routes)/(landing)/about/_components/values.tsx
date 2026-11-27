@@ -36,16 +36,13 @@ const values = [
   },
 ];
 
-const headingClass =
-  "font-serif font-extrabold tracking-[-0.06em] leading-[1.05]";
-
 export const Values = () => {
   return (
     <section aria-label="Our values" className="w-full">
       <Container>
         <div className="border-line border-t py-12 md:py-20">
           <Eyebrow label="What guides us" lineClass="bg-primary" />
-          <h2 className={`${headingClass} mt-5 mb-8 text-4xl md:text-5xl`}>
+          <h2 className="mt-5 mb-8 font-serif text-5xl font-bold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
             Four things we keep
             <br />
             coming back to.

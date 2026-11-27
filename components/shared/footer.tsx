@@ -80,7 +80,7 @@ export const Footer = () => {
               label="Your story has a place here"
               className="text-accent"
             />
-            <h2 className="mt-5 font-serif text-4xl leading-[1.02] font-extrabold tracking-[-0.06em] md:text-6xl">
+            <h2 className="my-6 font-serif text-[clamp(48px,8vw,78px)] leading-[0.85] font-extrabold tracking-[-0.075em]">
               Come as you are.
               <br />
               <span className="text-accent">Leave on fire.</span>

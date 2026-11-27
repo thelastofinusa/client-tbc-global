@@ -34,9 +34,7 @@ export const Practices = () => {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <Eyebrow label="What this looks like" lineClass="bg-primary" />
-              <h2
-                className={`${headingClass} mt-5 text-4xl md:text-5xl lg:text-[64px]`}
-              >
+              <h2 className="mt-5 font-serif text-5xl font-bold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
                 Gather. Grow. <em className="text-primary not-italic">Give.</em>
               </h2>
             </div>

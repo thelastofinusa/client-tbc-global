@@ -15,9 +15,9 @@ export const ServicesHeroComponent = async () => {
     <section className="bg-navy border-b border-white/10 py-16 text-white md:py-24">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
-          <div className="max-w-2xl">
+          <div className="max-w-xl">
             <Eyebrow label="Services & Expressions" className="text-accent" />
-            <h1 className="mt-4 font-serif text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl md:text-6xl">
+            <h1 className="mt-6 font-serif text-[clamp(48px,8vw,78px)] leading-[0.85] font-extrabold tracking-[-0.075em]">
               One house, many expressions.
             </h1>
             <p className="text-secondary/80 mt-5 max-w-xl text-sm leading-[1.75] sm:text-base">
@@ -49,14 +49,12 @@ export const ServicesHeroComponent = async () => {
 
           {highlight && (
             <div className="rounded-xl border border-white/15 bg-white/5 p-6">
-              <span className="text-accent text-xs font-semibold tracking-wider uppercase">
-                Join us
-              </span>
-              <p className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em]">
-                {highlight.name} · {highlight.time}
+              <Eyebrow label="Join Us" />
+              <p className="mt-2 text-xl font-extrabold tracking-[-0.03em]">
+                {highlight.name}
               </p>
               <p className="text-secondary/75 mt-1 text-sm">
-                {highlight.day} · {highlight.location}
+                {highlight.day} - {highlight.time}
               </p>
               <a
                 href={siteConfig.map.direction}

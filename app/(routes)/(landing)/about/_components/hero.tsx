@@ -11,7 +11,7 @@ export const AboutHeroComponent = () => {
       <Container className="pt-16 pb-6 md:pt-24 md:pb-10">
         <Eyebrow label="Kudenda, Kaduna · Everyone is welcome" />
 
-        <h1 className="my-6 font-serif text-[clamp(32px,7vw,62px)] leading-[1.08] font-extrabold tracking-[-0.075em] max-md:text-[40px]">
+        <h1 className="my-6 font-serif text-7xl leading-[0.85] font-extrabold tracking-[-0.075em] md:text-8xl lg:text-[clamp(68px,8vw,118px)]">
           Our roots run deep. <br className="hidden sm:block" /> Our future is{" "}
           <em className="text-primary not-italic">on fire.</em>
         </h1>

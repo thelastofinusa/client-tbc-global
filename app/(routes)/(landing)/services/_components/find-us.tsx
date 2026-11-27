@@ -10,14 +10,18 @@ export const FindUs = () => {
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
-            <Eyebrow label="Visit us" className="text-primary" />
-            <h2 className="mt-2 font-serif text-3xl font-extrabold tracking-[-0.03em]">
-              Come just as you are
+            <Eyebrow label="Plan your visit" className="text-primary" />
+            <h2 className="mt-5 font-serif text-5xl font-bold tracking-[-0.06em] md:text-6xl md:leading-[1.05]">
+              There’s a seat
+              <br />
+              <span className="text-primary">waiting for you.</span>
             </h2>
             <p className="text-muted-foreground mt-4 text-sm leading-[1.75]">
-              We meet in Kudenda, Kaduna. Arrive 10 to 15 minutes early so our
-              welcome team can help you settle in.
+              Join us in Kudenda, Kaduna. Arrive 10 to 15 minutes early so we
+              can welcome you, introduce you around, and help you feel right at
+              home.
             </p>
+
             <Button
               variant="red"
               size="lg"
