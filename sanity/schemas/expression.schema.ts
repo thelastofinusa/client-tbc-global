@@ -32,10 +32,26 @@ export const expressionSchema = defineType({
       rows: 4,
     }),
     defineField({
-      name: "schedule",
-      title: "When",
+      name: "frequency",
+      title: "How often",
       type: "string",
-      description: "e.g. Weekly · Sundays, or Quarterly",
+      options: {
+        list: [
+          { title: "Weekly", value: "weekly" },
+          { title: "Monthly", value: "monthly" },
+          { title: "Quarterly", value: "quarterly" },
+          { title: "Yearly", value: "yearly" },
+          { title: "Occasional", value: "occasional" },
+        ],
+      },
+    }),
+    defineField({
+      name: "nextGatheringAt",
+      title: "Next gathering",
+      type: "datetime",
+      description:
+        "Optional. When set, the website shows the date. Clear it after the event.",
+      options: { timeStep: 15 },
     }),
     defineField({
       name: "image",

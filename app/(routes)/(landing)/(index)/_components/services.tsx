@@ -4,30 +4,23 @@ import { RiMapPinRangeLine } from "react-icons/ri";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
+import { getServices } from "~/lib/data/services";
 
-// TODO: confirm Wednesday and Saturday times (and names) with the ministry.
-const gatherings = [
-  {
-    day: "Wed",
-    title: "Midweek gathering",
-    time: "Time coming soon",
-    highlight: false,
-  },
-  {
-    day: "Sat",
-    title: "Saturday gathering",
-    time: "Time coming soon",
-    highlight: false,
-  },
-  {
-    day: "Sun",
-    title: "Sunday service",
-    time: "9:00 AM",
-    highlight: true,
-  },
-];
+const COUNT_WORDS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"];
 
-export const ServicesComponent = () => {
+export const ServicesComponent = async () => {
+  const services = await getServices();
+  const weekly = services.filter((s) => s.kind === "weekly");
+  const gatherings = weekly.map((s, index) => ({
+    id: s.id,
+    day: (s.weekday ?? s.day).slice(0, 3),
+    title: s.name,
+    time: s.time,
+    location: s.location,
+    highlight: s.featured || (index === 0 && !weekly.some((w) => w.featured)),
+  }));
+  const countWord = COUNT_WORDS[gatherings.length - 1];
+
   return (
     <section aria-label="Services" className="flex-1 overflow-x-clip">
       <Container className="py-16 md:py-24">
@@ -36,7 +29,9 @@ export const ServicesComponent = () => {
             <Eyebrow lineClass="bg-primary" label="Join us this week" />
 
             <h2 className="my-5 font-serif text-3xl font-extrabold tracking-[-0.06em] md:text-4xl md:leading-[1.05] lg:text-5xl">
-              Three days a week,
+              {countWord
+                ? `${countWord} ${gatherings.length === 1 ? "day" : "days"} a week,`
+                : "Join us this week,"}
               <br />
               one open door.
             </h2>
@@ -59,9 +54,14 @@ export const ServicesComponent = () => {
           </div>
 
           <ol className="flex flex-col gap-3">
-            {gatherings.map(({ day, title, time, highlight }) => (
+            {gatherings.length === 0 && (
+              <li className="text-muted-foreground text-sm">
+                Our schedule is being updated. Check back shortly.
+              </li>
+            )}
+            {gatherings.map(({ id, day, title, time, location, highlight }) => (
               <li
-                key={day}
+                key={id}
                 className={
                   highlight
                     ? "bg-primary text-primary-foreground border-primary grid grid-cols-[64px_1fr] items-center gap-x-5 gap-y-3 border p-5 sm:grid-cols-[72px_1fr_auto] md:p-6"
@@ -71,8 +71,8 @@ export const ServicesComponent = () => {
                 <span
                   className={
                     highlight
-                      ? "text-accent font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
-                      : "text-primary font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
+                      ? "text-accent font-serif text-3xl font-extrabold tracking-[-0.05em] uppercase md:text-4xl"
+                      : "text-primary font-serif text-3xl font-extrabold tracking-[-0.05em] uppercase md:text-4xl"
                   }
                 >
                   {day}
@@ -90,7 +90,7 @@ export const ServicesComponent = () => {
                     }
                   >
                     <RiMapPinRangeLine size={13} />
-                    Kudenda, Kaduna
+                    {location}
                   </p>
                 </div>
 

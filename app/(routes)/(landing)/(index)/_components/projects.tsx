@@ -7,12 +7,14 @@ import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { CountingNumber } from "~/components/shared/count-number";
 import { Eyebrow } from "~/components/shared/eyebrow";
-import { getFeaturedProject } from "~/lib/data/projects";
+import { getProjects } from "~/lib/data/projects";
 
 function ProjectsView({
   featured,
+  hasProjects = false,
 }: {
   featured?: { title: string; summary: string; percentage: number };
+  hasProjects?: boolean;
 }) {
   const progress = featured?.percentage ?? 0;
 
@@ -29,16 +31,18 @@ function ProjectsView({
             </h2>
           </div>
 
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-max"
-            nativeButton={false}
-            render={<Link href="/projects" />}
-          >
-            <span>See all projects</span>
-            <ArrowUpRightIcon size={16} />
-          </Button>
+          {hasProjects && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-max"
+              nativeButton={false}
+              render={<Link href="/projects" />}
+            >
+              <span>See all projects</span>
+              <ArrowUpRightIcon size={16} />
+            </Button>
+          )}
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-3 md:mt-14 md:grid-cols-12">
@@ -59,62 +63,86 @@ function ProjectsView({
                     />
                     % of the way there.
                   </>
+                ) : hasProjects ? (
+                  "See what we’re building."
                 ) : (
-                  "Faith that gets to work."
+                  "Our first projects are on the way."
                 )}
               </h3>
               <p className="text-secondary/80 mt-4 max-w-md text-sm leading-[1.8]">
                 {featured
                   ? featured.summary
-                  : "New projects are being added. Check back soon to follow the work."}
+                  : hasProjects
+                    ? "Follow the work happening across Kudende."
+                    : "We’re preparing them now. Partner with us and be there from the start."}
               </p>
             </div>
 
-            <div>
-              <div className="mb-3 flex items-end justify-between">
-                <span className="text-secondary/70 text-xs tracking-[0.14em] uppercase">
-                  Progress
-                </span>
-                <strong className="font-mono text-2xl tabular-nums">
-                  <CountingNumber
-                    fromNumber={0}
-                    number={progress}
-                    inViewMargin="-50px"
-                  />
-                  %
-                </strong>
-              </div>
-              <div
-                role="progressbar"
-                aria-label={`${featured?.title ?? "Project"} progress`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={progress}
-                className="h-2 w-full bg-white/15"
-              >
+            {featured ? (
+              <div>
+                <div className="mb-3 flex items-end justify-between">
+                  <span className="text-secondary/70 text-xs tracking-[0.14em] uppercase">
+                    Progress
+                  </span>
+                  <strong className="font-mono text-2xl tabular-nums">
+                    <CountingNumber
+                      fromNumber={0}
+                      number={progress}
+                      inViewMargin="-50px"
+                    />
+                    %
+                  </strong>
+                </div>
                 <div
-                  className="bg-accent h-full"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+                  role="progressbar"
+                  aria-label={`${featured.title} progress`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progress}
+                  className="h-2 w-full bg-white/15"
+                >
+                  <div
+                    className="bg-accent h-full"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
 
-              <Button
-                variant="cream"
-                size="lg"
-                className="mt-8"
-                nativeButton={false}
-                render={<Link href="/projects" />}
-              >
-                <span>Follow the build</span>
-                <ArrowUpRightIcon size={16} />
-              </Button>
-            </div>
+                <Button
+                  variant="cream"
+                  size="lg"
+                  className="mt-8"
+                  nativeButton={false}
+                  render={<Link href="/projects" />}
+                >
+                  <span>Follow the build</span>
+                  <ArrowUpRightIcon size={16} />
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <Button
+                  variant="cream"
+                  size="lg"
+                  nativeButton={false}
+                  render={
+                    <Link href={hasProjects ? "/projects" : "/partner"} />
+                  }
+                >
+                  <span>
+                    {hasProjects ? "See all projects" : "Partner with us"}
+                  </span>
+                  <ArrowUpRightIcon size={16} />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Sponsor a student */}
           <Link
-            href="/partner"
-            className="bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8"
+            href="/partner?type=sponsor"
+            className={`bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8 ${
+              hasProjects ? "" : "md:row-span-2"
+            }`}
           >
             <div className="flex items-start justify-between">
               <GoSponsorTiers className="text-primary size-7" />
@@ -130,25 +158,27 @@ function ProjectsView({
             </div>
           </Link>
 
-          {/* Academic projects */}
-          <Link
-            href="/projects"
-            className="bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8"
-          >
-            <div className="flex items-start justify-between">
-              <HiOutlineAcademicCap className="text-primary size-7" />
-              <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-5 transition-colors" />
-            </div>
-            <div>
-              <h3 className="font-serif text-xl font-bold tracking-[-0.03em]">
-                Academic projects
-              </h3>
-              <p className="text-muted-foreground mt-2 text-sm leading-[1.7]">
-                Learning programs that help young people in Kudenda grow their
-                skills and dream bigger.
-              </p>
-            </div>
-          </Link>
+          {/* Academic projects (only once there are projects to see) */}
+          {hasProjects && (
+            <Link
+              href="/projects"
+              className="bg-card border-line hover:border-primary group flex flex-col justify-between gap-8 border p-6 transition-colors md:col-span-5 md:p-8"
+            >
+              <div className="flex items-start justify-between">
+                <HiOutlineAcademicCap className="text-primary size-7" />
+                <ArrowUpRightIcon className="text-muted-foreground group-hover:text-primary size-5 transition-colors" />
+              </div>
+              <div>
+                <h3 className="font-serif text-xl font-bold tracking-[-0.03em]">
+                  Academic projects
+                </h3>
+                <p className="text-muted-foreground mt-2 text-sm leading-[1.7]">
+                  Learning programs that help young people in Kudende grow their
+                  skills and dream bigger.
+                </p>
+              </div>
+            </Link>
+          )}
         </div>
       </Container>
     </section>
@@ -156,10 +186,12 @@ function ProjectsView({
 }
 
 async function ProjectsData() {
-  const featured = await getFeaturedProject();
+  const projects = await getProjects();
+  const featured = projects.find((project) => project.featured);
 
   return (
     <ProjectsView
+      hasProjects={projects.length > 0}
       featured={
         featured
           ? {

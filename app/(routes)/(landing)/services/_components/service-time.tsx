@@ -75,15 +75,15 @@ export const ServiceTime = async () => {
               </div>
 
               {item.description && (
-                <p
-                  className={
-                    index === 0
-                      ? "text-secondary/80 mt-3 text-sm leading-relaxed"
-                      : "text-muted-foreground mt-3 text-sm leading-relaxed"
-                  }
-                >
-                  {item.description}
-                </p>
+              <p
+                className={
+                  index === 0
+                    ? "text-secondary/80 mt-3 text-sm leading-relaxed"
+                    : "text-muted-foreground mt-3 text-sm leading-relaxed"
+                }
+              >
+                {item.description}
+              </p>
               )}
             </div>
           ))}

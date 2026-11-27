@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useSession } from "~/lib/auth/auth-client";
+import { useSignedIn } from "~/components/providers/auth-state";
 
 export function Show({
   when,
@@ -10,17 +10,9 @@ export function Show({
   when: "signed-in" | "signed-out";
   children: ReactNode;
 }) {
-  const { data: session, isPending } = useSession();
+  const signedIn = useSignedIn();
 
-  if (isPending) return null;
+  if (signedIn === null) return null;
 
-  if (when === "signed-in" && session?.user) {
-    return <>{children}</>;
-  }
-
-  if (when === "signed-out" && !session?.user) {
-    return <>{children}</>;
-  }
-
-  return null;
+  return (when === "signed-in") === signedIn ? <>{children}</> : null;
 }

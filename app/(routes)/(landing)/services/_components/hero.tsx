@@ -49,8 +49,10 @@ export const ServicesHeroComponent = async () => {
 
           {highlight && (
             <div className="rounded-xl border border-white/15 bg-white/5 p-6">
-              <Eyebrow label="Join us" className="text-accent" />
-              <p className="mt-2 font-serif text-xl font-extrabold tracking-[-0.03em]">
+              <span className="text-accent text-xs font-semibold tracking-wider uppercase">
+                Join us
+              </span>
+              <p className="mt-2 font-serif text-2xl font-extrabold tracking-[-0.03em]">
                 {highlight.name} · {highlight.time}
               </p>
               <p className="text-secondary/75 mt-1 text-sm">

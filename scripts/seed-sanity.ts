@@ -1,6 +1,6 @@
 /**
- * One-time starter content for Sanity: the weekly services and the seven
- * expressions. Safe to run again, it never overwrites edits you make in Studio.
+ * One-time starter content for Sanity: weekly services, the seven expressions,
+ * project filters, a starter Project Mount Zion and the site settings document. Safe to run again, it never overwrites edits you make in Studio.
  *
  *   bun scripts/seed-sanity.ts
  *
@@ -29,27 +29,40 @@ const client = createClient({
 
 const slug = (current: string) => ({ _type: "slug", current });
 
-const services = [
+type ServiceSeed = {
+  _id: string;
+  name: string;
+  slug: string;
+  kind: "weekly" | "special";
+  weekday: string;
+  startTime?: string;
+  expected: number;
+  description: string;
+  featured: boolean;
+  order: number;
+};
+
+const services: ServiceSeed[] = [
   {
     _id: "service-sunday",
     name: "Sunday Service",
     slug: "sunday-service",
     kind: "weekly",
-    day: "Sunday",
-    time: "9:00 AM",
+    weekday: "Sunday",
+    startTime: "09:00",
     expected: 0,
     description:
       "Our primary weekly gathering: worship, the Word, prayer and fellowship for the whole family.",
     featured: true,
     order: 1,
   },
+  // No start time yet: the site shows "To be confirmed" until you set one in Studio.
   {
     _id: "service-wednesday",
     name: "Midweek Service",
     slug: "midweek-service",
     kind: "weekly",
-    day: "Wednesday",
-    time: "To be confirmed",
+    weekday: "Wednesday",
     expected: 0,
     description: "Midweek teaching, prayer and encouragement.",
     featured: false,
@@ -60,14 +73,20 @@ const services = [
     name: "Saturday Gathering",
     slug: "saturday-gathering",
     kind: "weekly",
-    day: "Saturday",
-    time: "To be confirmed",
+    weekday: "Saturday",
     expected: 0,
     description: "Fellowship, preparation and community outreach.",
     featured: false,
     order: 3,
   },
 ];
+
+const projectFilters = [
+  ["Infrastructure", "infrastructure"],
+  ["Outreach", "outreach"],
+  ["Discipleship", "discipleship"],
+  ["Education", "education"],
+] as const;
 
 const expressions = [
   [
@@ -111,11 +130,45 @@ const expressions = [
   title,
   slug: slug(s as string),
   tagline,
+  // Only the weekly services have a known rhythm. Set the others in Studio.
+  ...(s === "weekly-services" ? { frequency: "weekly" } : {}),
   order: index + 1,
 }));
 
 async function main() {
   const tx = client.transaction();
+
+  tx.createIfNotExists({
+    _id: "siteSettings",
+    _type: "siteSettings",
+    announcement: { enabled: false },
+  });
+
+  for (const [name, value] of projectFilters) {
+    tx.createIfNotExists({
+      _id: `projectFilter-${value}`,
+      _type: "projectFilter",
+      name,
+      value: slug(value),
+    });
+  }
+
+  // Starter entry only: add the real story, dates, photos and numbers in Studio.
+  tx.createIfNotExists({
+    _id: "project-mount-zion",
+    _type: "project",
+    title: "Project Mount Zion",
+    slug: slug("mount-zion"),
+    code: "PRJ-01",
+    category: { _type: "reference", _ref: "projectFilter-infrastructure" },
+    status: "In Progress",
+    location: "Kudenda, Kaduna",
+    featured: true,
+    order: 1,
+    summary: "Mount Zion is the building we’re raising together.",
+    progressPercentage: 0,
+  });
+
   for (const service of services) {
     tx.createIfNotExists({
       ...service,
@@ -128,7 +181,7 @@ async function main() {
 
   await tx.commit();
   console.log(
-    `Seeded ${services.length} services and ${expressions.length} expressions.`,
+    `Seeded ${services.length} services, ${expressions.length} expressions, ${projectFilters.length} project filters, Project Mount Zion and site settings.`,
   );
 }
 

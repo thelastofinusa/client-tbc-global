@@ -1,20 +1,18 @@
 "use client";
 
-import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import { Suspense } from "react";
-import { GoFlame } from "react-icons/go";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
-import { RiMapPinRangeLine } from "react-icons/ri";
+import { useSchedule } from "~/components/providers/schedule";
+import { InfoBar } from "~/components/shared/info-bar";
 import { Show } from "~/components/shared/show";
-import { siteConfig } from "~/config/site.config";
 import { navItems } from "~/lib/constants";
 import { cn, isActivePath } from "~/lib/utils";
-import type { ServiceRow } from "~/sanity/queries/service.query";
 import { useToggle } from "../providers/toggle";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Button } from "../reusable/shadcn/button";
@@ -50,59 +48,16 @@ const itemVariants: Variants = {
 
 const links = navItems.filter((item) => (item.kind ?? "nav") === "nav");
 
-export const Header: React.FC<{
-  shouldAccessStudio: boolean;
-  services: ServiceRow[];
-}> = ({ shouldAccessStudio, services }) => {
+export const Header: React.FC<{ shouldAccessStudio: boolean }> = ({
+  shouldAccessStudio,
+}) => {
   const pathname = usePathname();
   const { toggle, isOpen, close } = useToggle("menu");
+  const { next } = useSchedule();
 
   return (
     <>
-      {/* Desktop only: slim info bar (scrolls away; the header below sticks) */}
-      <div className="bg-navy hidden text-white lg:block">
-        <Container>
-          <div className="flex h-10 items-center justify-between text-xs">
-            <Link
-              href="/services"
-              className="flex items-center gap-3 text-white/80 transition-colors hover:text-white"
-            >
-              <GoFlame size={14} className="text-accent" />
-              <span>
-                Next gathering:{" "}
-                <strong className="font-semibold text-white">
-                  Sunday service · 9:00 AM
-                </strong>
-              </span>
-              <span className="h-3 w-px bg-white/20" />
-              <span className="flex items-center gap-1.5">
-                <RiMapPinRangeLine size={13} />
-                Kudenda, Kaduna
-              </span>
-            </Link>
-
-            <div className="flex items-center gap-4 text-white/80">
-              {services && (
-                <>
-                  <span className="font-serif text-[9px] tracking-[0.14em] uppercase">
-                    {services.map((s) => s.day.slice(0, 3)).join(" · ")}
-                  </span>
-                  <span className="h-3 w-px bg-white/20" />
-                </>
-              )}
-              <a
-                href={siteConfig.map.direction}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-white/80 transition-colors hover:text-white"
-              >
-                Get directions
-                <ArrowUpRightIcon size={13} />
-              </a>
-            </div>
-          </div>
-        </Container>
-      </div>
+      <InfoBar />
 
       <header
         className={cn(
@@ -298,10 +253,12 @@ export const Header: React.FC<{
                   <div>
                     <Eyebrow label="Next gathering" className="text-accent" />
                     <strong className="mt-3 block font-serif text-xl font-extrabold tracking-[-0.03em]">
-                      Sunday service · 9:00 AM
+                      {next
+                        ? `${next.name} · ${next.time}`
+                        : "See our schedule"}
                     </strong>
                     <p className="text-secondary/75 mt-1 text-sm">
-                      Kudenda, Kaduna
+                      {next?.location ?? "Kudenda, Kaduna"}
                     </p>
                   </div>
 

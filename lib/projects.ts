@@ -28,6 +28,8 @@ export interface ProjectItem {
   timeline: string;
   /** Empty string when no banner image has been uploaded yet. */
   bannerImage: string;
+  /** Small square version for cards. */
+  bannerThumb: string;
   bannerAlt: string;
   summary: string;
   about: string[];

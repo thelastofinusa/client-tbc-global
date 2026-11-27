@@ -125,10 +125,12 @@ function ProjectLedgerCard({ project }: { project: ProjectItem }) {
 
             {/* Tilted Specimen Image Frame */}
             <div className="bg-navy border-line relative size-16 shrink-0 rotate-2 overflow-hidden rounded-lg border-2 shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0">
-              {project.bannerImage && (
+              {(project.bannerThumb || project.bannerImage) && (
                 <img
-                  src={project.bannerImage}
+                  src={project.bannerThumb || project.bannerImage}
                   alt={project.bannerAlt}
+                  loading="lazy"
+                  decoding="async"
                   className="size-full object-cover"
                 />
               )}

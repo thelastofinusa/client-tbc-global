@@ -20,17 +20,16 @@ const paths = [
     number: "02",
     icon: GoSponsorTiers,
     title: "Sponsor a student",
-    description:
-      "Help a child stay in school. Pick a project and become part of their story.",
+    description: "Help a child stay in school and become part of their story.",
     cta: "Become a sponsor",
-    href: "/partner",
+    href: "/partner?type=sponsor",
   },
   {
     number: "03",
     icon: FaRegHandshake,
     title: "Partner with us",
     description:
-      "Walk with us on the projects we’re building across Kudenda and beyond.",
+      "Walk with us on the projects we’re building across Kudende and beyond.",
     cta: "Start a partnership",
     href: "/partner",
   },

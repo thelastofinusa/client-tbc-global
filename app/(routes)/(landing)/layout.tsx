@@ -1,32 +1,50 @@
-import React, { Suspense } from "react";
+import { headers } from "next/headers";
+import { type ReactNode, Suspense } from "react";
+import { AuthStateProvider } from "~/components/providers/auth-state";
+import { ScheduleProvider } from "~/components/providers/schedule";
 import { Footer } from "~/components/shared/footer";
 import { Header } from "~/components/shared/header";
 import { InstallAppFab } from "~/components/shared/install-app-fab";
 import { PwaPullToRefresh } from "~/components/shared/pwa-pull-to-refresh";
 import { PwaRegister } from "~/components/shared/pwa-register";
-import { getDashboardViewer } from "~/lib/dashboard/access";
-import { getServices, type ServiceRow } from "~/lib/data/services";
+import { auth } from "~/lib/auth/auth";
+import { getScheduleSummary } from "~/lib/data/services";
 
 const STUDIO_ROLES = new Set(["super_admin", "admin", "media"]);
 
-async function LandingHeader({ services }: { services: ServiceRow[] }) {
-  const viewer = await getDashboardViewer();
-  const shouldAccessStudio = Boolean(
-    viewer && STUDIO_ROLES.has(viewer.baseRole),
-  );
-
-  return <Header services={services} shouldAccessStudio={shouldAccessStudio} />;
+/** Cached Sanity read, so this stays part of the static page. */
+async function ScheduleBoundary({ children }: { children: ReactNode }) {
+  const schedule = await getScheduleSummary();
+  return <ScheduleProvider value={schedule}>{children}</ScheduleProvider>;
 }
 
-export default async function LandingLayout(props: Readonly<LayoutProps<"/">>) {
-  const services = await getServices();
+/**
+ * Reads the signed session cookie only (no database round trip, see
+ * `session.cookieCache` in lib/auth/auth.ts). The Studio link can lag a role
+ * change by a few minutes, which is fine for a menu item.
+ */
+async function LandingHeader() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const role = (session?.user as { role?: string } | undefined)?.role ?? "";
 
   return (
-    <React.Fragment>
+    <AuthStateProvider signedIn={Boolean(session?.user)}>
+      <Header shouldAccessStudio={STUDIO_ROLES.has(role)} />
+    </AuthStateProvider>
+  );
+}
+
+export default function LandingLayout(props: Readonly<LayoutProps<"/">>) {
+  return (
+    <ScheduleBoundary>
       <Suspense
-        fallback={<Header services={services} shouldAccessStudio={false} />}
+        fallback={
+          <AuthStateProvider signedIn={null}>
+            <Header shouldAccessStudio={false} />
+          </AuthStateProvider>
+        }
       >
-        <LandingHeader services={services} />
+        <LandingHeader />
       </Suspense>
 
       <main className="flex-1">
@@ -37,7 +55,7 @@ export default async function LandingLayout(props: Readonly<LayoutProps<"/">>) {
         </Suspense>
         <PwaPullToRefresh />
       </main>
-      <Footer services={services} />
-    </React.Fragment>
+      <Footer />
+    </ScheduleBoundary>
   );
 }

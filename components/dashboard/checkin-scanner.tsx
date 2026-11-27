@@ -87,8 +87,7 @@ export function CheckInScanner() {
         .catch(() =>
           setResult({
             kind: "error",
-            message:
-              "Something went wrong. Check your connection and try again.",
+            message: "Something went wrong. Check your connection and try again.",
           }),
         );
     },

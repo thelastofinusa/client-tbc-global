@@ -1,29 +1,43 @@
-import { count, eq } from "drizzle-orm";
-import { connection } from "next/server";
+import { and, count, eq, ne } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, submissions, user } from "~/db";
 
 export interface PublicStats {
   members: number;
-  supporters: number;
+  sponsors: number;
+  partners: number;
 }
 
 /**
- * Real numbers for the home page. Call from inside a <Suspense> boundary.
- * Falls back to zeros if the database is unreachable so the page still loads.
+ * The three numbers on the home page. Cached for a minute and refreshed as
+ * soon as a new request comes in, so the home page stays static and fast.
+ * Falls back to zeros if the database is unreachable.
  */
 export async function getPublicStats(): Promise<PublicStats> {
-  await connection();
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("public-stats");
 
   try {
-    const [members] = await db
-      .select({ n: count() })
-      .from(user)
-      .where(eq(user.status, "approved"));
-    const [supporters] = await db.select({ n: count() }).from(submissions);
+    const countType = (type: "sponsor" | "partner") =>
+      db
+        .select({ n: count() })
+        .from(submissions)
+        .where(and(eq(submissions.type, type), ne(submissions.status, "declined")));
 
-    return { members: members?.n ?? 0, supporters: supporters?.n ?? 0 };
+    const [[members], [sponsors], [partners]] = await Promise.all([
+      db.select({ n: count() }).from(user).where(eq(user.status, "approved")),
+      countType("sponsor"),
+      countType("partner"),
+    ]);
+
+    return {
+      members: members?.n ?? 0,
+      sponsors: sponsors?.n ?? 0,
+      partners: partners?.n ?? 0,
+    };
   } catch (err) {
     console.error("Could not load public stats:", err);
-    return { members: 0, supporters: 0 };
+    return { members: 0, sponsors: 0, partners: 0 };
   }
 }

@@ -65,6 +65,11 @@ export const auth = betterAuth({
       joinedAt: { type: "date", required: false, input: false },
     },
   },
+  session: {
+    // Keeps a signed copy of the session in the cookie for 5 minutes, so
+    // reading "who is signed in" doesn't hit the database on every request.
+    cookieCache: { enabled: true, maxAge: 5 * 60 },
+  },
   account: {
     accountLinking: {
       enabled: true,

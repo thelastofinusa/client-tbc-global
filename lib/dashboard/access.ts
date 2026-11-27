@@ -84,7 +84,11 @@ export const getDashboardViewer = cache(
 
     try {
       session = await withDbRetry(() =>
-        auth.api.getSession({ headers: requestHeaders }),
+        auth.api.getSession({
+          headers: requestHeaders,
+          // The dashboard must see role/status changes immediately.
+          query: { disableCookieCache: true },
+        }),
       );
     } catch (err) {
       // Don't hide this: a failing database would otherwise look like "signed out".
@@ -104,6 +108,19 @@ export const getDashboardViewer = cache(
 
     const email = dbUser.email;
     const emailKey = email.toLowerCase();
+
+    // A super admin is never "pending", whichever way the role was set.
+    if (dbUser.role === "super_admin" && dbUser.status !== "approved") {
+      try {
+        await db
+          .update(userTable)
+          .set({ status: "approved" })
+          .where(eq(userTable.id, dbUser.id));
+        dbUser.status = "approved";
+      } catch (err) {
+        console.error("Failed to approve super admin:", err);
+      }
+    }
 
     if (
       dbUser.emailVerified &&
