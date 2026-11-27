@@ -54,11 +54,24 @@ export const projectSchema = defineType({
     }),
     defineField({ name: "location", title: "Location", type: "string", group: "overview" }),
     defineField({
-      name: "timeline",
-      title: "Timeline",
-      type: "string",
+      name: "startDate",
+      title: "Start date",
+      type: "date",
       group: "overview",
-      description: "e.g. Monthly distribution · 2026",
+    }),
+    defineField({
+      name: "endDate",
+      title: "Target end date",
+      type: "date",
+      group: "overview",
+      description: "Leave empty for ongoing projects.",
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const start = context.document?.startDate as string | undefined;
+          return value && start && value < start
+            ? "The end date can’t be before the start date"
+            : true;
+        }),
     }),
     defineField({
       name: "featured",
@@ -112,8 +125,21 @@ export const projectSchema = defineType({
       validation: (Rule) => Rule.min(0).max(100),
       initialValue: 0,
     }),
-    defineField({ name: "raisedLabel", title: "Raised so far", type: "string", group: "progress", description: "e.g. ₦4.2M" }),
-    defineField({ name: "goalLabel", title: "Goal", type: "string", group: "progress", description: "e.g. ₦10M" }),
+    defineField({
+      name: "amountRaised",
+      title: "Raised so far (₦)",
+      type: "number",
+      group: "progress",
+      description: "Whole naira, e.g. 4200000. Leave empty if you don’t publish amounts.",
+      validation: (Rule) => Rule.min(0),
+    }),
+    defineField({
+      name: "fundingGoal",
+      title: "Funding goal (₦)",
+      type: "number",
+      group: "progress",
+      validation: (Rule) => Rule.min(0),
+    }),
     defineField({
       name: "milestones",
       title: "Milestones",

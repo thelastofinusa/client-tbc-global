@@ -6,7 +6,8 @@ export const readClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false,
+  // Published content only, so the global CDN is safe and much faster.
+  useCdn: true,
   perspective: "published",
 });
 

@@ -5,14 +5,18 @@ import { CalendarDaysIcon, ChevronRightIcon } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { GoFlame } from "react-icons/go";
+import { useSchedule } from "~/components/providers/schedule";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
 import { Eyebrow } from "~/components/shared/eyebrow";
 import { siteConfig } from "~/config/site.config";
+import { joinDays } from "~/lib/schedule";
 
 const motto = ["Love God", "Serve People", "Transform Our Community"];
 
 export const HomeHeroComponent = () => {
+  const { next, fullDays } = useSchedule();
+
   return (
     <section aria-label="Hero" className="relative w-full overflow-hidden">
       <Container>
@@ -55,10 +59,12 @@ export const HomeHeroComponent = () => {
               </Button>
             </div>
 
-            <p className="text-muted-foreground mt-8 flex items-center gap-2 text-xs">
-              <GoFlame size={14} className="text-primary" />
-              Gathering every Wednesday, Saturday and Sunday
-            </p>
+            {fullDays.length > 0 && (
+              <p className="text-muted-foreground mt-8 flex items-center gap-2 text-xs">
+                <GoFlame size={14} className="text-primary" />
+                Gathering every {joinDays(fullDays)}
+              </p>
+            )}
           </div>
 
           {/* ─── Right: framed photo + floating card ─── */}
@@ -110,10 +116,12 @@ export const HomeHeroComponent = () => {
                       NEXT GATHERING
                     </span>
                     <strong className="text-sm font-semibold">
-                      Sunday service · 9:00 AM
+                      {next
+                        ? `${next.name} · ${next.time}`
+                        : "See our schedule"}
                     </strong>
                     <small className="text-muted-foreground text-xs">
-                      Kudenda, Kaduna
+                      {next?.location ?? "Kudenda, Kaduna"}
                     </small>
                   </div>
                   <span className="text-primary grid size-10 place-items-center transition-transform group-hover:translate-x-0.5">

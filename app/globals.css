@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/a11y/useGenericFontNames: <explanation> */
+/** biome-ignore-all lint/a11y/useGenericFontNames: ignore */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

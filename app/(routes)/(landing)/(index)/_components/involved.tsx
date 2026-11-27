@@ -20,10 +20,9 @@ const paths = [
     number: "02",
     icon: GoSponsorTiers,
     title: "Sponsor a student",
-    description:
-      "Help a child stay in school. Pick a project and become part of their story.",
+    description: "Help a child stay in school and become part of their story.",
     cta: "Become a sponsor",
-    href: "/partner",
+    href: "/partner?type=sponsor",
   },
   {
     number: "03",

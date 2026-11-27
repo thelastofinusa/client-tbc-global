@@ -33,5 +33,5 @@
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
   },
-  "cSpell.words": ["keltra", "Kudenda", "reicon", "toploader"]
+  "cSpell.words": ["checkin", "keltra", "Kudenda", "reicon", "toploader"]
 }

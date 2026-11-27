@@ -289,7 +289,7 @@ export function AttendanceSession({
               <span className="text-muted-foreground text-xs font-semibold tracking-[0.12em] uppercase">
                 {item.label}
               </span>
-              <strong className="mt-3 block font-serif text-3xl leading-none font-extrabold tracking-[-0.05em] tabular-nums">
+              <strong className="mt-3 block font-serif text-3xl leading-none font-extrabold tracking-tighter tabular-nums">
                 {item.value}
               </strong>
             </Card>

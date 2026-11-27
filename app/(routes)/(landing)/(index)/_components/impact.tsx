@@ -1,21 +1,19 @@
 import { cn } from "cn";
 import { Suspense } from "react";
 import { HiOutlineAcademicCap } from "react-icons/hi";
-import { HiOutlineUsers } from "react-icons/hi2";
-import { PiHammer } from "react-icons/pi";
+import { HiOutlineHeart, HiOutlineUsers } from "react-icons/hi2";
 import { Container } from "~/components/shared/container";
 import { CountingNumber } from "~/components/shared/count-number";
 import { Eyebrow } from "~/components/shared/eyebrow";
-import { getFeaturedProject } from "~/lib/data/projects";
 import { getPublicStats } from "~/lib/data/public-stats";
 
 interface ImpactData {
   members: number;
-  supporters: number;
-  featured?: { title: string; percentage: number };
+  sponsors: number;
+  partners: number;
 }
 
-function buildStats({ members, supporters, featured }: ImpactData) {
+function buildStats({ members, sponsors, partners }: ImpactData) {
   return [
     {
       value: members,
@@ -25,29 +23,24 @@ function buildStats({ members, supporters, featured }: ImpactData) {
       tile: "bg-primary text-primary-foreground",
       suffixClassName: "text-accent",
       labelClassName: "text-primary-foreground/85",
-      progress: null as number | null,
     },
     {
-      value: supporters,
+      value: sponsors,
       suffix: null,
-      label: "sponsors and partners walking with us",
+      label: sponsors === 1 ? "sponsor backing our projects" : "sponsors backing our projects",
       icon: HiOutlineAcademicCap,
       tile: "bg-muted text-foreground border border-line",
       suffixClassName: "",
       labelClassName: "text-muted-foreground",
-      progress: null as number | null,
     },
     {
-      value: featured?.percentage ?? 0,
-      suffix: "%",
-      label: featured
-        ? `of ${featured.title} complete`
-        : "of our featured project",
-      icon: PiHammer,
+      value: partners,
+      suffix: null,
+      label: partners === 1 ? "partner walking with us" : "partners walking with us",
+      icon: HiOutlineHeart,
       tile: "bg-navy text-white",
       suffixClassName: "text-accent",
       labelClassName: "text-secondary/80",
-      progress: (featured?.percentage ?? 0) as number | null,
     },
   ];
 }
@@ -111,22 +104,6 @@ function ImpactView(data: ImpactData) {
                   <p className={cn("mt-3 text-sm", stat.labelClassName)}>
                     {stat.label}
                   </p>
-
-                  {stat.progress !== null && (
-                    <div
-                      role="progressbar"
-                      aria-label={stat.label}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={stat.progress}
-                      className="mt-5 h-1.5 w-full bg-white/15"
-                    >
-                      <div
-                        className="bg-accent h-full"
-                        style={{ width: `${stat.progress}%` }}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             );
@@ -138,26 +115,12 @@ function ImpactView(data: ImpactData) {
 }
 
 async function ImpactData() {
-  const [stats, featured] = await Promise.all([
-    getPublicStats(),
-    getFeaturedProject(),
-  ]);
-
-  return (
-    <ImpactView
-      members={stats.members}
-      supporters={stats.supporters}
-      featured={
-        featured
-          ? { title: featured.title, percentage: featured.progress.percentage }
-          : undefined
-      }
-    />
-  );
+  const stats = await getPublicStats();
+  return <ImpactView {...stats} />;
 }
 
 export const ImpactComponent = () => (
-  <Suspense fallback={<ImpactView members={0} supporters={0} />}>
+  <Suspense fallback={<ImpactView members={0} sponsors={0} partners={0} />}>
     <ImpactData />
   </Suspense>
 );

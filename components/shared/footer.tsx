@@ -4,12 +4,13 @@ import { ArrowUpRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import React, { Suspense } from "react";
+import { useSchedule } from "~/components/providers/schedule";
 import { Button } from "~/components/reusable/shadcn/button";
 import { Container } from "~/components/shared/container";
+import { MapEmbed } from "~/components/shared/map-embed";
 import { Show } from "~/components/shared/show";
 import { siteConfig } from "~/config/site.config";
 import { type NavItemType, navItems } from "~/lib/constants";
-import { getServices, type ServiceRow } from "~/lib/data/services";
 import { Eyebrow } from "./eyebrow";
 import { LogoComponent } from "./logo";
 
@@ -61,8 +62,9 @@ const footerSections: FooterSection[] = [
   },
 ];
 
-export const Footer: React.FC<{ services: ServiceRow[] }> = ({ services }) => {
+export const Footer = () => {
   const [year, setYear] = React.useState<number>(2026);
+  const { days: gatheringDays } = useSchedule();
 
   React.useEffect(() => {
     setYear(new Date().getFullYear());
@@ -115,10 +117,16 @@ export const Footer: React.FC<{ services: ServiceRow[] }> = ({ services }) => {
               {siteConfig.about}
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              {services && (
-                <p className="border border-white/15 px-1.5 py-0.5 text-[11px] font-semibold text-white/80 uppercase">
-                  {services.map((s) => s.day.slice(0, 3)).join(" · ")}
-                </p>
+              {gatheringDays.map((day) => (
+                <span
+                  key={day}
+                  className="border border-white/15 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-white/80 uppercase"
+                >
+                  {day}
+                </span>
+              ))}
+              {gatheringDays.length > 0 && (
+                <span className="text-xs text-white/50">every week</span>
               )}
             </div>
           </div>
@@ -159,13 +167,7 @@ export const Footer: React.FC<{ services: ServiceRow[] }> = ({ services }) => {
             <Eyebrow label="Where to find us" className="text-accent" />
 
             <div className="aspect-2/1 overflow-hidden border border-white/10">
-              <iframe
-                title={`${siteConfig.title} location on Google Maps`}
-                src={siteConfig.map.embed}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                className="size-full border-none"
-              />
+              <MapEmbed />
             </div>
 
             <a

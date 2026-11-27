@@ -71,36 +71,36 @@ export async function getCommunities(): Promise<Community[]> {
 
     // Seed defaults if table is empty
     if (list.length === 0) {
-      // const defaults = [
-      //   {
-      //     id: "comm_whatsapp",
-      //     name: "WhatsApp Community",
-      //     description:
-      //       "Daily fellowship updates, reminders, and announcements.",
-      //     href: "https://chat.whatsapp.com/",
-      //     icon: "whatsapp",
-      //     badge: "Active",
-      //   },
-      //   {
-      //     id: "comm_telegram",
-      //     name: "Telegram Channel",
-      //     description: "Broadcasts, event notes, and shared resources.",
-      //     href: "https://t.me/",
-      //     icon: "telegram",
-      //     badge: "Channel",
-      //   },
-      //   {
-      //     id: "comm_forum",
-      //     name: "Member & Volunteer Forum",
-      //     description:
-      //       "Coordinate serving, outreach, and small-group check-ins.",
-      //     href: "https://chat.whatsapp.com/",
-      //     icon: "users",
-      //     badge: "Members",
-      //   },
-      // ];
+      const defaults = [
+        {
+          id: "comm_whatsapp",
+          name: "WhatsApp Community",
+          description:
+            "Daily fellowship updates, reminders, and announcements.",
+          href: "https://chat.whatsapp.com/",
+          icon: "whatsapp",
+          badge: "Active",
+        },
+        {
+          id: "comm_telegram",
+          name: "Telegram Channel",
+          description: "Broadcasts, event notes, and shared resources.",
+          href: "https://t.me/",
+          icon: "telegram",
+          badge: "Channel",
+        },
+        {
+          id: "comm_forum",
+          name: "Member & Volunteer Forum",
+          description:
+            "Coordinate serving, outreach, and small-group check-ins.",
+          href: "https://chat.whatsapp.com/",
+          icon: "users",
+          badge: "Members",
+        },
+      ];
 
-      // await db.insert(communities).values(defaults);
+      await db.insert(communities).values(defaults);
       return await db
         .select()
         .from(communities)
@@ -161,16 +161,14 @@ async function updateMember(
 ) {
   const viewer = await requireSuperAdmin();
   const key = email.toLowerCase();
-  const isSelf = key === viewer.email.toLowerCase();
 
-  if (isSelf) {
-    // Allow approving yourself as super_admin, while still blocking demoting yourself
-    // or locking yourself out with "suspended".
-    const locksSelfOut =
-      change.status === "suspended" ||
-      (change.role !== undefined && change.role !== "super_admin");
-
-    if (locksSelfOut) {
+  if (key === viewer.email.toLowerCase()) {
+    // Approving yourself is harmless. Demoting or suspending yourself could
+    // lock everyone out of the dashboard, so that stays blocked.
+    const demoting = change.role !== undefined && change.role !== "super_admin";
+    const suspending =
+      change.status !== undefined && change.status !== "approved";
+    if (demoting || suspending) {
       throw new Error(
         "You can't demote or suspend your own account. Use “View as” to preview other roles.",
       );
