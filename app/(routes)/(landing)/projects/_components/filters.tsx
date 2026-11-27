@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/performance/noImgElement: <explanation> */
+/** biome-ignore-all lint/performance/noImgElement: ignore */
 "use client";
 
 import { cn } from "cn";

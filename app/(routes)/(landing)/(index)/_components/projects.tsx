@@ -52,7 +52,7 @@ function ProjectsView({
               <span className="bg-accent/15 text-accent inline-block px-2 py-1 text-[10px] font-semibold tracking-wider uppercase">
                 {featured ? `Project ${featured.title}` : "Our projects"}
               </span>
-              <h3 className="mt-5 max-w-md font-serif text-3xl font-extrabold tracking-[-0.05em] md:text-4xl md:leading-[1.05]">
+              <h3 className="mt-5 max-w-md font-serif text-3xl font-extrabold tracking-tighter md:text-4xl md:leading-[1.05]">
                 {featured ? (
                   <>
                     We’re{" "}
@@ -73,7 +73,7 @@ function ProjectsView({
                 {featured
                   ? featured.summary
                   : hasProjects
-                    ? "Follow the work happening across Kudende."
+                    ? "Follow the work happening across Kudenda."
                     : "We’re preparing them now. Partner with us and be there from the start."}
               </p>
             </div>
@@ -173,7 +173,7 @@ function ProjectsView({
                   Academic projects
                 </h3>
                 <p className="text-muted-foreground mt-2 text-sm leading-[1.7]">
-                  Learning programs that help young people in Kudende grow their
+                  Learning programs that help young people in Kudenda grow their
                   skills and dream bigger.
                 </p>
               </div>

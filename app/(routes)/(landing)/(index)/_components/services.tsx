@@ -71,8 +71,8 @@ export const ServicesComponent = async () => {
                 <span
                   className={
                     highlight
-                      ? "text-accent font-serif text-3xl font-extrabold tracking-[-0.05em] uppercase md:text-4xl"
-                      : "text-primary font-serif text-3xl font-extrabold tracking-[-0.05em] uppercase md:text-4xl"
+                      ? "text-accent font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
+                      : "text-primary font-serif text-3xl font-extrabold tracking-tighter uppercase md:text-4xl"
                   }
                 >
                   {day}

@@ -29,7 +29,7 @@ const tracks: PartnershipTrack[] = [
     name: "Monthly Partner",
     tagline: "Steady, ongoing commitment",
     description:
-      "Provide dependable monthly backing for weekly gatherings, ministry operations, and ongoing care in Kudende.",
+      "Provide dependable monthly backing for weekly gatherings, ministry operations, and ongoing care in Kudenda.",
     perks: [
       "Consistent support for weekly services",
       "Quarterly partnership & impact updates",
@@ -445,7 +445,7 @@ export const Tracks = ({
                   </div>
 
                   {/* Honeypot: hidden from people, filled in by bots. */}
-                  <div aria-hidden="true" className="absolute -left-[9999px]">
+                  <div aria-hidden="true" className="absolute left-[-9999px]">
                     <label htmlFor="partner-company">Company</label>
                     <input
                       id="partner-company"

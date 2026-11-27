@@ -1,4 +1,5 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: ignore */
+/** biome-ignore-all lint/performance/noImgElement: ignore */
 import {
   ArrowUpRightIcon,
   CheckCircle2Icon,
@@ -85,7 +86,7 @@ export const MainContent: React.FC<{ project: ProjectItem }> = ({
                     key={`${photo.src}-${index}`}
                     className="bg-card border-line group overflow-hidden rounded-xl border"
                   >
-                    <div className="bg-muted aspect-[4/3] overflow-hidden">
+                    <div className="bg-muted aspect-4/3 overflow-hidden">
                       <img
                         src={photo.src}
                         alt={photo.alt}
